@@ -391,7 +391,7 @@ th:first-child, td:first-child { text-align: left; }
             <button type="button" data-v="0">전체</button>
           </div>
           <div class="toggles">
-            <label class="check"><input type="checkbox" id="ma-dim" checked> <span>캔들 흐리게</span></label>
+            <label class="check"><input type="checkbox" id="ma-dim"> <span>캔들 흐리게</span></label>
             <label class="check"><input type="checkbox" id="ma-log"> <span>로그</span></label>
           </div>
         </div>
@@ -980,7 +980,7 @@ const colorOf = n => css("--ma" + n);
 const swatch = (tf, n, w = 26) => `<svg width="${w}" height="8" aria-hidden="true"><line x1="1" y1="4" x2="${w - 1}" y2="4" style="stroke:var(--ma${n})" stroke-width="${tf === "M" ? 3 : tf === "W" ? 2.4 : 2}" ${SVG_DASH[tf] ? `stroke-dasharray="${SVG_DASH[tf]}"` : ""} stroke-linecap="${tf === "M" ? "round" : "butt"}"/></svg>`;
 
 /* ---------- 상태 ---------- */
-const st = { sym: "^KS11", tf: "D", range: 12, on: new Set(["D20", "D60", "D120", "W60", "M20"]), sort: "price", log: false, dim: true,
+const st = { sym: "^KS11", tf: "D", range: 12, on: new Set(["D20", "D60", "D120", "W60", "M20"]), sort: "price", log: false, dim: false,
   hl: null, hover: null, data: null, end: 0, cnt: 0, loaded: false, req: 0 };
 try {
   const o = JSON.parse(localStorage.getItem(LS) || "null");
@@ -990,7 +990,7 @@ try {
     if (o.range === null || typeof o.range === "number") st.range = o.range ?? 12;
     if (Array.isArray(o.on)) st.on = new Set(o.on.filter(k => ALL.some(a => a.key === k)));
     if (o.sort === "tf" || o.sort === "price") st.sort = o.sort;
-    st.log = !!o.log; st.dim = o.dim !== false;
+    st.log = !!o.log; st.dim = o.dim === true;
   }
 } catch (e) {}
 function save() { try { localStorage.setItem(LS, JSON.stringify({ sym: st.sym, tf: st.tf, range: st.range, on: [...st.on], sort: st.sort, log: st.log, dim: st.dim })); } catch (e) {} }
@@ -1264,7 +1264,7 @@ function draw() {
   if (volH) {
     let mv = 0; for (let k = i0; k <= i1; k++) mv = Math.max(mv, C[k].v);
     const vb = mainB + gap + volH;
-    g.globalAlpha = st.dim ? 0.3 : 0.55;
+    g.globalAlpha = st.dim ? 0.45 : 0.7;
     for (let k = i0; k <= i1; k++) {
       if (!mv) break; const c = C[k], h = c.v / mv * volH;
       g.fillStyle = c.c >= c.o ? up : down; g.fillRect(X(k) - Math.max(0.5, cw * 0.35), vb - h, Math.max(1, cw * 0.7), h);
@@ -1275,7 +1275,7 @@ function draw() {
 
   // 캔들
   g.save(); g.beginPath(); g.rect(L0, padT, plotW, mainH); g.clip();
-  g.globalAlpha = st.dim ? 0.32 : 1;
+  g.globalAlpha = st.dim ? 0.75 : 1;
   for (let k = i0; k <= i1; k++) {
     const c = C[k], x = X(k), col = c.c >= c.o ? up : down;
     g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 1;
