@@ -182,6 +182,15 @@ th:first-child, td:first-child { text-align: left; }
 .pxrow { display: flex; align-items: center; gap: 8px; padding: 6px 4px; font-family: var(--font-num); font-size: 13px; font-weight: 600; }
 .pxrow::before, .pxrow::after { content: ""; flex: 1; border-top: 2px solid var(--ink); }
 .ladder h3 { margin: 10px 0 2px; font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 0.04em; }
+/* Portfolio mode */
+.pf-row,.pf-row-label { display:grid; grid-template-columns:minmax(0,1fr) 76px 52px; gap:8px; align-items:end; margin:10px 0; }
+.pf-row select,.pf-row input { min-width:0; width:100%; }
+.pf-chart { height:340px; position:relative; }
+.pf-chart canvas { width:100%; height:100%; display:block; }
+.pf-legend { display:flex; flex-wrap:wrap; gap:8px 14px; font-size:12px; margin:8px 0; }
+.pf-legend span::before { content:""; display:inline-block; width:16px; border-top:3px solid var(--c); margin-right:5px; vertical-align:middle; }
+#pf-status { white-space:pre-line; }
+@media(max-width:480px) { .pf-row,.pf-row-label { grid-template-columns:minmax(0,1fr) 65px 48px; gap:5px; } .pf-chart { height:280px; } }
 </style>
 </head>
 <body>
@@ -205,7 +214,46 @@ th:first-child, td:first-child { text-align: left; }
     <p>그날부터 꾸준히 샀다면 지금 평단과 평가금액은 얼마일까. 종목과 주기, 금액을 고르면 야후 파이낸스 일별 종가로 회차별 계산을 합니다.</p>
   </header>
 
-  <div class="grid">
+  <div class="seg" role="group" aria-label="계산 방식" id="dca-kind" style="margin-bottom:18px">
+    <button type="button" data-v="single" aria-pressed="true">단일 종목</button>
+    <button type="button" data-v="portfolio" aria-pressed="false">포트폴리오</button>
+  </div>
+  <div id="portfolio-mode" hidden>
+    <div class="grid">
+      <div class="stack">
+        <section class="panel">
+          <h2>종목과 투자 비중</h2>
+          <p class="hint">매번 납입금을 비중대로 나눠 매수합니다. 기존 보유분은 매도하거나 리밸런싱하지 않습니다.</p>
+          <div class="pf-row-label hint" aria-hidden="true"><span>종목</span><span>비중 (%)</span><span></span></div>
+          <div id="pf-assets"></div>
+          <div class="row"><button type="button" class="btn" id="pf-add">종목 추가</button><strong id="pf-total" aria-live="polite"></strong></div>
+        </section>
+        <section class="panel">
+          <h2>공통 적립 조건</h2>
+          <div class="row">
+            <div class="field"><label for="pf-start">시작일</label><input type="date" id="pf-start" value="2016-01-01"></div>
+            <div class="field"><label for="pf-end">종료일 (비워두면 최신 공통일)</label><input type="date" id="pf-end"></div>
+          </div>
+          <div class="field"><label for="pf-frequency">매수 주기</label><select id="pf-frequency"><option value="month">매월</option><option value="week">매주</option><option value="day">매일 (두 시장 중 거래일)</option></select></div>
+          <div class="field" id="pf-month-field"><label for="pf-monthday">매수일</label><select id="pf-monthday"></select></div>
+          <div class="field" id="pf-week-field" hidden><label for="pf-weekday">요일</label><select id="pf-weekday"><option value="1">월요일</option><option value="2">화요일</option><option value="3">수요일</option><option value="4">목요일</option><option value="5">금요일</option></select></div>
+          <div class="field"><label for="pf-amount">회당 총 투자금 (원)</label><input type="number" id="pf-amount" value="1000000" min="1" step="10000"></div>
+          <label class="check"><input type="checkbox" id="pf-fractional" checked><span>소수점 수량 허용</span></label>
+          <label class="check"><input type="checkbox" id="pf-adjusted"><span>배당 재투자 가정 (수정주가)</span></label>
+          <p class="hint">해외 종목은 매수일·평가일의 실제 환율로 원화 환산합니다. 각 시장의 휴장일에는 배정금을 원화로 보관하고 다음 거래일에 매수합니다. 정수 주 매수의 잔액도 원화로 이월합니다.</p>
+          <button type="button" class="btn" id="pf-calculate">계산 / 시세 다시 불러오기</button>
+          <p id="pf-status" class="hint" role="status" aria-live="polite"></p>
+        </section>
+      </div>
+      <div class="stack" id="pf-results" hidden>
+        <section class="panel"><h2>포트폴리오 결과</h2><div class="kpis" id="pf-kpis"></div><p class="hint" id="pf-period"></p></section>
+        <section class="panel"><h2>포트폴리오와 단일 종목 비교</h2><p class="hint">같은 날짜에 같은 총금액을 납입해 각 종목에 전액 투자한 경우와 비교합니다. 평가에는 해당 날짜까지의 시세만 사용합니다.</p><div class="pf-legend" id="pf-legend"></div><div class="pf-chart" id="pf-chartbox"><canvas id="pf-chart" aria-label="포트폴리오와 단일 종목 평가금액 비교"></canvas></div><p class="hint" id="pf-hover"></p><div class="tablewrap"><table><thead><tr><th>구성</th><th>평가금액</th><th>손익</th><th>수익률</th><th>XIRR</th><th>MDD</th></tr></thead><tbody id="pf-comparison"></tbody></table></div></section>
+        <section class="panel"><h2>종목별 결과</h2><div class="tablewrap"><table><thead><tr><th>종목</th><th>목표 / 최종 비중</th><th>납입 원금</th><th>평가금액</th><th>손익</th><th>수익률</th><th>보유 수량</th><th>평균 단가 (현지 통화)</th><th>원화 잔액</th></tr></thead><tbody id="pf-holdings"></tbody></table></div></section>
+        <section class="panel"><div class="statement-head"><h2>매수 내역</h2><span class="hint" id="pf-tx-count"></span></div><div class="tablewrap"><table><thead><tr><th>날짜</th><th>종목</th><th>수량</th><th>단가 (현지 통화)</th><th>환율</th><th>매수금액 (원)</th></tr></thead><tbody id="pf-transactions"></tbody></table></div><button type="button" class="btn" id="pf-more" hidden>더 보기</button></section>
+      </div>
+    </div>
+  </div>
+  <div class="grid" id="single-mode">
     <div class="stack">
       <section class="panel" aria-labelledby="h-asset">
         <h2 id="h-asset">종목</h2>
@@ -521,7 +569,7 @@ async function selectSymbol(sym, label) {
   sym = sym.trim().toUpperCase(); if (!sym) return;
   st.sym = sym; const my = ++st.req;
   $("assetinfo").innerHTML = `<b></b><small>시세 불러오는 중…</small>`; $("assetinfo").querySelector("b").textContent = label || sym;
-  document.querySelector(".grid > .stack:last-child").classList.add("loading");
+  document.querySelector("#single-mode > .stack:last-child").classList.add("loading");
   try {
     const a = await loadChart(sym);
     if (my !== st.req) return;
@@ -549,7 +597,7 @@ async function selectSymbol(sym, label) {
     $("assetinfo").children[1].textContent = e.message;
     run();
   } finally {
-    if (my === st.req) document.querySelector(".grid > .stack:last-child").classList.remove("loading");
+    if (my === st.req) document.querySelector("#single-mode > .stack:last-child").classList.remove("loading");
   }
 }
 $("preset").addEventListener("change", () => { const o = $("preset").selectedOptions[0]; selectSymbol(o.value, o.textContent); });
@@ -1479,5 +1527,7 @@ let startTab = "dca"; try { startTab = localStorage.getItem(LS_TAB) || "dca"; } 
 showTab(startTab === "ma" ? "ma" : "dca");
 })();
 </script>
+<script src="portfolio.js"></script>
+<script src="portfolio-ui.js"></script>
 </body>
 </html>
