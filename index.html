@@ -393,6 +393,8 @@ th:first-child, td:first-child { text-align: left; }
           <div class="toggles">
             <label class="check"><input type="checkbox" id="ma-dim"> <span>캔들 흐리게</span></label>
             <label class="check"><input type="checkbox" id="ma-log"> <span>로그</span></label>
+            <label class="check"><input type="checkbox" id="ma-bb"> <span>볼린저밴드 (20, 2σ)</span></label>
+            <label class="check"><input type="checkbox" id="ma-rsi"> <span>RSI (14)</span></label>
           </div>
         </div>
         <div class="ma-chips" id="ma-chips" aria-label="현재 주기 이평선"></div>
@@ -980,7 +982,7 @@ const colorOf = n => css("--ma" + n);
 const swatch = (tf, n, w = 26) => `<svg width="${w}" height="8" aria-hidden="true"><line x1="1" y1="4" x2="${w - 1}" y2="4" style="stroke:var(--ma${n})" stroke-width="${tf === "M" ? 3 : tf === "W" ? 2.4 : 2}" ${SVG_DASH[tf] ? `stroke-dasharray="${SVG_DASH[tf]}"` : ""} stroke-linecap="${tf === "M" ? "round" : "butt"}"/></svg>`;
 
 /* ---------- 상태 ---------- */
-const st = { sym: "^KS11", tf: "D", range: 12, on: new Set(["D20", "D60", "D120", "W60", "M20"]), sort: "price", log: false, dim: false,
+const st = { sym: "^KS11", tf: "D", range: 12, on: new Set(["D20", "D60", "D120", "W60", "M20"]), sort: "price", log: false, dim: false, bb: false, rsi: false,
   hl: null, hover: null, data: null, end: 0, cnt: 0, loaded: false, req: 0 };
 try {
   const o = JSON.parse(localStorage.getItem(LS) || "null");
@@ -990,10 +992,10 @@ try {
     if (o.range === null || typeof o.range === "number") st.range = o.range ?? 12;
     if (Array.isArray(o.on)) st.on = new Set(o.on.filter(k => ALL.some(a => a.key === k)));
     if (o.sort === "tf" || o.sort === "price") st.sort = o.sort;
-    st.log = !!o.log; st.dim = o.dim === true;
+    st.log = !!o.log; st.dim = o.dim === true; st.bb = !!o.bb; st.rsi = !!o.rsi;
   }
 } catch (e) {}
-function save() { try { localStorage.setItem(LS, JSON.stringify({ sym: st.sym, tf: st.tf, range: st.range, on: [...st.on], sort: st.sort, log: st.log, dim: st.dim })); } catch (e) {} }
+function save() { try { localStorage.setItem(LS, JSON.stringify({ sym: st.sym, tf: st.tf, range: st.range, on: [...st.on], sort: st.sort, log: st.log, dim: st.dim, bb: st.bb, rsi: st.rsi })); } catch (e) {} }
 
 /* ---------- 탭 ---------- */
 function showTab(which) {
@@ -1011,6 +1013,26 @@ $("tab-btn-ma").addEventListener("click", () => showTab("ma"));
 /* ---------- 데이터 ---------- */
 const store = new Map();
 const fetchSym = sym => API.getChart(sym);
+// 종가 기준: Wilder RSI(14), 단순이동평균 ± 모집단 표준편차 2배(20봉).
+function indicators(bars) {
+  const rsi = Array(bars.length).fill(null), bb = Array(bars.length).fill(null);
+  let gain = 0, loss = 0;
+  for (let i = 0; i < bars.length; i++) {
+    if (i >= 19) {
+      const window = bars.slice(i - 19, i + 1).map(b => b.c);
+      const mid = window.reduce((a, b) => a + b, 0) / 20;
+      const sd = Math.sqrt(window.reduce((sum, v) => sum + (v - mid) ** 2, 0) / 20);
+      bb[i] = { mid, upper: mid + 2 * sd, lower: mid - 2 * sd };
+    }
+    if (!i) continue;
+    const delta = bars[i].c - bars[i - 1].c;
+    if (i <= 14) { gain += Math.max(0, delta) / 14; loss += Math.max(0, -delta) / 14; }
+    else { gain = (gain * 13 + Math.max(0, delta)) / 14; loss = (loss * 13 + Math.max(0, -delta)) / 14; }
+    if (i >= 14) rsi[i] = loss === 0 ? (gain === 0 ? 50 : 100) : 100 - 100 / (1 + gain / loss);
+  }
+  return { rsi, bb };
+}
+
 function prepare(j) {
   const days = j.data.map(r => ({ t: r[0], c: r[1], o: r[3] ?? r[1], h: r[4] ?? r[1], l: r[5] ?? r[1], v: r[6] ?? 0 }));
   const N = days.length;
@@ -1030,7 +1052,8 @@ function prepare(j) {
   for (const tf of ["D", "W", "M"]) { const b = B[tf], p = new Float64Array(b.length + 1); for (let k = 0; k < b.length; k++) p[k + 1] = p[k] + b[k].c; P[tf] = p; }
   // tf 주기 n 이평선의 "i번째 거래일 종가 기준" 값: 직전 n-1개 완성봉 종가 + 그날 종가
   const maAt = (tf, n, i) => { const bi = idx[tf][i]; if (bi < n - 1) return null; return (P[tf][bi] - P[tf][bi - n + 1] + days[i].c) / n; };
-  return { ...j, days, B, idx, maAt, hasVol: days.some(d => d.v > 0) };
+  const indicatorsByTf = Object.fromEntries(Object.entries(B).map(([tf, bars]) => [tf, indicators(bars)]));
+  return { ...j, days, B, idx, maAt, indicatorsByTf, hasVol: days.some(d => d.v > 0) };
 }
 async function loadSym(sym) {
   st.sym = sym; const my = ++st.req;
@@ -1090,6 +1113,10 @@ $("ma-range").addEventListener("click", e => { const b = e.target.closest("butto
 $("ma-sort").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; st.sort = b.dataset.v; setSeg($("ma-sort"), st.sort); renderSide(); save(); });
 $("ma-dim").addEventListener("change", () => { st.dim = $("ma-dim").checked; draw(); save(); });
 $("ma-log").addEventListener("change", () => { st.log = $("ma-log").checked; draw(); save(); });
+for (const key of ["bb", "rsi"]) {
+  $("ma-" + key).checked = st[key];
+  $("ma-" + key).addEventListener("change", () => { st[key] = $("ma-" + key).checked; draw(); save(); });
+}
 $("ma-all").addEventListener("click", () => { st.on = new Set(ALL.map(a => a.key)); refresh(); });
 $("ma-none").addEventListener("click", () => { st.on.clear(); refresh(); });
 $("ma-near-only").addEventListener("click", () => {
@@ -1211,7 +1238,9 @@ function draw() {
   const C = D.B[st.tf], n = C.length, i0 = st.end - st.cnt + 1, i1 = st.end;
   const gut = W < 520 ? 96 : 118, L0 = 4, padT = 10, xAxisH = 22;
   const volH = D.hasVol ? Math.round(H * 0.15) : 0, gap = volH ? 10 : 0;
-  const plotW = W - gut - L0, mainH = H - padT - xAxisH - volH - gap, mainB = padT + mainH;
+  const rsiH = st.rsi ? Math.round(H * 0.2) : 0, rsiGap = rsiH ? 18 : 0;
+  const plotW = W - gut - L0, mainH = H - padT - xAxisH - volH - gap - rsiH - rsiGap, mainB = padT + mainH;
+  const indicator = D.indicatorsByTf[st.tf];
   const cw = plotW / st.cnt, X = k => L0 + (k - i0 + 0.5) * cw;
   const ink = css("--ink"), muted = css("--muted"), line = css("--line"), sheet = css("--sheet"), up = css("--up"), down = css("--down");
   const font = css("--font-num");
@@ -1228,7 +1257,8 @@ function draw() {
   for (let k = i0; k <= i1; k++) { lo = Math.min(lo, C[k].l); hi = Math.max(hi, C[k].h); }
   const span0 = (hi - lo) || hi * 0.02, aLo = lo - span0 * 0.35, aHi = hi + span0 * 0.35;
   for (const ln of lines) for (const v of ln.vals) if (v != null && v >= aLo && v <= aHi) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
-  const span = hi - lo; lo -= span * 0.05; hi += span * 0.05; if (st.log && lo <= 0) lo = hi * 0.01;
+  if (st.bb) for (let k = i0; k <= i1; k++) { const b = indicator.bb[k]; if (b) { lo = Math.min(lo, st.log ? Math.max(b.lower, C[k].l * 0.01) : b.lower); hi = Math.max(hi, b.upper); } }
+  const span = (hi - lo) || Math.max(1, hi * 0.02); lo -= span * 0.05; hi += span * 0.05; if (st.log && lo <= 0) lo = hi * 0.01;
   const tr = v => st.log ? Math.log(v) : v, tlo = tr(lo), thi = tr(hi);
   const Y = v => padT + (thi - tr(v)) / (thi - tlo) * mainH;
   const invY = y => { const tv = thi - (y - padT) / mainH * (thi - tlo); return st.log ? Math.exp(tv) : tv; };
@@ -1275,6 +1305,22 @@ function draw() {
 
   // 캔들
   g.save(); g.beginPath(); g.rect(L0, padT, plotW, mainH); g.clip();
+  if (st.bb) {
+    const valid = []; for (let k = i0; k <= i1; k++) if (indicator.bb[k]) valid.push(k);
+    const bandY = v => Y(st.log ? Math.max(lo, v) : v);
+    if (valid.length) {
+      g.fillStyle = css("--ma90"); g.globalAlpha = 0.1; g.beginPath();
+      valid.forEach((k, i) => i ? g.lineTo(X(k), bandY(indicator.bb[k].upper)) : g.moveTo(X(k), bandY(indicator.bb[k].upper)));
+      valid.slice().reverse().forEach(k => g.lineTo(X(k), bandY(indicator.bb[k].lower)));
+      g.closePath(); g.fill(); g.globalAlpha = 1;
+      g.strokeStyle = css("--ma90"); g.lineWidth = 1.6;
+      for (const key of ["upper", "mid", "lower"]) {
+        g.setLineDash(key === "mid" ? [5, 4] : []); g.beginPath();
+        valid.forEach((k, i) => i ? g.lineTo(X(k), bandY(indicator.bb[k][key])) : g.moveTo(X(k), bandY(indicator.bb[k][key]))); g.stroke();
+      }
+      g.setLineDash([]);
+    }
+  }
   g.globalAlpha = st.dim ? 0.75 : 1;
   for (let k = i0; k <= i1; k++) {
     const c = C[k], x = X(k), col = c.c >= c.o ? up : down;
@@ -1337,6 +1383,27 @@ function draw() {
   }
   g.globalAlpha = 1;
 
+  if (st.rsi) {
+    const top = mainB + gap + volH + rsiGap, height = rsiH;
+    const rY = v => top + (100 - v) / 100 * height;
+    g.save(); g.font = `11px ${font}`; g.textAlign = "left"; g.textBaseline = "middle";
+    g.strokeStyle = line; g.lineWidth = 1;
+    for (const value of [0, 30, 50, 70, 100]) {
+      g.setLineDash(value === 30 || value === 70 ? [4, 3] : []);
+      g.beginPath(); g.moveTo(L0, rY(value)); g.lineTo(L0 + plotW, rY(value)); g.stroke();
+      g.fillStyle = value === 70 ? up : value === 30 ? down : muted;
+      g.fillText(String(value), L0 + plotW + 6, rY(value));
+    }
+    g.setLineDash([]); g.fillStyle = muted; g.textBaseline = "bottom"; g.fillText("RSI (14) · 70 / 30", L0 + 4, top - 3);
+    g.beginPath(); g.rect(L0, top, plotW, height); g.clip();
+    g.strokeStyle = css("--ma120"); g.lineWidth = 2; g.beginPath(); let started = false;
+    for (let k = i0; k <= i1; k++) {
+      const v = indicator.rsi[k]; if (v == null) { started = false; continue; }
+      if (!started) { g.moveTo(X(k), rY(v)); started = true; } else g.lineTo(X(k), rY(v));
+    }
+    g.stroke(); g.restore();
+  }
+
   G = { i0, i1, cw, L0, plotW, padT, mainB, X, Y, invY, gut, C, lines };
 
   // 십자선
@@ -1367,6 +1434,9 @@ function renderInfo() {
   h += `<span><span class="k">시</span>${nf2.format(c.o)}</span><span><span class="k">고</span>${nf2.format(c.h)}</span><span><span class="k">저</span>${nf2.format(c.l)}</span><span><span class="k">종</span>${nf2.format(c.c)}</span>`;
   h += `<span class="${cc}">${chg > 0 ? "▲" : chg < 0 ? "▼" : ""}${nf2.format(Math.abs(chg))} (${pct(cr)})</span>`;
   if (c.v) h += `<span><span class="k">거</span>${nf0.format(c.v)}</span>`;
+  const indicator = st.data.indicatorsByTf[st.tf];
+  if (st.rsi) { const v = indicator.rsi[k]; h += `<span style="color:${css("--ma120")}">RSI (14) ${v == null ? "데이터 부족" : nf2.format(v)}</span>`; }
+  if (st.bb) { const b = indicator.bb[k]; h += `<span style="color:${css("--ma90")}">BB (20, 2σ) ${b ? `${nf2.format(b.lower)} / ${nf2.format(b.mid)} / ${nf2.format(b.upper)}` : "데이터 부족"}</span>`; }
   const parts = G.lines.map(ln => { const v = ln.vals[k - G.i0]; return v == null ? "" : `<span style="color:${ln.color}">${ln.label} ${nf2.format(v)}</span>`; }).filter(Boolean);
   if (parts.length) h += `<span style="flex-basis:100%;height:0"></span>` + parts.join("");
   $("ma-info").innerHTML = h;
