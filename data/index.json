@@ -1,0 +1,204 @@
+{
+ "updated": "2026-10-24 14:26 KST",
+ "items": [
+  {
+   "symbol": "^KS11",
+   "label": "코스피",
+   "name": "KOSPI Composite Index",
+   "group": "지수",
+   "currency": "KRW",
+   "first": "1996-12-11",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "^KQ11",
+   "label": "코스닥",
+   "name": "Kosdaq Composite Index",
+   "group": "지수",
+   "currency": "KRW",
+   "first": "2000-10-16",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "^IXIC",
+   "label": "나스닥 종합",
+   "name": "NASDAQ Composite",
+   "group": "지수",
+   "currency": "USD",
+   "first": "1971-02-05",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "^NDX",
+   "label": "나스닥 100",
+   "name": "NASDAQ-100",
+   "group": "지수",
+   "currency": "USD",
+   "first": "1985-10-01",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "^DJI",
+   "label": "다우존스",
+   "name": "Dow Jones Industrial Average",
+   "group": "지수",
+   "currency": "USD",
+   "first": "1992-01-02",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "^GSPC",
+   "label": "S&P 500",
+   "name": "S&P 500",
+   "group": "지수",
+   "currency": "USD",
+   "first": "1970-01-02",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "069500.KS",
+   "label": "KODEX 200",
+   "name": "KODEX 200",
+   "group": "국내 ETF",
+   "currency": "KRW",
+   "first": "2007-01-29",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "229200.KS",
+   "label": "KODEX 코스닥150",
+   "name": "KODEX KOSDAQ 150",
+   "group": "국내 ETF",
+   "currency": "KRW",
+   "first": "2015-10-01",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "133690.KS",
+   "label": "TIGER 미국나스닥100",
+   "name": "Mirae Asset TIGER USA NASDAQ 100 ETF",
+   "group": "국내 ETF",
+   "currency": "KRW",
+   "first": "2010-10-18",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "360750.KS",
+   "label": "TIGER 미국S&P500",
+   "name": "Mirae Asset Maps Management - Mirae Asset Tiger S&P500 ETF",
+   "group": "국내 ETF",
+   "currency": "KRW",
+   "first": "2020-08-07",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "QQQ",
+   "label": "QQQ (나스닥100)",
+   "name": "Invesco QQQ Trust",
+   "group": "미국 ETF",
+   "currency": "USD",
+   "first": "1999-03-10",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "SPY",
+   "label": "SPY (S&P500)",
+   "name": "State Street SPDR S&P 500 ETF Trust",
+   "group": "미국 ETF",
+   "currency": "USD",
+   "first": "1993-01-29",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "VOO",
+   "label": "VOO (S&P500)",
+   "name": "Vanguard S&P 500 ETF",
+   "group": "미국 ETF",
+   "currency": "USD",
+   "first": "2010-09-09",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "DIA",
+   "label": "DIA (다우30)",
+   "name": "State Street SPDR Dow Jones Industrial Average ETF Trust",
+   "group": "미국 ETF",
+   "currency": "USD",
+   "first": "1998-01-20",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "SCHD",
+   "label": "SCHD (배당)",
+   "name": "Schwab U.S. Dividend Equity ETF",
+   "group": "미국 ETF",
+   "currency": "USD",
+   "first": "2011-10-20",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "005930.KS",
+   "label": "삼성전자",
+   "name": "Samsung Electronics Co., Ltd.",
+   "group": "개별 종목",
+   "currency": "KRW",
+   "first": "2000-01-04",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "000660.KS",
+   "label": "SK하이닉스",
+   "name": "SK hynix Inc.",
+   "group": "개별 종목",
+   "currency": "KRW",
+   "first": "2000-01-04",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "AAPL",
+   "label": "애플",
+   "name": "Apple Inc.",
+   "group": "개별 종목",
+   "currency": "USD",
+   "first": "1980-12-12",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "MSFT",
+   "label": "마이크로소프트",
+   "name": "Microsoft Corporation",
+   "group": "개별 종목",
+   "currency": "USD",
+   "first": "1986-03-13",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "NVDA",
+   "label": "엔비디아",
+   "name": "NVIDIA Corporation",
+   "group": "개별 종목",
+   "currency": "USD",
+   "first": "1999-01-22",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "TSLA",
+   "label": "테슬라",
+   "name": "Tesla, Inc.",
+   "group": "개별 종목",
+   "currency": "USD",
+   "first": "2010-06-29",
+   "last": "2026-10-23"
+  },
+  {
+   "symbol": "KRW=X",
+   "label": "USD/KRW 환율",
+   "name": "USD/KRW",
+   "group": "환율",
+   "currency": "KRW",
+   "first": "2003-12-01",
+   "last": "2026-10-24",
+   "hidden": true
+  }
+ ]
+}
