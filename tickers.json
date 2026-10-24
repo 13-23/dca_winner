@@ -1,0 +1,26 @@
+[
+  { "symbol": "^KS11", "label": "코스피", "group": "지수" },
+  { "symbol": "^KQ11", "label": "코스닥", "group": "지수" },
+  { "symbol": "^IXIC", "label": "나스닥 종합", "group": "지수" },
+  { "symbol": "^NDX", "label": "나스닥 100", "group": "지수" },
+  { "symbol": "^DJI", "label": "다우존스", "group": "지수" },
+  { "symbol": "^GSPC", "label": "S&P 500", "group": "지수" },
+
+  { "symbol": "069500.KS", "label": "KODEX 200", "group": "국내 ETF" },
+  { "symbol": "229200.KS", "label": "KODEX 코스닥150", "group": "국내 ETF" },
+  { "symbol": "133690.KS", "label": "TIGER 미국나스닥100", "group": "국내 ETF" },
+  { "symbol": "360750.KS", "label": "TIGER 미국S&P500", "group": "국내 ETF" },
+
+  { "symbol": "QQQ", "label": "QQQ (나스닥100)", "group": "미국 ETF" },
+  { "symbol": "SPY", "label": "SPY (S&P500)", "group": "미국 ETF" },
+  { "symbol": "VOO", "label": "VOO (S&P500)", "group": "미국 ETF" },
+  { "symbol": "DIA", "label": "DIA (다우30)", "group": "미국 ETF" },
+  { "symbol": "SCHD", "label": "SCHD (배당)", "group": "미국 ETF" },
+
+  { "symbol": "005930.KS", "label": "삼성전자", "group": "개별 종목" },
+  { "symbol": "000660.KS", "label": "SK하이닉스", "group": "개별 종목" },
+  { "symbol": "AAPL", "label": "애플", "group": "개별 종목" },
+  { "symbol": "MSFT", "label": "마이크로소프트", "group": "개별 종목" },
+  { "symbol": "NVDA", "label": "엔비디아", "group": "개별 종목" },
+  { "symbol": "TSLA", "label": "테슬라", "group": "개별 종목" }
+]
