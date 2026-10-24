@@ -1,0 +1,65 @@
+{
+  "updated": "2026-10-24T06:09:46.335665+00:00",
+  "items": [
+    {
+      "symbol": "^KS11",
+      "referencePrice": null,
+      "per": null,
+      "pbr": null,
+      "asOf": null,
+      "source": "Yahoo Finance",
+      "basis": "TTM",
+      "status": "unavailable"
+    },
+    {
+      "symbol": "^KQ11",
+      "referencePrice": null,
+      "per": null,
+      "pbr": null,
+      "asOf": null,
+      "source": "Yahoo Finance",
+      "basis": "TTM",
+      "status": "unavailable"
+    },
+    {
+      "symbol": "^IXIC",
+      "referencePrice": null,
+      "per": null,
+      "pbr": null,
+      "asOf": null,
+      "source": "Yahoo Finance",
+      "basis": "TTM",
+      "status": "unavailable"
+    },
+    {
+      "symbol": "^NDX",
+      "referencePrice": null,
+      "per": null,
+      "pbr": null,
+      "asOf": null,
+      "source": "Yahoo Finance",
+      "basis": "TTM",
+      "status": "unavailable"
+    },
+    {
+      "symbol": "^DJI",
+      "referencePrice": null,
+      "per": null,
+      "pbr": null,
+      "asOf": null,
+      "source": "Yahoo Finance",
+      "basis": "TTM",
+      "status": "unavailable"
+    },
+    {
+      "symbol": "^GSPC",
+      "referencePrice": null,
+      "per": null,
+      "pbr": null,
+      "asOf": null,
+      "source": "Yahoo Finance",
+      "basis": "TTM",
+      "status": "unavailable"
+    }
+  ]
+}
