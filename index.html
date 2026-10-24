@@ -182,6 +182,12 @@ th:first-child, td:first-child { text-align: left; }
 .pxrow { display: flex; align-items: center; gap: 8px; padding: 6px 4px; font-family: var(--font-num); font-size: 13px; font-weight: 600; }
 .pxrow::before, .pxrow::after { content: ""; flex: 1; border-top: 2px solid var(--ink); }
 .ladder h3 { margin: 10px 0 2px; font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: 0.04em; }
+/* Valuation reference snapshots */
+.valuation { border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:14px 0; margin:12px 0; }
+.valuation h3 { margin:0 0 10px; font-size:14px; }
+.valuation .row > .field { min-width:0; flex:1; }
+.valuation input:not([type=checkbox]) { width:100%; min-width:0; }
+.valuation .check { margin:8px 0; }
 /* Portfolio mode */
 .pf-row,.pf-row-label { display:grid; grid-template-columns:minmax(0,1fr) 76px 52px; gap:8px; align-items:end; margin:10px 0; }
 .pf-row select,.pf-row input { min-width:0; width:100%; }
@@ -461,6 +467,27 @@ th:first-child, td:first-child { text-align: left; }
 
       <aside class="panel ma-side" aria-labelledby="ma-side-h">
         <div class="ma-quote" id="ma-quote"></div>
+        <section class="valuation" aria-labelledby="valuation-title">
+          <h3 id="valuation-title">PER · PBR 밸류에이션</h3>
+          <div class="ma-near" id="valuation-current"></div>
+          <p class="hint" id="valuation-source"></p>
+          <label class="check"><input type="checkbox" id="valuation-per-on"><span>PER 가격 밴드</span></label>
+          <label class="check"><input type="checkbox" id="valuation-pbr-on"><span>PBR 가격 밴드</span></label>
+          <div class="field"><label for="valuation-per-levels">PER 배수 (쉼표로 구분, 최대 5개)</label><input type="text" id="valuation-per-levels" value="15,20,25"></div>
+          <div class="field"><label for="valuation-pbr-levels">PBR 배수 (쉼표로 구분, 최대 5개)</label><input type="text" id="valuation-pbr-levels" value="1,2,3"></div>
+          <p class="hint">기준일의 EPS·BPS를 고정한 환산 가격선입니다. 과거 실제 PER·PBR 추이나 적정가 판정이 아닙니다. 표시 범위 밖의 선도 아래 표에서 확인할 수 있습니다.</p>
+          <div class="tablewrap"><table><thead><tr><th>밴드</th><th>환산 가격</th></tr></thead><tbody id="valuation-bands"></tbody></table></div>
+          <details><summary>기준값 직접 입력 / 수정</summary>
+            <p class="hint">현재 선택한 지수의 같은 기준일·출처에서 확인한 지수값과 배수를 함께 입력하세요. ETF의 PER·PBR은 지수와 다를 수 있습니다.</p>
+            <div class="field"><label for="valuation-price">기준 지수값</label><input type="number" id="valuation-price" min="0.0001" step="any"></div>
+            <div class="row"><div class="field"><label for="valuation-per">기준 PER (실적 기준)</label><input type="number" id="valuation-per" min="0.0001" step="any"></div><div class="field"><label for="valuation-pbr">기준 PBR</label><input type="number" id="valuation-pbr" min="0.0001" step="any"></div></div>
+            <div class="field"><label for="valuation-date">기준일</label><input type="date" id="valuation-date"></div>
+            <div class="field"><label for="valuation-input-source">출처</label><input type="text" id="valuation-input-source" maxlength="200" placeholder="예: 지수 제공사 공시"></div>
+            <button type="button" class="btn" id="valuation-apply">기준값 적용</button>
+            <button type="button" class="btn" id="valuation-reset">직접 입력값 지우기</button>
+          </details>
+          <p class="hint" id="valuation-status" role="status" aria-live="polite"></p>
+        </section>
         <div class="ma-near" id="ma-near"></div>
         <div class="statement-head">
           <h2 id="ma-side-h">이평선 15개</h2>
@@ -481,6 +508,7 @@ th:first-child, td:first-child { text-align: left; }
   </div><!-- /tab-ma -->
 </div>
 
+<script src="valuation.js"></script>
 <!--API--><script>
 /* 데이터 가져오기: 웹 버전. data/ 폴더의 시세 파일을 읽습니다 (매일 GitHub Actions가 갱신) */
 window.API = (() => {
@@ -1030,7 +1058,7 @@ const colorOf = n => css("--ma" + n);
 const swatch = (tf, n, w = 26) => `<svg width="${w}" height="8" aria-hidden="true"><line x1="1" y1="4" x2="${w - 1}" y2="4" style="stroke:var(--ma${n})" stroke-width="${tf === "M" ? 3 : tf === "W" ? 2.4 : 2}" ${SVG_DASH[tf] ? `stroke-dasharray="${SVG_DASH[tf]}"` : ""} stroke-linecap="${tf === "M" ? "round" : "butt"}"/></svg>`;
 
 /* ---------- 상태 ---------- */
-const st = { sym: "^KS11", tf: "D", range: 12, on: new Set(["D20", "D60", "D120", "W60", "M20"]), sort: "price", log: false, dim: false, bb: false, rsi: false,
+const st = { sym: "^KS11", tf: "D", range: 12, on: new Set(["D20", "D60", "D120", "W60", "M20"]), sort: "price", log: false, dim: false, bb: false, rsi: false, perBands: false, pbrBands: false, perLevels: "15,20,25", pbrLevels: "1,2,3", valuation: null,
   hl: null, hover: null, data: null, end: 0, cnt: 0, loaded: false, req: 0 };
 try {
   const o = JSON.parse(localStorage.getItem(LS) || "null");
@@ -1040,10 +1068,11 @@ try {
     if (o.range === null || typeof o.range === "number") st.range = o.range ?? 12;
     if (Array.isArray(o.on)) st.on = new Set(o.on.filter(k => ALL.some(a => a.key === k)));
     if (o.sort === "tf" || o.sort === "price") st.sort = o.sort;
-    st.log = !!o.log; st.dim = o.dim === true; st.bb = !!o.bb; st.rsi = !!o.rsi;
+    st.log = !!o.log; st.dim = o.dim === true; st.bb = !!o.bb; st.rsi = !!o.rsi; st.perBands = !!o.perBands; st.pbrBands = !!o.pbrBands;
+    for (const key of ["perLevels", "pbrLevels"]) { try { ValuationModel.multiples(o[key]); st[key] = o[key]; } catch (e) {} }
   }
 } catch (e) {}
-function save() { try { localStorage.setItem(LS, JSON.stringify({ sym: st.sym, tf: st.tf, range: st.range, on: [...st.on], sort: st.sort, log: st.log, dim: st.dim, bb: st.bb, rsi: st.rsi })); } catch (e) {} }
+function save() { try { localStorage.setItem(LS, JSON.stringify({ sym: st.sym, tf: st.tf, range: st.range, on: [...st.on], sort: st.sort, log: st.log, dim: st.dim, bb: st.bb, rsi: st.rsi, perBands: st.perBands, pbrBands: st.pbrBands, perLevels: st.perLevels, pbrLevels: st.pbrLevels })); } catch (e) {} }
 
 /* ---------- 탭 ---------- */
 function showTab(which) {
@@ -1057,6 +1086,68 @@ function showTab(which) {
 }
 $("tab-btn-dca").addEventListener("click", () => showTab("dca"));
 $("tab-btn-ma").addEventListener("click", () => showTab("ma"));
+
+/* ---------- 밸류에이션: 실제 제공값 또는 명시적인 사용자 기준값만 사용 ---------- */
+let valuationPromise = null, manualValuations = {};
+try { const v = JSON.parse(localStorage.getItem("ma-valuation-v1") || "{}"); if (v && typeof v === "object" && !Array.isArray(v)) manualValuations = v; } catch (e) {}
+function valuationSnapshot() { return manualValuations[st.sym] || st.valuation; }
+function valuationLines() {
+  if (!st.data || st.data.symbol !== st.sym) return [];
+  try { return ValuationModel.bands(valuationSnapshot(), st.data.days.at(-1).c, st.perBands ? ValuationModel.multiples(st.perLevels) : [], st.pbrBands ? ValuationModel.multiples(st.pbrLevels) : []); } catch (e) { return []; }
+}
+async function loadValuation(symbol, request) {
+  try {
+    if (!valuationPromise) valuationPromise = fetch("data/valuations.json", {cache:"no-cache"}).then(r => { if (!r.ok) throw Error("조회 불가"); return r.json(); }).catch(e => { valuationPromise = null; throw e; });
+    const data = await valuationPromise; if (request !== st.req) return;
+    st.valuation = data.items?.find(v => v.symbol === symbol) || null;
+  } catch (e) { if (request !== st.req) return; st.valuation = null; }
+  renderValuation(); draw();
+}
+function renderValuation(fillForm = true) {
+  const valid = st.data && st.data.symbol === st.sym, snap = valuationSnapshot();
+  const current = valid ? st.data.days.at(-1) : null;
+  const v = ValuationModel.evaluate(snap, current?.c);
+  $("valuation-current").replaceChildren();
+  for (const [label,value] of [["PER",v.per],["PBR",v.pbr]]) {
+    const cell = document.createElement("div"), title = document.createElement("span"), number = document.createElement("strong");
+    cell.className = "near"; title.className = "lbl"; number.className = "nv"; title.textContent = label + " (기준가치 환산)"; number.textContent = value == null ? "자료 없음" : nf2.format(value) + "배"; cell.append(title, number); $("valuation-current").append(cell);
+  }
+  const source = $("valuation-source");
+  if (!valid) source.textContent = "지수 시세를 불러온 뒤 확인할 수 있습니다.";
+  else if (v.per == null && v.pbr == null) source.textContent = "이 지수의 검증 가능한 자동 제공값이 없습니다. 직접 확인한 기준값을 입력하면 환산 수치와 가격 밴드를 볼 수 있습니다.";
+  else source.textContent = (manualValuations[st.sym] ? "직접 입력 · " : snap.status === "stale" ? "갱신 실패 · 이전 기준값 유지 · " : "자동 제공 · ") + (snap.source || "출처 미기재") + " · 기준일 " + snap.asOf + " · 기준 지수 " + nf2.format(snap.referencePrice) + " · 최신 종가 " + current.t + "로 환산 (EPS/BPS 고정).";
+  if (fillForm) {
+  $("valuation-price").value = valid ? (snap?.referencePrice || current.c) : "";
+  $("valuation-per").value = snap?.per || ""; $("valuation-pbr").value = snap?.pbr || "";
+  $("valuation-date").value = snap?.asOf || current?.t || ""; $("valuation-input-source").value = snap?.source || "";
+  }
+  $("valuation-bands").replaceChildren();
+  const lines = valuationLines();
+  for (const ln of lines) { const tr = document.createElement("tr"), name = document.createElement("td"), value = document.createElement("td"); name.textContent = ln.type + " " + nf2.format(ln.multiple) + "배"; value.textContent = nf2.format(ln.price); tr.append(name,value); $("valuation-bands").append(tr); }
+  if (!lines.length) { const row = document.createElement("tr"), cell = document.createElement("td"); cell.colSpan = 2; cell.textContent = "기준값이 있는 밴드를 체크해 주세요."; row.append(cell); $("valuation-bands").append(row); }
+}
+function saveManualValuations() { try { localStorage.setItem("ma-valuation-v1",JSON.stringify(manualValuations)); } catch (e) {} }
+for (const type of ["per","pbr"]) {
+  $("valuation-"+type+"-on").checked = st[type+"Bands"];
+  $("valuation-"+type+"-levels").value = st[type+"Levels"];
+  for (const part of ["on","levels"]) $("valuation-"+type+"-"+part).addEventListener("input", () => {
+    st[type+"Bands"] = $("valuation-"+type+"-on").checked; st[type+"Levels"] = $("valuation-"+type+"-levels").value;
+    try { ValuationModel.multiples(st[type+"Levels"]); $("valuation-status").textContent = ""; } catch(e) { $("valuation-status").textContent = e.message; }
+    save(); renderValuation(false); draw();
+  });
+}
+$("valuation-apply").addEventListener("click", () => {
+  try {
+    if (!st.data || st.data.symbol !== st.sym) throw Error("먼저 지수 시세를 불러와 주세요.");
+    const referencePrice = +$("valuation-price").value, per = $("valuation-per").value ? +$("valuation-per").value : null, pbr = $("valuation-pbr").value ? +$("valuation-pbr").value : null;
+    const asOf = $("valuation-date").value, source = $("valuation-input-source").value.trim();
+    if (!ValuationModel.positive(referencePrice) || (per != null && !ValuationModel.positive(per)) || (pbr != null && !ValuationModel.positive(pbr)) || (!per && !pbr)) throw Error("기준 지수와 PER 또는 PBR을 0보다 큰 숫자로 입력해 주세요.");
+    if (!asOf || !Number.isFinite(Date.parse(asOf)) || asOf > new Date().toISOString().slice(0,10) || !source) throw Error("미래가 아닌 기준일과 확인한 출처를 입력해 주세요.");
+    manualValuations[st.sym] = {referencePrice,per,pbr,asOf,source,basis:"TTM",status:"manual"};
+    saveManualValuations(); renderValuation(); draw(); $("valuation-status").textContent = "직접 입력한 기준값을 이 브라우저에 저장했습니다.";
+  } catch(e) { $("valuation-status").textContent = e.message; }
+});
+$("valuation-reset").addEventListener("click", () => { delete manualValuations[st.sym]; saveManualValuations(); renderValuation(); draw(); $("valuation-status").textContent = "직접 입력값을 지웠습니다."; });
 
 /* ---------- 데이터 ---------- */
 const store = new Map();
@@ -1104,8 +1195,9 @@ function prepare(j) {
   return { ...j, days, B, idx, maAt, indicatorsByTf, hasVol: days.some(d => d.v > 0) };
 }
 async function loadSym(sym) {
-  st.sym = sym; const my = ++st.req;
+  st.sym = sym; const my = ++st.req; st.valuation = null;
   setSeg($("ma-sym"), sym);
+  renderValuation();
   $("ma-status").hidden = false; $("ma-status").textContent = `${NAMES[sym] || sym} 시세 불러오는 중…`;
   try {
     let D = store.get(sym);
@@ -1115,9 +1207,10 @@ async function loadSym(sym) {
     applyRange(st.range ?? 12);
     $("ma-status").hidden = true;
     renderChips(); renderSide(); draw(); save();
+    loadValuation(sym, my);
   } catch (e) {
     if (my !== st.req) return;
-    st.data = null; draw();
+    st.data = null; draw(); renderValuation();
     $("ma-status").hidden = false; $("ma-status").textContent = `${NAMES[sym] || sym} 불러오기 실패: ${e.message}`;
     $("ma-quote").innerHTML = ""; $("ma-near").innerHTML = ""; $("ma-ladder").innerHTML = ""; $("ma-info").innerHTML = "";
   }
@@ -1306,6 +1399,8 @@ function draw() {
   const span0 = (hi - lo) || hi * 0.02, aLo = lo - span0 * 0.35, aHi = hi + span0 * 0.35;
   for (const ln of lines) for (const v of ln.vals) if (v != null && v >= aLo && v <= aHi) { lo = Math.min(lo, v); hi = Math.max(hi, v); }
   if (st.bb) for (let k = i0; k <= i1; k++) { const b = indicator.bb[k]; if (b) { lo = Math.min(lo, st.log ? Math.max(b.lower, C[k].l * 0.01) : b.lower); hi = Math.max(hi, b.upper); } }
+  const valueLines = valuationLines();
+  for (const ln of valueLines) if (ln.price >= aLo && ln.price <= aHi) { lo = Math.min(lo, ln.price); hi = Math.max(hi, ln.price); }
   const span = (hi - lo) || Math.max(1, hi * 0.02); lo -= span * 0.05; hi += span * 0.05; if (st.log && lo <= 0) lo = hi * 0.01;
   const tr = v => st.log ? Math.log(v) : v, tlo = tr(lo), thi = tr(hi);
   const Y = v => padT + (thi - tr(v)) / (thi - tlo) * mainH;
@@ -1399,6 +1494,16 @@ function draw() {
   }
   g.setLineDash([]); g.globalAlpha = 1; g.lineCap = "butt";
 
+  // 현재 기준가치의 고정 가격선. 과거 실제 밸류에이션 시계열이 아님.
+  g.font = `11px ${font}`; g.textAlign = "left"; g.textBaseline = "bottom";
+  for (const ln of valueLines) {
+    const y = Y(ln.price); if (y < padT || y > mainB) continue;
+    g.strokeStyle = ln.type === "PER" ? css("--ma5") : css("--ma200"); g.fillStyle = g.strokeStyle;
+    g.lineWidth = 1.4; g.setLineDash(ln.type === "PER" ? [9,5] : [2,4]);
+    g.beginPath(); g.moveTo(L0,y); g.lineTo(L0+plotW,y); g.stroke();
+    g.fillText(ln.type + " " + nf2.format(ln.multiple) + "배 · " + shortNum(ln.price),L0+(ln.type === "PER" ? 5 : plotW * 0.5),y-3,plotW * 0.48);
+  }
+  g.setLineDash([]);
   // 현재가 선 (전체 데이터의 최신 종가)
   const lastPx = D.days[D.days.length - 1].c, ypx = Y(lastPx);
   if (ypx >= padT && ypx <= mainB) { g.strokeStyle = ink; g.lineWidth = 1; g.setLineDash([2, 3]); g.beginPath(); g.moveTo(L0, Math.round(ypx) + 0.5); g.lineTo(L0 + plotW, Math.round(ypx) + 0.5); g.stroke(); g.setLineDash([]); }

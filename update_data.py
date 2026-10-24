@@ -190,6 +190,8 @@ def main():
     index = {"updated": datetime.now(KST).strftime("%Y-%m-%d %H:%M") + " KST", "items": items}
     with open(os.path.join(DATA, "index.json"), "w", encoding="utf-8") as f:
         json.dump(index, f, ensure_ascii=False, indent=1)
+    from update_valuations import update as update_valuations
+    update_valuations(DATA, yahoo, mock=MOCK)
     print("완료: 성공 %d, 실패 %d%s" % (len(ok), len(failed), (" (" + ", ".join(failed) + ")") if failed else ""))
     if failed and len(failed) >= len(tickers):
         sys.exit(1)  # 전부 실패하면 Actions에 오류로 표시

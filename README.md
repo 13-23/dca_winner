@@ -28,6 +28,14 @@ GitHub Pages로 올리는 웹 버전입니다. 시세는 GitHub Actions가 **매
 
 `portfolio.js`는 계산 로직, `portfolio-ui.js`는 화면입니다. 추가 패키지 설치 없이 `node --test tests/*.test.cjs`로 계산 테스트를 실행할 수 있습니다.
 
+## PER · PBR 밸류에이션
+
+이평선 화면에서 최신 종가를 기준으로 환산한 PER·PBR과 고정 가격 밴드를 볼 수 있습니다. PER 밴드는 `기준 지수값 ÷ 기준 PER × 목표 PER`, PBR 밴드는 `기준 지수값 ÷ 기준 PBR × 목표 PBR`로 계산합니다. 기준일의 EPS/BPS를 고정한 참고 가격선이며, 과거 실제 PER/PBR 시계열이나 적정가격 판정이 아닙니다.
+
+`update_valuations.py`가 Yahoo Finance에서 지수별 실적 기준 PER와 PBR을 가능한 경우에만 수집해 `data/valuations.json`에 저장합니다. 가격·기준일·배수가 제공되지 않으면 자료 없음으로 표시합니다. 갱신 실패 시 이전 기준일을 유지하고 오래된 값임을 표시합니다. 지수별 자동 제공이 보장되지 않으며, 이때는 같은 출처·기준일에서 확인한 지수값과 배수를 직접 입력할 수 있습니다. 직접 입력값은 지수별로 현재 브라우저에만 저장됩니다. ETF 값을 지수 값으로 대체하지 않습니다.
+
+검증: `node --test tests/*.test.cjs`, `python3 -m unittest discover -s tests -p 'test_*.py'`.
+
 ## 처음 설정하기 (10분)
 
 ### 1. 저장소 만들기
@@ -38,7 +46,7 @@ github.com 오른쪽 위 **+ → New repository**
 
 ### 2. 파일 올리기
 만든 저장소 화면에서 **uploading an existing file** 링크(또는 **Add file → Upload files**)를 누르고,
-`index.html`, `portfolio.js`, `portfolio-ui.js`, `tickers.json`, `update_data.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
+`index.html`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
 
 ### 3. 자동 실행 설정 파일 만들기
 `.github` 폴더는 숨김 폴더라 끌어다 놓기로는 잘 안 올라갑니다. 직접 만드는 게 확실해요.
