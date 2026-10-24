@@ -528,7 +528,7 @@ async function selectSymbol(sym, label) {
     const first = a.data[0].t, last = a.data[a.data.length - 1].t;
     if (!$("start").value || $("start").value < first || $("start").value > last) $("start").value = first;
     if (!$("end").value || $("end").value > last || $("end").value < first || st.endWasLatest) { $("end").value = last; }
-    st.endWasLatest = true;
+    st.endWasLatest = $("end").value === last;
     syncForm(); run();
     if (a.currency !== "KRW") {
       const fxSym = a.currency === "USD" ? "KRW=X" : a.currency + "KRW=X";
@@ -614,7 +614,8 @@ function simulate() {
   const foreign = a.currency !== "KRW";
   const useAuto = foreign && $("fxsrc").value === "auto";
   if (useAuto && !st.fx && !st.fxErr) return { error: "환율을 불러오는 중입니다…" };
-  const fixed = Math.max(0.0001, +$("fxrate").value || 1400);
+  const fixed = +$("fxrate").value;
+  if (foreign && !useAuto && (!Number.isFinite(fixed) || fixed <= 0)) return { error: "고정 환율은 0보다 큰 숫자로 입력해 주세요." };
   const fx = t => !foreign ? 1 : (useAuto && st.fx ? fxAt(st.fx.data, t) : fixed);
 
   let startT = $("start").value || days[0].t, endT = $("end").value || days[days.length - 1].t;
@@ -625,7 +626,8 @@ function simulate() {
   const buyIdx = schedule(days, startT, endT);
   if (!buyIdx.length) return { error: "이 기간에는 매수일이 없습니다. 기간이나 주기를 바꿔 보세요." };
 
-  const amt = Math.max(0, +$("amt").value || 0);
+  const amt = +$("amt").value;
+  if (!Number.isFinite(amt) || amt <= 0) return { error: "회당 매수 금액 또는 수량은 0보다 큰 숫자로 입력해 주세요." };
   const unit = $("unit").value, frac = $("frac").checked;
   let qty = 0, costA = 0, costK = 0, cash = 0, stockK = 0;
   const tx = [], series = [];
@@ -877,7 +879,7 @@ window.addEventListener("themechange", drawChart);
 const formIds = ["start", "end", "weekday", "mday", "amt", "fxrate"];
 function saveForm() {
   try {
-    const o = { freq: st.freq, mode: st.mode, sym: st.sym, symLabel: $("preset").selectedOptions[0]?.textContent, unit: $("unit").value, frac: $("frac").checked, adj: $("adj").checked, fxsrc: $("fxsrc").value };
+    const o = { freq: st.freq, mode: st.mode, endWasLatest: st.endWasLatest, sym: st.sym, symLabel: $("preset").selectedOptions[0]?.textContent, unit: $("unit").value, frac: $("frac").checked, adj: $("adj").checked, fxsrc: $("fxsrc").value };
     formIds.forEach(k => o[k] = $(k).value); localStorage.setItem(LS_FORM, JSON.stringify(o));
   } catch (e) {}
 }
@@ -887,8 +889,8 @@ function restoreForm() {
   st.freq = o.freq || "month"; st.mode = o.mode || "amount"; setSeg($("freq"), st.freq); setSeg($("mode"), st.mode);
   if (o.fxsrc) $("fxsrc").value = o.fxsrc;
   syncForm();
-  formIds.forEach(k => { if (o[k] != null && k !== "end") $(k).value = o[k]; });
-  if ([...$("unit").options].some(x => x.value === o.unit)) st.pendingUnit = o.unit;
+  formIds.forEach(k => { if (o[k] != null && (k !== "end" || o.endWasLatest === false)) $(k).value = o[k]; });
+  if (o.unit) st.pendingUnit = o.unit;
   $("frac").checked = o.frac !== false; $("adj").checked = !!o.adj;
   return o;
 }
@@ -925,7 +927,7 @@ async function buildWebList() {
   }
   $("preset").value = sym;
   if (list) label = $("preset").selectedOptions[0]?.textContent || label;
-  st.endWasLatest = true;
+  st.endWasLatest = saved?.endWasLatest !== false;
   await selectSymbol(sym, label);
   if (st.pendingUnit && [...$("unit").options].some(x => x.value === st.pendingUnit)) { $("unit").value = st.pendingUnit; run(); }
 })();
