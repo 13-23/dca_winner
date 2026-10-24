@@ -14,6 +14,15 @@
   { "symbol": "360750.KS", "label": "TIGER 미국S&P500", "group": "국내 ETF" },
 
   { "symbol": "QQQ", "label": "QQQ (나스닥100)", "group": "미국 ETF" },
+  { "symbol": "QLD", "label": "QLD (나스닥100 2배)", "group": "미국 레버리지 ETF·ETN" },
+  { "symbol": "TQQQ", "label": "TQQQ (나스닥100 3배)", "group": "미국 레버리지 ETF·ETN" },
+  { "symbol": "SSO", "label": "SSO (S&P500 2배)", "group": "미국 레버리지 ETF·ETN" },
+  { "symbol": "UPRO", "label": "UPRO (S&P500 3배)", "group": "미국 레버리지 ETF·ETN" },
+  { "symbol": "USD", "label": "USD (반도체 2배)", "group": "미국 레버리지 ETF·ETN" },
+  { "symbol": "SOXL", "label": "SOXL (반도체 3배)", "group": "미국 레버리지 ETF·ETN" },
+  { "symbol": "TECL", "label": "TECL (기술주 3배)", "group": "미국 레버리지 ETF·ETN" },
+  { "symbol": "FNGU", "label": "FNGU (FANG+ 3배 ETN)", "group": "미국 레버리지 ETF·ETN" },
+
   { "symbol": "SPY", "label": "SPY (S&P500)", "group": "미국 ETF" },
   { "symbol": "VOO", "label": "VOO (S&P500)", "group": "미국 ETF" },
   { "symbol": "DIA", "label": "DIA (다우30)", "group": "미국 ETF" },
