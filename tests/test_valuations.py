@@ -20,7 +20,7 @@ class ValuationTests(unittest.TestCase):
 
     def test_unavailable_values_are_null_and_never_mocked(self):
         with tempfile.TemporaryDirectory() as folder:
-            result = update(folder, lambda _: {'quoteResponse': {'result': []}})
+            result = update(folder, lambda _: {'quoteResponse': {'result': []}}, get=lambda _: b'')
             self.assertEqual(len(result['items']), 6)
             self.assertTrue(all(x['per'] is None and x['pbr'] is None and x['status'] == 'unavailable' for x in result['items']))
             result = update(folder, lambda _: self.fail('Mock mode must not call provider'), mock=True)
@@ -32,7 +32,7 @@ class ValuationTests(unittest.TestCase):
             (Path(folder) / 'valuations.json').write_text(json.dumps({'items': [old]}))
             def fail(_):
                 raise RuntimeError('Provider unavailable')
-            result = update(folder, fail)
+            result = update(folder, fail, get=lambda _: b'')
             item = result['items'][0]
             self.assertEqual(item['status'], 'stale')
             self.assertEqual(item['asOf'], '2024-01-02')

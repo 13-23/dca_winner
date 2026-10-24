@@ -4,6 +4,9 @@ import math
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
+from urllib.request import Request, urlopen
+import gzip
+from valuation_sources import fetch_multpl
 
 SYMBOLS = ['^KS11', '^KQ11', '^IXIC', '^NDX', '^DJI', '^GSPC']
 
@@ -27,7 +30,14 @@ def snapshot(row):
             'source': 'Yahoo Finance', 'basis': 'TTM', 'status': 'available'}
 
 
-def update(directory, yahoo, mock=False):
+def fetch_web(url):
+    request = Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; investment-tools/1.0)', 'Accept': 'application/atom+xml,text/html', 'Accept-Encoding': 'gzip'})
+    with urlopen(request, timeout=20) as response:
+        payload = response.read()
+        return gzip.decompress(payload) if response.headers.get('Content-Encoding') == 'gzip' else payload
+
+
+def update(directory, yahoo, mock=False, get=fetch_web):
     path = Path(directory) / 'valuations.json'
     try:
         previous = {x['symbol']: x for x in json.loads(path.read_text())['items']}
@@ -44,6 +54,11 @@ def update(directory, yahoo, mock=False):
                         rows[row['symbol']] = item
         except Exception as exc:
             print('  valuation source unavailable:', type(exc).__name__)
+    if not mock and '^GSPC' not in rows:
+        try:
+            rows['^GSPC'] = fetch_multpl(get)
+        except Exception as exc:
+            print('  Multpl valuation unavailable:', type(exc).__name__)
     items = []
     for symbol in SYMBOLS:
         item = rows.get(symbol)

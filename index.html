@@ -1108,14 +1108,30 @@ function renderValuation(fillForm = true) {
   const current = valid ? st.data.days.at(-1) : null;
   const v = ValuationModel.evaluate(snap, current?.c);
   $("valuation-current").replaceChildren();
-  for (const [label,value] of [["PER",v.per],["PBR",v.pbr]]) {
+  const manual = !!manualValuations[st.sym];
+  for (const [label,value] of [["PER",manual ? v.per : (ValuationModel.positive(snap?.per) ? snap.per : null)],["PBR",manual ? v.pbr : (ValuationModel.positive(snap?.pbr) ? snap.pbr : null)]]) {
     const cell = document.createElement("div"), title = document.createElement("span"), number = document.createElement("strong");
-    cell.className = "near"; title.className = "lbl"; number.className = "nv"; title.textContent = label + " (기준가치 환산)"; number.textContent = value == null ? "자료 없음" : nf2.format(value) + "배"; cell.append(title, number); $("valuation-current").append(cell);
+    cell.className = "near"; title.className = "lbl"; number.className = "nv"; title.textContent = label + (manual ? " (기준가치 환산)" : " (출처 기준)"); number.textContent = value == null ? "자료 없음" : nf2.format(value) + "배"; cell.append(title, number); $("valuation-current").append(cell);
   }
   const source = $("valuation-source");
   if (!valid) source.textContent = "지수 시세를 불러온 뒤 확인할 수 있습니다.";
   else if (v.per == null && v.pbr == null) source.textContent = "이 지수의 검증 가능한 자동 제공값이 없습니다. 직접 확인한 기준값을 입력하면 환산 수치와 가격 밴드를 볼 수 있습니다.";
   else source.textContent = (manualValuations[st.sym] ? "직접 입력 · " : snap.status === "stale" ? "갱신 실패 · 이전 기준값 유지 · " : "자동 제공 · ") + (snap.source || "출처 미기재") + " · 기준일 " + snap.asOf + " · 기준 지수 " + nf2.format(snap.referencePrice) + " · 최신 종가 " + current.t + "로 환산 (EPS/BPS 고정).";
+  const priceMismatch = valid && !manual && snap?.asOf === current.t && ValuationModel.positive(snap.referencePrice) && Math.abs(current.c / snap.referencePrice - 1) > 0.005;
+  source.className = priceMismatch ? "hint warn" : "hint";
+  if (valid && !manual && (v.per != null || v.pbr != null)) {
+    source.textContent += " 차트 종가 " + nf2.format(current.c) + " 기준 환산: PER " + (v.per == null ? "자료 없음" : nf2.format(v.per) + "배") + " / PBR " + (v.pbr == null ? "자료 없음" : nf2.format(v.pbr) + "배") + ".";
+    if (priceMismatch) source.textContent += " 같은 날짜의 출처 지수값과 차트 시세에 차이가 있어 출처 배수와 환산 배수를 구분했습니다.";
+  }
+  if (valid && (v.per != null || v.pbr != null) && snap.estimated) {
+    source.textContent += " · 출처의 추정 배수입니다.";
+    source.textContent += snap.bookValueAsOf ? " BPS 보고 기준: " + snap.bookValueAsOf + "." : " BPS의 보고 기준일은 출처에서 확인해 주세요.";
+  }
+  if (valid && snap?.source?.startsWith("Multpl")) {
+    for (const [label,url] of [["PER 원문","https://www.multpl.com/s-p-500-pe-ratio"],["PBR 원문","https://www.multpl.com/s-p-500-price-to-book"]]) {
+      const link=document.createElement("a");link.href=url;link.textContent=label;link.target="_blank";link.rel="noopener noreferrer";source.append(" · ",link);
+    }
+  }
   if (fillForm) {
   $("valuation-price").value = valid ? (snap?.referencePrice || current.c) : "";
   $("valuation-per").value = snap?.per || ""; $("valuation-pbr").value = snap?.pbr || "";

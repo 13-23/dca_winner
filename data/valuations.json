@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-24T06:09:46.335665+00:00",
+  "updated": "2026-10-24T06:23:05.533999+00:00",
   "items": [
     {
       "symbol": "^KS11",
@@ -53,13 +53,21 @@
     },
     {
       "symbol": "^GSPC",
-      "referencePrice": null,
-      "per": null,
-      "pbr": null,
-      "asOf": null,
-      "source": "Yahoo Finance",
-      "basis": "TTM",
-      "status": "unavailable"
+      "referencePrice": 7681.84,
+      "per": 26.01,
+      "pbr": 6.05,
+      "asOf": "2026-10-23",
+      "sourceTimestamp": "2026-10-23T16:00:00-04:00",
+      "source": "Multpl (S&P 500)",
+      "sourceUrls": {
+        "per": "https://www.multpl.com/s-p-500-pe-ratio",
+        "pbr": "https://www.multpl.com/s-p-500-price-to-book",
+        "price": "https://www.multpl.com/s-p-500-historical-prices"
+      },
+      "basis": "TTM as-reported; latest reported book value",
+      "estimated": true,
+      "bookValueAsOf": "2025-09",
+      "status": "available"
     }
   ]
 }
