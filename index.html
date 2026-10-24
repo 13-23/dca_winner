@@ -506,7 +506,10 @@ function syncForm(modeChanged) {
     if ($("fxsrc").value === "auto") {
       $("fxhint").textContent = st.fx ? `환율 데이터 ${st.fx.data[0].t}부터. 그 이전 회차는 첫 환율을 씁니다.` : (st.fxErr ? "환율을 불러오지 못해 고정 환율을 써야 합니다: " + st.fxErr : "환율 불러오는 중…");
       $("fxhint").className = st.fxErr ? "hint warn" : "hint";
-    } else { $("fxhint").textContent = "모든 회차에 같은 환율을 씁니다."; $("fxhint").className = "hint"; }
+    } else {
+      $("fxhint").textContent = st.fxErr ? "날짜별 환율을 불러오지 못해 고정 환율로 계산합니다. 입력된 환율을 확인해 주세요. (" + st.fxErr + ")" : "모든 회차에 같은 환율을 씁니다.";
+      $("fxhint").className = st.fxErr ? "hint warn" : "hint";
+    }
   }
   if (a) { const f = a.data[0].t, l = a.data[a.data.length - 1].t; $("start").min = f; $("start").max = l; $("end").min = f; $("end").max = l; }
 }
