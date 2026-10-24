@@ -7,6 +7,8 @@
   { "symbol": "^GSPC", "label": "S&P 500", "group": "지수" },
 
   { "symbol": "069500.KS", "label": "KODEX 200", "group": "국내 ETF" },
+  { "symbol": "122630.KS", "label": "KODEX 레버리지", "group": "국내 ETF" },
+  { "symbol": "233740.KS", "label": "KODEX 코스닥150레버리지", "group": "국내 ETF" },
   { "symbol": "229200.KS", "label": "KODEX 코스닥150", "group": "국내 ETF" },
   { "symbol": "133690.KS", "label": "TIGER 미국나스닥100", "group": "국내 ETF" },
   { "symbol": "360750.KS", "label": "TIGER 미국S&P500", "group": "국내 ETF" },
