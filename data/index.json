@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-30 10:03 KST",
+ "updated": "2026-10-30 23:05 KST",
  "items": [
   {
    "symbol": "^KS11",
@@ -26,7 +26,7 @@
    "group": "지수",
    "currency": "USD",
    "first": "1971-02-05",
-   "last": "2026-10-29"
+   "last": "2026-10-30"
   },
   {
    "symbol": "^NDX",
@@ -35,7 +35,7 @@
    "group": "지수",
    "currency": "USD",
    "first": "1985-10-01",
-   "last": "2026-10-29"
+   "last": "2026-10-30"
   },
   {
    "symbol": "^DJI",
@@ -44,7 +44,7 @@
    "group": "지수",
    "currency": "USD",
    "first": "1992-01-02",
-   "last": "2026-10-29"
+   "last": "2026-10-30"
   },
   {
    "symbol": "^GSPC",
@@ -53,7 +53,7 @@
    "group": "지수",
    "currency": "USD",
    "first": "1970-01-02",
-   "last": "2026-10-29"
+   "last": "2026-10-30"
   },
   {
    "symbol": "069500.KS",
@@ -116,7 +116,7 @@
    "group": "미국 ETF",
    "currency": "USD",
    "first": "1999-03-10",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "QLD",
@@ -125,7 +125,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2006-06-21",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "TQQQ",
@@ -134,7 +134,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2010-02-11",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "SSO",
@@ -143,7 +143,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2006-06-21",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "UPRO",
@@ -152,7 +152,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2009-06-25",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "USD",
@@ -161,7 +161,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2007-02-01",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "SOXL",
@@ -170,7 +170,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2010-03-11",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "TECL",
@@ -179,7 +179,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2008-12-30",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "FNGU",
@@ -188,7 +188,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2025-02-20",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "SPY",
@@ -197,7 +197,7 @@
    "group": "미국 ETF",
    "currency": "USD",
    "first": "1993-01-29",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "VOO",
@@ -206,7 +206,7 @@
    "group": "미국 ETF",
    "currency": "USD",
    "first": "2010-09-09",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "DIA",
@@ -215,7 +215,7 @@
    "group": "미국 ETF",
    "currency": "USD",
    "first": "1998-01-20",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "SCHD",
@@ -224,7 +224,7 @@
    "group": "미국 ETF",
    "currency": "USD",
    "first": "2011-10-20",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "005930.KS",
@@ -251,7 +251,7 @@
    "group": "개별 종목",
    "currency": "USD",
    "first": "1980-12-12",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "MSFT",
@@ -260,7 +260,7 @@
    "group": "개별 종목",
    "currency": "USD",
    "first": "1986-03-13",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "NVDA",
@@ -269,7 +269,7 @@
    "group": "개별 종목",
    "currency": "USD",
    "first": "1999-01-22",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "TSLA",
@@ -278,7 +278,7 @@
    "group": "개별 종목",
    "currency": "USD",
    "first": "2010-06-29",
-   "last": "2026-10-28"
+   "last": "2026-10-30"
   },
   {
    "symbol": "KRW=X",
