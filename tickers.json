@@ -1,37 +1,193 @@
 [
-  { "symbol": "^KS11", "label": "코스피", "group": "지수" },
-  { "symbol": "^KQ11", "label": "코스닥", "group": "지수" },
-  { "symbol": "^IXIC", "label": "나스닥 종합", "group": "지수" },
-  { "symbol": "^NDX", "label": "나스닥 100", "group": "지수" },
-  { "symbol": "^DJI", "label": "다우존스", "group": "지수" },
-  { "symbol": "^GSPC", "label": "S&P 500", "group": "지수" },
-
-  { "symbol": "069500.KS", "label": "KODEX 200", "group": "국내 ETF" },
-  { "symbol": "122630.KS", "label": "KODEX 레버리지", "group": "국내 ETF" },
-  { "symbol": "233740.KS", "label": "KODEX 코스닥150레버리지", "group": "국내 ETF" },
-  { "symbol": "229200.KS", "label": "KODEX 코스닥150", "group": "국내 ETF" },
-  { "symbol": "133690.KS", "label": "TIGER 미국나스닥100", "group": "국내 ETF" },
-  { "symbol": "360750.KS", "label": "TIGER 미국S&P500", "group": "국내 ETF" },
-
-  { "symbol": "QQQ", "label": "QQQ (나스닥100)", "group": "미국 ETF" },
-  { "symbol": "QLD", "label": "QLD (나스닥100 2배)", "group": "미국 레버리지 ETF·ETN" },
-  { "symbol": "TQQQ", "label": "TQQQ (나스닥100 3배)", "group": "미국 레버리지 ETF·ETN" },
-  { "symbol": "SSO", "label": "SSO (S&P500 2배)", "group": "미국 레버리지 ETF·ETN" },
-  { "symbol": "UPRO", "label": "UPRO (S&P500 3배)", "group": "미국 레버리지 ETF·ETN" },
-  { "symbol": "USD", "label": "USD (반도체 2배)", "group": "미국 레버리지 ETF·ETN" },
-  { "symbol": "SOXL", "label": "SOXL (반도체 3배)", "group": "미국 레버리지 ETF·ETN" },
-  { "symbol": "TECL", "label": "TECL (기술주 3배)", "group": "미국 레버리지 ETF·ETN" },
-  { "symbol": "FNGU", "label": "FNGU (FANG+ 3배 ETN)", "group": "미국 레버리지 ETF·ETN" },
-
-  { "symbol": "SPY", "label": "SPY (S&P500)", "group": "미국 ETF" },
-  { "symbol": "VOO", "label": "VOO (S&P500)", "group": "미국 ETF" },
-  { "symbol": "DIA", "label": "DIA (다우30)", "group": "미국 ETF" },
-  { "symbol": "SCHD", "label": "SCHD (배당)", "group": "미국 ETF" },
-
-  { "symbol": "005930.KS", "label": "삼성전자", "group": "개별 종목" },
-  { "symbol": "000660.KS", "label": "SK하이닉스", "group": "개별 종목" },
-  { "symbol": "AAPL", "label": "애플", "group": "개별 종목" },
-  { "symbol": "MSFT", "label": "마이크로소프트", "group": "개별 종목" },
-  { "symbol": "NVDA", "label": "엔비디아", "group": "개별 종목" },
-  { "symbol": "TSLA", "label": "테슬라", "group": "개별 종목" }
+  {
+    "symbol": "^KS11",
+    "label": "코스피",
+    "group": "지수"
+  },
+  {
+    "symbol": "^KQ11",
+    "label": "코스닥",
+    "group": "지수"
+  },
+  {
+    "symbol": "^IXIC",
+    "label": "나스닥 종합",
+    "group": "지수"
+  },
+  {
+    "symbol": "^NDX",
+    "label": "나스닥 100",
+    "group": "지수"
+  },
+  {
+    "symbol": "^DJI",
+    "label": "다우존스",
+    "group": "지수"
+  },
+  {
+    "symbol": "^GSPC",
+    "label": "S&P 500",
+    "group": "지수"
+  },
+  {
+    "symbol": "069500.KS",
+    "label": "KODEX 200",
+    "group": "국내 ETF"
+  },
+  {
+    "symbol": "122630.KS",
+    "label": "KODEX 레버리지",
+    "group": "국내 ETF"
+  },
+  {
+    "symbol": "233740.KS",
+    "label": "KODEX 코스닥150레버리지",
+    "group": "국내 ETF"
+  },
+  {
+    "symbol": "229200.KS",
+    "label": "KODEX 코스닥150",
+    "group": "국내 ETF"
+  },
+  {
+    "symbol": "133690.KS",
+    "label": "TIGER 미국나스닥100",
+    "group": "국내 ETF"
+  },
+  {
+    "symbol": "360750.KS",
+    "label": "TIGER 미국S&P500",
+    "group": "국내 ETF"
+  },
+  {
+    "symbol": "QQQ",
+    "label": "QQQ (나스닥100)",
+    "group": "미국 ETF"
+  },
+  {
+    "symbol": "QLD",
+    "label": "QLD (나스닥100 2배)",
+    "group": "미국 레버리지 ETF·ETN"
+  },
+  {
+    "symbol": "TQQQ",
+    "label": "TQQQ (나스닥100 3배)",
+    "group": "미국 레버리지 ETF·ETN"
+  },
+  {
+    "symbol": "SSO",
+    "label": "SSO (S&P500 2배)",
+    "group": "미국 레버리지 ETF·ETN"
+  },
+  {
+    "symbol": "UPRO",
+    "label": "UPRO (S&P500 3배)",
+    "group": "미국 레버리지 ETF·ETN"
+  },
+  {
+    "symbol": "USD",
+    "label": "USD (반도체 2배)",
+    "group": "미국 레버리지 ETF·ETN"
+  },
+  {
+    "symbol": "SOXL",
+    "label": "SOXL (반도체 3배)",
+    "group": "미국 레버리지 ETF·ETN"
+  },
+  {
+    "symbol": "TECL",
+    "label": "TECL (기술주 3배)",
+    "group": "미국 레버리지 ETF·ETN"
+  },
+  {
+    "symbol": "FNGU",
+    "label": "FNGU (FANG+ 3배 ETN)",
+    "group": "미국 레버리지 ETF·ETN"
+  },
+  {
+    "symbol": "SPY",
+    "label": "SPY (S&P500)",
+    "group": "미국 ETF"
+  },
+  {
+    "symbol": "VOO",
+    "label": "VOO (S&P500)",
+    "group": "미국 ETF"
+  },
+  {
+    "symbol": "DIA",
+    "label": "DIA (다우30)",
+    "group": "미국 ETF"
+  },
+  {
+    "symbol": "SCHD",
+    "label": "SCHD (배당)",
+    "group": "미국 ETF"
+  },
+  {
+    "symbol": "005930.KS",
+    "label": "삼성전자",
+    "group": "개별 종목"
+  },
+  {
+    "symbol": "000660.KS",
+    "label": "SK하이닉스",
+    "group": "개별 종목"
+  },
+  {
+    "symbol": "AAPL",
+    "label": "애플",
+    "group": "개별 종목"
+  },
+  {
+    "symbol": "MSFT",
+    "label": "마이크로소프트",
+    "group": "개별 종목"
+  },
+  {
+    "symbol": "NVDA",
+    "label": "엔비디아",
+    "group": "개별 종목"
+  },
+  {
+    "symbol": "TSLA",
+    "label": "테슬라",
+    "group": "개별 종목"
+  },
+  {
+    "symbol": "KORU",
+    "label": "KORU (한국 3배)",
+    "group": "미국 레버리지 ETF·ETN",
+    "aliases": [
+      "한국",
+      "코루",
+      "Korea"
+    ]
+  },
+  {
+    "symbol": "035720.KS",
+    "label": "카카오",
+    "group": "개별 종목",
+    "aliases": [
+      "Kakao"
+    ]
+  },
+  {
+    "symbol": "035420.KS",
+    "label": "네이버",
+    "group": "개별 종목",
+    "aliases": [
+      "NAVER"
+    ]
+  },
+  {
+    "symbol": "051900.KS",
+    "label": "LG생활건강",
+    "group": "개별 종목",
+    "aliases": [
+      "엘지생활건강",
+      "LG H&H",
+      "LG Household & Health Care"
+    ]
+  }
 ]

@@ -170,6 +170,8 @@ def main():
                 return None
             item = dict(old[sym])  # 예전 파일 유지
             item.update({"label": t.get("label") or item.get("label"), "group": t.get("group") or item.get("group")})
+        if t.get("aliases"):
+            item["aliases"] = t["aliases"]
         if hidden:
             item["hidden"] = True
         items.append(item)
