@@ -312,9 +312,9 @@ th:first-child, td:first-child { text-align: left; }
         </div>
         <div class="field">
           <label for="q">다른 종목 찾기</label>
-          <input type="search" id="q" placeholder="코드 또는 영문명 (예: 035420.KS, Apple)" autocomplete="off">
+          <input type="search" id="q" placeholder="종목명·코드 검색 (예: 카카오, 035420, KORU)" autocomplete="off">
           <div class="results" id="results"></div>
-          <p class="hint" id="q-hint">국내 종목은 코드 뒤에 .KS(코스피) 또는 .KQ(코스닥)를 붙입니다. 예: 005930.KS. 입력 후 Enter를 누르면 그 코드로 바로 불러옵니다.</p>
+          <p class="hint" id="q-hint">한글명·영문명·코드로 검색하고 결과를 누르거나 Enter로 선택하세요.</p>
         </div>
         <div class="assetinfo" id="assetinfo" aria-live="polite"><b>불러오는 중…</b></div>
       </section>
@@ -528,9 +528,14 @@ window.API = (() => {
       return r.json();
     },
     async search(q) {
-      const list = await index(); q = q.toLowerCase();
-      const hit = x => !x.hidden && [x.symbol, x.label, x.name].some(v => (v || "").toLowerCase().includes(q));
-      return { quotes: list.items.filter(hit).slice(0, 12).map(x => ({ symbol: x.symbol, name: x.label || x.name, type: x.group, exchange: x.currency })) };
+      const list = await index();
+      const norm = v => (v || "").normalize("NFKC").toLowerCase().replace(/\s+/g, "");
+      q = norm(q);
+      if (!q) return { quotes: [] };
+      const fields = x => [x.symbol, x.symbol.split(".")[0], x.label, x.name, ...(x.aliases || [])].map(norm);
+      const score = x => fields(x).some(v => v === q) ? 0 : fields(x).some(v => v.startsWith(q)) ? 1 : 2;
+      const hit = x => !x.hidden && fields(x).some(v => v.includes(q));
+      return { quotes: list.items.filter(hit).sort((a, b) => score(a) - score(b)).slice(0, 12).map(x => ({ symbol: x.symbol, name: x.label || x.name, type: x.group, exchange: x.currency })) };
     }
   };
 })();
@@ -633,13 +638,13 @@ $("preset").addEventListener("change", () => { const o = $("preset").selectedOpt
 let qTimer = null;
 $("q").addEventListener("input", () => {
   clearTimeout(qTimer); const q = $("q").value.trim();
-  if (q.length < 2) { $("results").innerHTML = ""; return; }
+  if (q.length < 1) { $("results").innerHTML = ""; return; }
   qTimer = setTimeout(async () => {
     try {
       const j = await API.search(q);
       if ($("q").value.trim() !== q) return;
       const box = $("results"); box.innerHTML = "";
-      if (!j.quotes.length) { box.innerHTML = '<p class="hint">결과가 없습니다. 코드를 직접 입력하고 Enter를 눌러 보세요.</p>'; return; }
+      if (!j.quotes.length) { box.innerHTML = '<p class="hint">등록된 종목에서 찾지 못했습니다. 종목명이나 코드로 다시 검색해 주세요.</p>'; return; }
       for (const x of j.quotes) {
         const b = document.createElement("button"); b.type = "button";
         const n = document.createElement("span"); n.textContent = x.name || x.symbol;
@@ -649,7 +654,18 @@ $("q").addEventListener("input", () => {
     } catch (e) { $("results").innerHTML = ""; const p = document.createElement("p"); p.className = "hint warn"; p.textContent = e.message; $("results").append(p); }
   }, 300);
 });
-$("q").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); const v = $("q").value.trim(); if (v) pickCustom(v.toUpperCase(), v.toUpperCase()); } });
+$("q").addEventListener("keydown", async e => {
+  if (e.key === "Escape") { clearTimeout(qTimer); $("results").innerHTML = ""; return; }
+  if (e.key !== "Enter" || e.isComposing) return;
+  e.preventDefault(); clearTimeout(qTimer);
+  const q = $("q").value.trim(); if (!q) return;
+  try {
+    const j = await API.search(q);
+    if ($("q").value.trim() !== q) return;
+    if (j.quotes.length) pickCustom(j.quotes[0].symbol, j.quotes[0].name);
+    else { $("results").innerHTML = '<p class="hint">등록된 종목에서 찾지 못했습니다. 종목명이나 코드로 다시 검색해 주세요.</p>'; }
+  } catch (e) { $("results").textContent = e.message; }
+});
 function pickCustom(sym, name) {
   sym = sym.toUpperCase();
   let opt = [...$("preset").options].find(o => o.value === sym);
@@ -988,8 +1004,8 @@ async function buildWebList() {
     if (!groups.has(x.group)) { const og = document.createElement("optgroup"); og.label = x.group; groups.set(x.group, og); sel.append(og); }
     const o = document.createElement("option"); o.value = x.symbol; o.textContent = x.label || x.name || x.symbol; groups.get(x.group).append(o);
   }
-  $("q").placeholder = "목록에서 찾기 (예: 삼성, QQQ)";
-  $("q-hint").textContent = `업데이트되는 ${list.items.filter(x => !x.hidden).length}개 종목 중에서 찾습니다. 다른 종목은 tickers.json에 추가하면 다음 업데이트부터 나타납니다.`;
+  $("q").placeholder = "종목명·코드 검색 (예: 카카오, 035420, KORU)";
+  $("q-hint").textContent = `업데이트되는 ${list.items.filter(x => !x.hidden).length}개 종목을 한글명·영문명·코드로 검색합니다. 결과를 누르거나 Enter로 첫 결과를 선택하세요.`;
   const up = $("data-updated");
   if (up && list.updated) { up.hidden = false; up.textContent = `시세 업데이트: ${list.updated} (매일 자동)`; }
   return list;
