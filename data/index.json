@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-05 00:23 KST",
+ "updated": "2026-11-05 08:54 KST",
  "items": [
   {
    "symbol": "^KS11",
@@ -233,7 +233,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2000-01-04",
-   "last": "2026-11-03"
+   "last": "2026-11-04"
   },
   {
    "symbol": "000660.KS",
@@ -242,7 +242,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2000-01-04",
-   "last": "2026-11-03"
+   "last": "2026-11-04"
   },
   {
    "symbol": "AAPL",
@@ -279,6 +279,58 @@
    "currency": "USD",
    "first": "2010-06-29",
    "last": "2026-11-04"
+  },
+  {
+   "symbol": "KORU",
+   "label": "KORU (한국 3배)",
+   "name": "Direxion Daily South Korea Bull 3X Shares",
+   "group": "미국 레버리지 ETF·ETN",
+   "currency": "USD",
+   "first": "2013-04-10",
+   "last": "2026-11-04",
+   "aliases": [
+    "한국",
+    "코루",
+    "Korea"
+   ]
+  },
+  {
+   "symbol": "035720.KS",
+   "label": "카카오",
+   "name": "Kakao Corp.",
+   "group": "개별 종목",
+   "currency": "KRW",
+   "first": "2000-02-11",
+   "last": "2026-11-04",
+   "aliases": [
+    "Kakao"
+   ]
+  },
+  {
+   "symbol": "035420.KS",
+   "label": "네이버",
+   "name": "NAVER Corporation",
+   "group": "개별 종목",
+   "currency": "KRW",
+   "first": "2002-10-29",
+   "last": "2026-11-04",
+   "aliases": [
+    "NAVER"
+   ]
+  },
+  {
+   "symbol": "051900.KS",
+   "label": "LG생활건강",
+   "name": "LG H&H Co., Ltd.",
+   "group": "개별 종목",
+   "currency": "KRW",
+   "first": "2001-04-25",
+   "last": "2026-11-04",
+   "aliases": [
+    "엘지생활건강",
+    "LG H&H",
+    "LG Household & Health Care"
+   ]
   },
   {
    "symbol": "KRW=X",
