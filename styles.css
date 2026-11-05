@@ -393,3 +393,9 @@ tbody tr:hover { background: var(--accent-soft); }
 .asset-search-results small{color:var(--muted)}
 .asset-search-results button:disabled{opacity:.6;cursor:default}
 .pf-row > button{white-space:nowrap;padding-inline:8px}
+
+.position-logic{background:var(--accent-soft);color:var(--ink);padding:18px;border-radius:12px;font-size:13px;line-height:1.85;overflow-wrap:anywhere}
+.position-logic h3{font-size:14px;margin:0 0 12px}
+.position-logic p{margin:0 0 12px;max-width:75ch}
+.position-logic p:last-child{margin-bottom:0}
+.position-logic-note{padding-top:12px;border-top:1px solid var(--line)}
