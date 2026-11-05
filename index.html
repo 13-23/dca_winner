@@ -218,7 +218,8 @@
           <h2 id="h-chart">원금과 평가금액</h2>
           <div class="legend"><span style="--c:var(--invest)">누적 원금</span><span style="--c:var(--accent)">평가금액</span><span style="--c:var(--down)">MDD 구간</span></div>
         </div>
-        <div class="chartbox" id="chartbox"><canvas id="chart" aria-label="누적 원금과 평가금액 추이"></canvas><div class="tip" id="tip" hidden></div></div>
+        <div class="chartbox" id="chartbox"><canvas id="chart" aria-label="누적 원금과 평가금액 추이" aria-describedby="mdd-guide"></canvas><div class="tip" id="tip" hidden></div></div>
+        <p class="hint" id="mdd-guide"><strong>MDD 구간 (최대 낙폭)</strong>은 그래프에서 가장 크게 하락한 고점부터 저점까지의 기간입니다. 예를 들어 입금 효과를 뺀 수익률 지수가 100에서 75까지 떨어졌다면 최대 낙폭은 −25%입니다. 파란 음영은 그 하락 구간을 표시하며, 이전 고점을 회복하기까지의 기간은 수익·위험 지표에서 따로 확인할 수 있습니다.</p>
       </section>
       <section class="panel position-panel" data-position-panel></section>
         <section class="panel market-panel" data-market-panel aria-label="미국 시장 보조지표"></section>

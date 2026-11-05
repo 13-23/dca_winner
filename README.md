@@ -2,8 +2,10 @@
 
 GitHub Pages로 올리는 웹 버전입니다. 시세는 GitHub Actions가 **매일 두 번 자동으로** 야후 파이낸스에서 받아 `data/` 폴더에 저장하고, 페이지는 그 파일을 읽어 계산합니다.
 
-- 평일 16:10 (한국장 마감 후)
-- 화~토 06:20 (미국장 마감 후)
+- 평일 17:10 (한국 종가 확정 기준 이후)
+- 화~토 07:10 (미국 종가 확정 기준 이후)
+
+현재 [공개 사이트](https://13-23.github.io/dca_winner/)의 자동 검사, 배포, 장애 대응은 [운영 안내](OPERATIONS.md)를 참고하세요.
 
 ## 파일 구성
 
@@ -113,8 +115,8 @@ github.com 오른쪽 위 **+ → New repository**
 
 ### 5. 웹페이지 켜기
 1. **Settings → Pages**
-2. Source: **Deploy from a branch**, Branch: **main** / **(root)** → **Save**
-3. 2~3분 뒤 같은 화면 위쪽에 주소가 나옵니다: `https://아이디.github.io/invest-tools/`
+2. Source: **GitHub Actions** 선택
+3. `.github/workflows/site.yml`을 포함한 `main`을 배포합니다. 이 저장소에서는 **사이트 검사 및 배포**를 수동 실행할 수도 있습니다. 다른 저장소로 복제할 때는 `scripts/check_production.py`의 사이트 주소를 맞춰 주세요.
 
 이제 그 주소를 폰이나 PC 어디서든 열면 됩니다. 이후로는 아무것도 안 해도 매일 시세가 갱신돼요.
 

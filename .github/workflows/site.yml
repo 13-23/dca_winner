@@ -1,0 +1,84 @@
+name: 사이트 검사 및 배포
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['시세 업데이트']
+    branches: [main]
+    types: [completed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      revision: ${{ steps.package.outputs.revision }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: 계산 및 검색 테스트
+        run: |
+          python -m unittest discover -s tests -p 'test_*.py'
+          node --test tests/*.test.cjs
+      - name: 공개 파일 묶기
+        id: package
+        run: |
+          mkdir _site
+          cp index.html styles.css market.js position.js portfolio.js portfolio-ui.js valuation.js POSITION_V2_METHOD.md POSITION_V2_RESULTS.md _site/
+          cp -r data _site/
+          revision=$(git rev-parse HEAD)
+          printf '{"revision":"%s"}\n' "$revision" > _site/release.json
+          echo "revision=$revision" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.publish.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: publish
+
+  smoke:
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ needs.build.outputs.revision }}
+          persist-credentials: false
+      - name: 공개 사이트와 실제 시세 확인
+        env:
+          SITE_REVISION: ${{ needs.build.outputs.revision }}
+        run: python scripts/check_production.py
