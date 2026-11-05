@@ -19,6 +19,7 @@ KORU, 카카오(035720.KS), 네이버(035420.KS), LG생활건강(051900.KS)을 �
 |---|---|
 | `index.html` | 화면 (적립식 계산기 + 이평선 탭) |
 | `styles.css` | 공통 디자인, 밝은·어두운 테마, 모바일 레이아웃 |
+| `market.js`, `update_market.py` | 시장 보조지표 표시 및 일별 수집 |
 | `tickers.json` | 업데이트할 종목 목록 |
 | `update_data.py` | 시세를 받아 `data/`에 저장하는 스크립트 |
 | `.github/workflows/update-data.yml` | 매일 자동 실행 설정 |
@@ -36,6 +37,18 @@ KORU, 카카오(035720.KS), 네이버(035420.KS), LG생활건강(051900.KS)을 �
 - 입력값과 계산 방식은 브라우저에 저장합니다. 단일 종목 계산과 이평선 차트도 계속 사용할 수 있습니다.
 
 `portfolio.js`는 계산 로직, `portfolio-ui.js`는 화면입니다. 추가 패키지 설치 없이 `node --test tests/*.test.cjs`로 계산 테스트를 실행할 수 있습니다.
+
+## 시장 보조지표
+
+원금·평가금액 차트 아래에서 미국 시장의 공포·탐욕 지수, VIX, 전체 풋/콜비율, VIX9D, VVIX를 확인합니다. 단일 종목과 포트폴리오 화면 모두 같은 최신 자료를 사용합니다. 선택 종목이나 과거 적립 기간에 맞춘 수치가 아니며 계산 결과에도 반영하지 않습니다.
+
+- VIX·VIX9D·VVIX: [Cboe 일별 CSV](https://www.cboe.com/tradable-products/vix/vix-historical-data).
+- 전체 풋/콜비율: [Cboe 당일 전체 상품 옵션 통계](https://www.cboe.com/markets/us/options/market-statistics/daily). 발표 비율과 풋/콜 거래량이 일치하는지 검증합니다. CNN의 5일 평균 또는 주식 전용 비율과 혼용하지 않습니다.
+- 공포·탐욕: [CNN](https://www.cnn.com/markets/fear-and-greed) 직접 수집을 먼저 시도합니다. 불가능하면 [공개 CNN 아카이브](https://github.com/whit3rabbit/fear-greed-data)를 사용하고 화면에 아카이브 출처를 표시합니다.
+- 각 지표의 실제 기준일, 이전 관측값 대비 변화, 출처와 상태를 표시합니다. 추이 선택창은 확보한 최대 90개 관측값을 보여주며 풋/콜비율은 수집이 이어지면서 이력이 누적됩니다.
+- 갱신 실패 시 이전 기준일과 값을 유지하고 오래된 자료로 표시합니다. 5일이 넘은 관측값도 오래된 자료로 취급합니다. 값이 없으면 수집 불가로 표시하며 임의의 점수로 채우지 않습니다.
+
+기존 시세 업데이트 작업이 `update_market.py`를 함께 실행해 `data/market.json`을 갱신합니다. Actions 수동 실행 시 `market_only`를 켜면 보조지표만 갱신합니다. 웹 화면의 새로고침은 저장된 JSON을 다시 읽으며 외부 기관의 실시간 자료를 직접 요청하지 않습니다. 로컬에서는 `python update_market.py`로 수집할 수 있습니다. Python 표준 라이브러리만 사용합니다.
 
 ## PER · PBR 밸류에이션
 
@@ -55,7 +68,7 @@ github.com 오른쪽 위 **+ → New repository**
 
 ### 2. 파일 올리기
 만든 저장소 화면에서 **uploading an existing file** 링크(또는 **Add file → Upload files**)를 누르고,
-`index.html`, `styles.css`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
+`index.html`, `styles.css`, `market.js`, `update_market.py`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
 
 ### 3. 자동 실행 설정 파일 만들기
 `.github` 폴더는 숨김 폴더라 끌어다 놓기로는 잘 안 올라갑니다. 직접 만드는 게 확실해요.
