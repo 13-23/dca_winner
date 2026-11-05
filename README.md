@@ -18,6 +18,7 @@ KORU, 카카오(035720.KS), 네이버(035420.KS), LG생활건강(051900.KS)을 �
 | 파일 | 하는 일 |
 |---|---|
 | `index.html` | 화면 (적립식 계산기 + 이평선 탭) |
+| `styles.css` | 공통 디자인, 밝은·어두운 테마, 모바일 레이아웃 |
 | `tickers.json` | 업데이트할 종목 목록 |
 | `update_data.py` | 시세를 받아 `data/`에 저장하는 스크립트 |
 | `.github/workflows/update-data.yml` | 매일 자동 실행 설정 |
@@ -54,7 +55,7 @@ github.com 오른쪽 위 **+ → New repository**
 
 ### 2. 파일 올리기
 만든 저장소 화면에서 **uploading an existing file** 링크(또는 **Add file → Upload files**)를 누르고,
-`index.html`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
+`index.html`, `styles.css`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
 
 ### 3. 자동 실행 설정 파일 만들기
 `.github` 폴더는 숨김 폴더라 끌어다 놓기로는 잘 안 올라갑니다. 직접 만드는 게 확실해요.
