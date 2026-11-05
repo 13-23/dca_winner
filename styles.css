@@ -321,7 +321,8 @@ tbody tr:hover { background: var(--accent-soft); }
 .market-panel .tablewrap:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .market-panel .tablewrap { max-height: none; }
 .market-scale { margin-top: 8px; display: flex; gap: 6px; align-items: center; font-size: 11px; color: var(--muted); }
-.market-scale meter { flex: 1; min-width: 80px; max-width: 130px; height: 10px; accent-color: var(--accent); }
+.market-scale meter { flex: 1; min-width: 40px; max-width: 130px; height: 10px; accent-color: var(--accent); }
+.market-scale span { white-space: nowrap; }
 .market-history { display: grid; gap: 12px; }
 .market-history .field { max-width: 300px; }
 .market-history figure { margin: 0; }
