@@ -6,9 +6,18 @@ on:
     paths:
       - tickers.json
   schedule:
-    - cron: "10 7 * * 1-5"    # 평일 16:10 KST — 한국장 마감 후
-    - cron: "20 21 * * 1-5"   # 화~토 06:20 KST — 미국장 마감 후
+    - cron: "10 8 * * 1-5"    # 평일 17:10 KST — 연구용 한국 종가 확정 기준 이후
+    - cron: "10 22 * * 1-5"   # 화~토 07:10 KST — 연구용 미국 종가 확정 기준 이후
   workflow_dispatch:           # Actions 탭에서 "Run workflow"로 바로 실행
+    inputs:
+      market_only:
+        description: "시장 보조지표만 갱신"
+        type: boolean
+        default: false
+      research_only:
+        description: "연구용 지수 6개와 시장 보조지표만 갱신"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -20,6 +29,7 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
 
@@ -28,13 +38,30 @@ jobs:
           python-version: "3.12"
 
       - name: 시세 받기
+        if: inputs.market_only != true && inputs.research_only != true
         run: python update_data.py
+
+      - name: 연구용 지수 OHLC 받기
+        if: inputs.research_only == true
+        run: python update_position_prices.py
+
+      - name: 시장 보조지표 받기
+        run: python update_market.py
+
+      - name: 시장 위치 연구용 이력 받기
+        run: python update_position_inputs.py
+
+      - name: 시장 위치 순차 검증 갱신
+        run: python market_position.py
+
+      - name: 시장별 6개월 반등 검증 갱신
+        run: python market_position_v2.py
 
       - name: 바뀐 시세 저장
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898341+github-actions[bot]@users.noreply.github.com"
-          git add data
+          git add data POSITION_RESULTS.md POSITION_V2_RESULTS.md
           if git diff --cached --quiet; then
             echo "바뀐 시세 없음"
           else

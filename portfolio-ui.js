@@ -9,16 +9,18 @@ const cache=new Map();
 let saved=null;try{saved=JSON.parse(localStorage.getItem(storeKey)||'null');}catch(e){}
 const fields=['start','end','frequency','monthday','weekday','amount'];
 for(let i=1;i<=31;i++){$('pf-monthday').add(new Option(i===31?'말일':i+'일',i));}
-if(saved){if(Array.isArray(saved.entries)&&saved.entries.length&&saved.entries.length<=10)entries=saved.entries.map(e=>({symbol:String(e.symbol),weight:Number(e.weight)}));for(const f of fields)if(saved[f]!=null)$('pf-'+f).value=saved[f];$('pf-fractional').checked=saved.fractional!==false;$('pf-adjusted').checked=!!saved.adjusted;}
+if(saved){if(Array.isArray(saved.entries)&&saved.entries.length&&saved.entries.length<=10)entries=saved.entries.map(e=>({symbol:String(e.symbol),weight:Number(e.weight),label:String(e.label||e.symbol)}));for(const f of fields)if(saved[f]!=null)$('pf-'+f).value=saved[f];$('pf-fractional').checked=saved.fractional!==false;$('pf-adjusted').checked=!!saved.adjusted;}
 function save(){try{const v={entries,active,fractional:$('pf-fractional').checked,adjusted:$('pf-adjusted').checked};for(const f of fields)v[f]=$('pf-'+f).value;localStorage.setItem(storeKey,JSON.stringify(v));}catch(e){}}
-function total(){const sum=entries.reduce((s,e)=>s+(Number.isFinite(e.weight)?e.weight:0),0);$('pf-total').textContent='합계 '+num.format(sum)+'%';$('pf-total').className=Math.abs(sum-100)>1e-6?'hint warn':'hint';$('pf-add').disabled=entries.length>=Math.min(10,list.length);}
+function total(){const sum=entries.reduce((s,e)=>s+(Number.isFinite(e.weight)?e.weight:0),0);$('pf-total').textContent='합계 '+num.format(sum)+'%';$('pf-total').className=Math.abs(sum-100)>1e-6?'hint warn':'hint';$('pf-add').disabled=entries.length>=10;}
 function renderRows(){
  const box=$('pf-assets');box.replaceChildren();
  entries.forEach((entry,i)=>{
   const row=document.createElement('div');row.className='pf-row';
   const symbol=document.createElement('select');symbol.setAttribute('aria-label',(i+1)+'번째 종목');
-  const groups=new Map();for(const t of list){if(!groups.has(t.group)){const g=document.createElement('optgroup');g.label=t.group||'기타';groups.set(t.group,g);symbol.append(g);}groups.get(t.group).append(new Option(t.label||t.name||t.symbol,t.symbol));}
-  symbol.value=entry.symbol;symbol.title=symbol.selectedOptions[0]?.textContent||entry.symbol;symbol.addEventListener('change',()=>{entry.symbol=symbol.value;symbol.title=symbol.selectedOptions[0]?.textContent||entry.symbol;changed();});
+  const optionLabel=t=>{const name=t.label||t.name||t.symbol;return name.includes(t.symbol)?name:t.symbol+' · '+name;};
+  const groups=new Map();for(const t of list){if(!groups.has(t.group)){const g=document.createElement('optgroup');g.label=t.group||'기타';groups.set(t.group,g);symbol.append(g);}groups.get(t.group).append(new Option(optionLabel(t),t.symbol));}
+  if(!list.some(t=>t.symbol===entry.symbol))symbol.append(new Option(optionLabel(entry),entry.symbol));
+  symbol.value=entry.symbol;symbol.title=symbol.selectedOptions[0]?.textContent||entry.symbol;symbol.addEventListener('change',()=>{entry.symbol=symbol.value;entry.label=symbol.selectedOptions[0]?.textContent||entry.symbol;symbol.title=symbol.selectedOptions[0]?.textContent||entry.symbol;changed();});
   const weight=document.createElement('input');weight.type='number';weight.min='0.01';weight.max='100';weight.step='any';weight.value=entry.weight;weight.setAttribute('aria-label',(i+1)+'번째 비중 (%)');weight.addEventListener('input',()=>{entry.weight=+weight.value;changed();});
   const remove=document.createElement('button');remove.type='button';remove.className='btn';remove.textContent='삭제';remove.setAttribute('aria-label',(i+1)+'번째 종목 삭제');remove.disabled=entries.length===1;remove.addEventListener('click',()=>{entries.splice(i,1);renderRows();changed();});
   row.append(symbol,weight,remove);box.append(row);
@@ -34,7 +36,7 @@ async function calculate(){
   if(!entries.length||entries.some(e=>!Number.isFinite(e.weight)||e.weight<=0)||Math.abs(entries.reduce((s,e)=>s+e.weight,0)-100)>1e-6)throw Error('종목별 비중을 입력해 합계를 100%로 맞춰 주세요.');
   if(new Set(entries.map(e=>e.symbol)).size!==entries.length)throw Error('같은 종목은 한 번만 선택해 주세요.');
   if(!Number.isFinite(amount)||amount<=0)throw Error('회당 총 투자금은 0보다 큰 숫자로 입력해 주세요.');
-  const assets=await Promise.all(entries.map(async e=>{const j=await load(e.symbol);const item=list.find(t=>t.symbol===e.symbol);return {...j,weight:e.weight,label:item?.label||j.name||e.symbol};}));
+  const assets=await Promise.all(entries.map(async e=>{const j=await load(e.symbol);const item=list.find(t=>t.symbol===e.symbol);return {...j,weight:e.weight,label:item?.label||e.label||j.name||e.symbol};}));
   const fx={};await Promise.all([...new Set(assets.map(a=>a.currency).filter(c=>c!=='KRW'))].map(async c=>{fx[c]=(await load(c==='USD'?'KRW=X':c+'KRW=X')).data;}));
   if(mine!==request)return;
   result=PortfolioEngine.compare({assets,fx,amount,start:$('pf-start').value,end:$('pf-end').value,frequency:$('pf-frequency').value,weekday:+$('pf-weekday').value,monthday:+$('pf-monthday').value,fractional:$('pf-fractional').checked,adjusted:$('pf-adjusted').checked});
@@ -75,7 +77,55 @@ function draw(){
 }
 $('pf-chart').addEventListener('pointermove',e=>{if(!result||!chartGeometry)return;const {lines,pad,W}=chartGeometry,n=lines[0].series.length,x=e.clientX-e.currentTarget.getBoundingClientRect().left,i=Math.max(0,Math.min(n-1,Math.round((x-pad.l)/(W-pad.l-pad.r)*(n-1))));$('pf-hover').textContent=lines[0].series[i].t+' · '+lines.map(l=>l.label+' '+won(l.series[i].value)).join(' / ');});
 $('pf-more').addEventListener('click',()=>{shown+=100;renderTransactions();});
-$('pf-add').addEventListener('click',()=>{const item=list.find(t=>!entries.some(e=>e.symbol===t.symbol));if(item&&entries.length<10){entries.push({symbol:item.symbol,weight:0});renderRows();changed();}});
+let searchTimer,searchVersion=0;
+let adding=false;
+function addAsset(x){
+ const box=$('pf-search-results');
+ if(entries.length>=10){box.textContent='최대 10종목까지 추가할 수 있습니다.';return;}
+ if(entries.some(e=>e.symbol===x.symbol)){box.textContent=x.symbol+'은(는) 이미 추가한 종목입니다.';return;}
+ entries.push({symbol:x.symbol,label:x.name||x.label||x.symbol,weight:0});
+ if(!list.some(t=>t.symbol===x.symbol))list.push({symbol:x.symbol,label:x.name||x.label||x.symbol,group:'검색한 종목'});
+ $('pf-search').value='';++searchVersion;clearTimeout(searchTimer);box.replaceChildren();renderRows();changed();
+ box.textContent=x.symbol+' 추가 완료 · 새 종목의 비중을 입력하고 합계를 100%로 맞춰 주세요.';
+ $('pf-assets').lastElementChild.querySelector('input').focus();
+}
+async function addFromSearch(){
+ if(adding)return;
+ const query=$('pf-search').value.trim(),box=$('pf-search-results');
+ if(!query){const item=list.find(t=>!entries.some(e=>e.symbol===t.symbol));if(item)addAsset(item);return;}
+ const version=++searchVersion;clearTimeout(searchTimer);adding=true;$('pf-add').disabled=true;box.textContent='추가할 종목 확인 중…';
+ try{
+  const j=await API.search(query);if(version!==searchVersion||$('pf-search').value.trim()!==query)return;
+  const normalize=v=>String(v||'').normalize('NFKC').replace(/\s+/g,'').toUpperCase();
+  const exact=j.quotes.filter(x=>normalize(x.symbol)===normalize(query)||normalize(x.name)===normalize(query));
+  const item=exact.length===1?exact[0]:j.quotes.length===1?j.quotes[0]:null;
+  if(item)addAsset(item);
+  else box.textContent=j.quotes.length?'검색 결과가 여러 개입니다. 종목명이나 정확한 티커를 입력한 뒤 검색 결과에서 선택해 주세요.':'검색 결과가 없습니다. 종목명이나 티커를 확인해 주세요.';
+ }catch(e){if(version===searchVersion)box.textContent=e.message;}
+ finally{adding=false;total();}
+}
+$('pf-add').addEventListener('click',addFromSearch);
+$('pf-search').addEventListener('input',()=>{
+ const query=$('pf-search').value.trim(), version=++searchVersion;clearTimeout(searchTimer);
+ const box=$('pf-search-results');box.replaceChildren();if(!query)return;
+ box.textContent='시장 종목 검색 중…';
+ searchTimer=setTimeout(async()=>{
+  try{
+   const j=await API.search(query);if(version!==searchVersion)return;box.replaceChildren();
+   if(j.warning){const p=document.createElement('p');p.className='hint warn';p.textContent=j.warning;box.append(p);}
+   if(!j.quotes.length)box.textContent='검색 결과가 없습니다. 영문명·티커·국내 6자리 코드로 다시 검색해 주세요.';
+   for(const x of j.quotes){
+    const button=document.createElement('button');button.type='button';
+    const name=document.createElement('span');name.textContent=x.name||x.symbol;
+    const code=document.createElement('small');code.textContent=x.symbol+' · '+(x.exchange||x.type||'')+' · 추가';button.append(name,code);
+    const exists=entries.some(e=>e.symbol===x.symbol);button.disabled=exists||entries.length>=10;
+    if(exists)code.textContent=x.symbol+' · 이미 추가됨';
+    button.addEventListener('click',()=>addAsset(x));box.append(button);
+   }
+  }catch(e){if(version===searchVersion)box.textContent=e.message;}
+ },300);
+});
+$('pf-search').addEventListener('keydown',e=>{if(e.isComposing)return;if(e.key==='Escape'){++searchVersion;clearTimeout(searchTimer);$('pf-search-results').replaceChildren();}if(e.key==='Enter'){e.preventDefault();if($('pf-search').value.trim())addFromSearch();}});
 $('pf-calculate').addEventListener('click',()=>{cache.clear();calculate();});
 for(const f of [...fields,'fractional','adjusted'])$('pf-'+f).addEventListener('input',changed);
 async function mode(portfolio){active=portfolio;$('single-mode').hidden=active;$('portfolio-mode').hidden=!active;for(const b of $('dca-kind').querySelectorAll('button'))b.setAttribute('aria-pressed',String((b.dataset.v==='portfolio')===active));save();if(active){try{const index=await API.index();list=index.items.filter(t=>!t.hidden);if(!list.length)throw Error('사용할 수 있는 종목이 없습니다.');renderRows();calculate();}catch(e){$('pf-status').className='hint warn';$('pf-status').textContent='시세 목록을 불러오지 못했습니다: '+e.message;}}}

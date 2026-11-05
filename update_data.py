@@ -99,6 +99,7 @@ def fetch(symbol):
     pick = lambda a, i: a[i] if i < len(a) and a[i] is not None and a[i] > 0 else None
     epoch = datetime(1970, 1, 1, tzinfo=timezone.utc)
     rows = {}
+    estimated_ohlc_dates = []
     for i, t in enumerate(ts):
         cl = pick(close, i)
         if cl is None:
@@ -109,6 +110,9 @@ def fetch(symbol):
         a = pick(adj, i) or cl
         v = vol[i] if i < len(vol) and vol[i] else 0
         d = (epoch + timedelta(seconds=t + off)).strftime("%Y-%m-%d")
+        if (pick(opn, i) is None or pick(high, i) is None or pick(low, i) is None or
+                pick(high, i) < max(o, cl) or pick(low, i) > min(o, cl)):
+            estimated_ohlc_dates.append(d)
         # [날짜, 종가, 수정종가, 시가, 고가, 저가, 거래량]
         rows[d] = [d, round(cl, 4), round(a, 4), round(o, 4), round(h, 4), round(l, 4), int(v)]
     data = [rows[k] for k in sorted(rows)]
@@ -119,6 +123,8 @@ def fetch(symbol):
         "name": meta.get("longName") or meta.get("shortName") or symbol,
         "currency": (meta.get("currency") or "USD").upper(),
         "exchange": meta.get("fullExchangeName") or meta.get("exchangeName") or "",
+        "fetchedAt": datetime.now(timezone.utc).isoformat(),
+        "ohlcEstimatedDates": sorted(set(estimated_ohlc_dates)),
         "data": data,
     }
 

@@ -2,8 +2,10 @@
 
 GitHub Pages로 올리는 웹 버전입니다. 시세는 GitHub Actions가 **매일 두 번 자동으로** 야후 파이낸스에서 받아 `data/` 폴더에 저장하고, 페이지는 그 파일을 읽어 계산합니다.
 
-- 평일 16:10 (한국장 마감 후)
-- 화~토 06:20 (미국장 마감 후)
+- 평일 17:10 (한국 종가 확정 기준 이후)
+- 화~토 07:10 (미국 종가 확정 기준 이후)
+
+현재 [공개 사이트](https://13-23.github.io/dca_winner/)의 자동 검사, 배포, 장애 대응은 [운영 안내](OPERATIONS.md)를 참고하세요.
 
 ## 파일 구성
 
@@ -13,11 +15,17 @@ KORU, 카카오(035720.KS), 네이버(035420.KS), LG생활건강(051900.KS)을 �
 
 신규 종목은 `tickers.json`에 `symbol`, `label`, `group`을 추가합니다. 선택 항목 `aliases` 배열에 별칭을 넣으면 검색에도 사용됩니다. main 브랜치의 종목 목록이 변경되면 시세 수집이 자동 실행됩니다. 수집에 성공한 종목부터 사이트 목록에 표시됩니다.
 
-화면에서 미등록 종목까지 바로 추가하는 후속 기능은 종목 검색 서비스와 서버 측 시세 수집이 필요합니다. GitHub Pages만 유지하려면 종목 추가 요청을 모아 검토 후 목록에 반영하는 방식이 적합합니다. 사용자 브라우저에 GitHub 쓰기 토큰을 저장하지 않습니다.
+‘다른 종목 찾기’는 저장 목록과 전체 시장 검색을 합쳐 표시합니다. 미국 종목·ETF는 Yahoo Finance, 국내 한글명·6자리 코드는 네이버 증권 검색으로 코스피·코스닥을 구분합니다. 검색 제공처가 지원하지 않는 종목은 나오지 않을 수 있습니다. 미등록 종목은 선택 시 Yahoo Finance 일별 시세를 가져와 즉시 계산합니다. 포트폴리오의 ‘다른 종목 찾아 추가’에서도 같은 검색을 사용하며, 최대 10종목의 코드·이름·비중을 브라우저에 저장합니다. 추가 후 비중 합계를 100%로 맞추세요.
+
+GitHub Pages는 기존 정적 파일을 그대로 제공하고, 외부 검색·시세만 `https://dca-winner-market.vercel.app/api/quotes`를 호출합니다. 서버 코드는 `api/quotes.mjs`, 배포 설정은 `vercel.json`입니다. 이 두 파일을 Vercel의 `dca-winner-market` 프로젝트에 배포하면 조회 서비스를 갱신할 수 있습니다. 다른 서비스 주소는 API 초기화 전에 `window.QUOTE_API`로 지정할 수 있습니다. 브라우저에는 GitHub 쓰기 토큰이나 시세 서비스 비밀키를 저장하지 않습니다.
+
+조회 서비스는 정해진 시세 제공처에만 요청하고 요청 시간을 제한합니다. 검색은 5분, 시세는 15분 동안 서버 메모리에 재사용되며 CDN도 5분간 재사용할 수 있습니다. 종가는 실시간 호가가 아니며 종목마다 마지막 거래일이 다릅니다. 제공처 연결 실패 시 저장 종목만 표시한다는 안내를 내고, 외부 시세가 없으면 계산 오류를 표시합니다. 가짜 시세로 대체하지 않습니다. `tickers.json`은 계속 매일 갱신할 기본 종목 관리에 사용합니다.
 
 | 파일 | 하는 일 |
 |---|---|
 | `index.html` | 화면 (적립식 계산기 + 이평선 탭) |
+| `styles.css` | 공통 디자인, 밝은·어두운 테마, 모바일 레이아웃 |
+| `market.js`, `update_market.py` | 시장 보조지표 표시 및 일별 수집 |
 | `tickers.json` | 업데이트할 종목 목록 |
 | `update_data.py` | 시세를 받아 `data/`에 저장하는 스크립트 |
 | `.github/workflows/update-data.yml` | 매일 자동 실행 설정 |
@@ -35,6 +43,40 @@ KORU, 카카오(035720.KS), 네이버(035420.KS), LG생활건강(051900.KS)을 �
 - 입력값과 계산 방식은 브라우저에 저장합니다. 단일 종목 계산과 이평선 차트도 계속 사용할 수 있습니다.
 
 `portfolio.js`는 계산 로직, `portfolio-ui.js`는 화면입니다. 추가 패키지 설치 없이 `node --test tests/*.test.cjs`로 계산 테스트를 실행할 수 있습니다.
+
+## 시장 보조지표
+
+원금·평가금액 차트 아래에서 미국 시장의 공포·탐욕 지수, VIX, 전체 풋/콜비율, VIX9D, VVIX를 확인합니다. 단일 종목과 포트폴리오 화면 모두 같은 최신 자료를 사용합니다. 선택 종목이나 과거 적립 기간에 맞춘 수치가 아니며 계산 결과에도 반영하지 않습니다.
+
+- VIX·VIX9D·VVIX: [Cboe 일별 CSV](https://www.cboe.com/tradable-products/vix/vix-historical-data).
+- 전체 풋/콜비율: [Cboe 당일 전체 상품 옵션 통계](https://www.cboe.com/markets/us/options/market-statistics/daily). 발표 비율과 풋/콜 거래량이 일치하는지 검증합니다. CNN의 5일 평균 또는 주식 전용 비율과 혼용하지 않습니다.
+- 공포·탐욕: [CNN](https://www.cnn.com/markets/fear-and-greed) 직접 수집을 먼저 시도합니다. 불가능하면 [공개 CNN 아카이브](https://github.com/whit3rabbit/fear-greed-data)를 사용하고 화면에 아카이브 출처를 표시합니다.
+- 각 지표의 실제 기준일, 이전 관측값 대비 변화, 출처와 상태를 표시합니다. 추이 선택창은 확보한 최대 90개 관측값을 보여주며 풋/콜비율은 수집이 이어지면서 이력이 누적됩니다.
+- 갱신 실패 시 이전 기준일과 값을 유지하고 오래된 자료로 표시합니다. 5일이 넘은 관측값도 오래된 자료로 취급합니다. 값이 없으면 수집 불가로 표시하며 임의의 점수로 채우지 않습니다.
+
+기존 시세 업데이트 작업이 `update_market.py`를 함께 실행해 `data/market.json`을 갱신합니다. Actions 수동 실행 시 `market_only`를 켜면 보조지표만 갱신합니다. 웹 화면의 새로고침은 저장된 JSON을 다시 읽으며 외부 기관의 실시간 자료를 직접 요청하지 않습니다. 로컬에서는 `python update_market.py`로 수집할 수 있습니다. Python 표준 라이브러리만 사용합니다.
+
+## 시장별 6개월 반등 검증 v2
+
+현재 화면은 S&P 500·나스닥 종합·나스닥100·코스피·코스닥·다우를 각각 자기 지수의 이력으로 분류합니다. 지수를 바꾸면 해당 시장 기준이 자동 적용됩니다. 알려진 ETF는 관련 기준시장을 참고로 연결하되 상품 자체와 동일한 검증이라고 표시하지 않습니다. 미등록 미국 종목과 혼합 포트폴리오는 비교 시장을 직접 선택합니다.
+
+공통 점수는 각 지수의 가격 위치·일봉/이전 완료 주 RSI·20일 실현변동성의 역백분위입니다. VIX·VXN·VKOSPI와 다른 실현변동성이며 미국 VIX/CNN을 코스피 점수로 대체하지 않습니다. 시장마다 과거 1,260개 관측값으로 정규화하고 매년 이전 연도까지만으로 10단계 경계를 만듭니다. 코스피는 현재 이력과 사전 요건상 2009년부터 검증하므로 2008년 금융위기는 포함하지 못합니다.
+
+반등은 **다음 거래일 시가 진입 후 달력상 6개월 안에 종가 +10% 도달 여부**로 정의합니다. 전략 손익은 도달 종가를 확인한 다음 거래일 시가 청산(만기일 도달 시 사전 지정한 만기 종가), 미도달 시 만기 종가 청산으로 계산하며 실패 손익과 밤사이 갭도 포함합니다. +5%/+20% 목표 민감도도 비교합니다.
+
+6개월 최저가는 일별 저가의 최솟값입니다. 최저가 뒤 최대 반등과 +10% 반등 관측은 원래 6개월 창 안에서 계산합니다. 이는 미래 최저가를 알아야 하는 사후 참고치로, 실행 가능한 기대수익과 분리합니다. 최저가가 마지막 날이면 후속 반등 미관측으로 별도 집계합니다. 전략 청산 이후의 가격도 최저가 경로에는 포함될 수 있습니다.
+
+화면에는 단계별 표본 수·비중첩 사례·95% 이동블록 부트스트랩 구간, 만기 손익·최저가 하락·전략 손익, 실제 진입·최저가·청산 사례, 계산 근거, 네 핵심 시장의 공통 기간 비교를 표시합니다. 관측 비율을 확정된 미래 확률로 표현하지 않습니다.
+
+- `POSITION_V2_METHOD.md`: 계산 전 고정한 정의와 검증 규칙.
+- `market_position_v2.py`: 시장별 단계 및 반등 검증. `position.js`: 현재 화면.
+- `data/position-v2.json`: 화면용 요약. `data/position-v2-signals.json`: 월별 신호와 관측 결과.
+- `POSITION_V2_RESULTS.md`: 시장·단계·시기별 결과, 목표 민감도와 공통 기간 비교.
+- v1의 `market_position.py`, `POSITION_METHOD.md`, `POSITION_RESULTS.md`는 이전 연구의 재현용으로 보존합니다. v1과 v2의 다른 모델·기간 정의를 혼합하지 않습니다.
+
+원시 누락값이 보완된 시가·고가·저가는 별도 기록해 연구에서 제외합니다. 파일별 수집 시각으로 미확정 당일봉도 제외합니다. Actions의 `research_only`를 켜면 연구용 지수 6개만 새로 수집하고 재검증합니다.
+
+재계산은 `python market_position_v2.py`이며 Python 표준 라이브러리만 사용합니다. 기존 시세 업데이트 Actions에도 연결되어 있습니다. 가격지수 기준으로 배당·비용·환율 효과를 제외하며, 수정 가능한 역사 자료·결과 기간 중첩·설계에 이미 본 자료가 포함되는 한계가 있습니다.
 
 ## PER · PBR 밸류에이션
 
@@ -54,7 +96,7 @@ github.com 오른쪽 위 **+ → New repository**
 
 ### 2. 파일 올리기
 만든 저장소 화면에서 **uploading an existing file** 링크(또는 **Add file → Upload files**)를 누르고,
-`index.html`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
+`index.html`, `styles.css`, `market.js`, `update_market.py`, `position.js`, `market_position.py`, `market_position_v2.py`, `update_position_prices.py`, `update_position_inputs.py`, `POSITION_METHOD.md`, `POSITION_V2_METHOD.md`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
 
 ### 3. 자동 실행 설정 파일 만들기
 `.github` 폴더는 숨김 폴더라 끌어다 놓기로는 잘 안 올라갑니다. 직접 만드는 게 확실해요.
@@ -73,8 +115,8 @@ github.com 오른쪽 위 **+ → New repository**
 
 ### 5. 웹페이지 켜기
 1. **Settings → Pages**
-2. Source: **Deploy from a branch**, Branch: **main** / **(root)** → **Save**
-3. 2~3분 뒤 같은 화면 위쪽에 주소가 나옵니다: `https://아이디.github.io/invest-tools/`
+2. Source: **GitHub Actions** 선택
+3. `.github/workflows/site.yml`을 포함한 `main`을 배포합니다. 이 저장소에서는 **사이트 검사 및 배포**를 수동 실행할 수도 있습니다. 다른 저장소로 복제할 때는 `scripts/check_production.py`의 사이트 주소를 맞춰 주세요.
 
 이제 그 주소를 폰이나 PC 어디서든 열면 됩니다. 이후로는 아무것도 안 해도 매일 시세가 갱신돼요.
 
