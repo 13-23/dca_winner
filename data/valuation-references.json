@@ -1,0 +1,41 @@
+{
+  "trailing": {
+    "^KS11": {
+      "referencePrice": 6838.04,
+      "per": 11.40,
+      "pbr": 1.70,
+      "asOf": "2026-09-30",
+      "source": "한국거래소 · 국가통계포털",
+      "basis": "2026년 9월 공표 배수와 월말 종가",
+      "sourceUrls": {
+        "PER": "https://kosis.kr/statHtml/statHtml.do?orgId=343&tblId=DT_343_2010_S0033",
+        "PBR": "https://kosis.kr/statHtml/statHtml.do?orgId=343&tblId=DT_343_2010_S0034"
+      }
+    },
+    "^KQ11": {
+      "referencePrice": 855.91,
+      "per": 36.97,
+      "pbr": 1.88,
+      "asOf": "2026-09-30",
+      "source": "한국거래소 · 국가통계포털",
+      "basis": "2026년 9월 공표 배수와 월말 종가",
+      "sourceUrls": {
+        "PER": "https://kosis.kr/statHtml/statHtml.do?orgId=343&tblId=DT_343_2010_S0073",
+        "PBR": "https://kosis.kr/statHtml/statHtml.do?orgId=343&tblId=DT_343_2010_S0074"
+      }
+    }
+  },
+  "forward": {
+    "^GSPC": {
+      "referencePrice": 7720.39,
+      "per": 18.7,
+      "pbr": null,
+      "asOf": "2026-10-29",
+      "source": "FactSet",
+      "basis": "12개월 선행 이익 · 2026-10-30 보고서",
+      "sourceUrls": {
+        "선행 PER": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_103026.pdf#page=16"
+      }
+    }
+  }
+}
