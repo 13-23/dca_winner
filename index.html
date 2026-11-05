@@ -18,6 +18,7 @@
   <nav class="tabs" role="tablist" aria-label="도구">
     <button type="button" role="tab" id="tab-btn-dca" aria-controls="tab-dca" aria-selected="true">적립식 평단 계산기</button>
     <button type="button" role="tab" id="tab-btn-ma" aria-controls="tab-ma" aria-selected="false">이평선 지지·저항</button>
+    <button type="button" role="tab" id="tab-btn-value" aria-controls="tab-value" aria-selected="false" tabindex="-1">지수 PER·PBR</button>
   </nav>
   <div class="seg seg-sm theme-seg" role="group" aria-label="화면 테마" id="theme">
     <button type="button" data-v="light">밝게</button>
@@ -330,10 +331,61 @@
       </aside>
     </div>
   </div><!-- /tab-ma -->
+  <div id="tab-value" role="tabpanel" aria-labelledby="tab-btn-value" class="tabpanel" hidden>
+    <header class="tool-intro">
+      <h1>지수 PER·PBR</h1>
+      <p>지수 종가와 배수별 환산 가격을 한 차트에서 비교합니다.</p>
+    </header>
+    <div class="grid">
+      <section class="panel" aria-labelledby="iv-controls">
+        <h2 id="iv-controls">지수와 가격 밴드</h2>
+        <div class="field">
+          <label for="iv-index">비교할 지수</label>
+          <select id="iv-index">
+            <option value="^GSPC">S&amp;P 500</option>
+            <option value="^IXIC">나스닥 종합</option>
+            <option value="^NDX">나스닥 100</option>
+            <option value="^KS11">코스피</option>
+            <option value="^KQ11">코스닥</option>
+            <option value="^DJI">다우존스</option>
+          </select>
+        </div>
+        <div class="field"><label for="iv-range">차트 기간</label><select id="iv-range"><option value="3">3개월</option><option value="12" selected>1년</option><option value="36">3년</option><option value="60">5년</option></select></div>
+        <div class="field"><label class="check"><input id="iv-per-on" type="checkbox" checked><span>PER 가격 밴드</span></label><label for="iv-per-levels">PER 배수</label><input id="iv-per-levels" placeholder="예: 15, 20, 25"></div>
+        <div class="field"><label class="check"><input id="iv-pbr-on" type="checkbox" checked><span>PBR 가격 밴드</span></label><label for="iv-pbr-levels">PBR 배수</label><input id="iv-pbr-levels" placeholder="예: 1, 2, 3"></div>
+        <p class="hint">배수는 쉼표로 최대 5개를 입력하세요. 비우면 기준 배수의 80%, 100%, 120%를 사용합니다.</p>
+        <p id="iv-band-error" class="hint warn" role="status" hidden></p>
+        <details id="iv-input">
+          <summary>지수 기준값 직접 입력</summary>
+          <form id="iv-form" class="stack index-value-form">
+            <p class="hint">같은 날짜의 지수값과 배수를 입력하세요. 저장한 값은 선택한 지수에만 적용됩니다.</p>
+            <div class="field"><label for="iv-date">기준일</label><input id="iv-date" type="date" required></div>
+            <div class="field"><label for="iv-price">기준 지수값</label><input id="iv-price" type="number" step="any" min="0.000001" required></div>
+            <div class="field"><label for="iv-per">기준 PER</label><input id="iv-per" type="number" step="any" min="0.000001"></div>
+            <div class="field"><label for="iv-pbr">기준 PBR</label><input id="iv-pbr" type="number" step="any" min="0.000001"></div>
+            <div class="field"><label for="iv-source">출처</label><input id="iv-source" maxlength="200" required></div>
+            <div class="row"><button type="submit" class="btn">기준값 적용</button><button type="button" class="btn" id="iv-reset">입력값 지우기</button></div>
+            <p class="hint" id="iv-input-status" role="status"></p>
+          </form>
+        </details>
+        <p class="hint"><a href="https://data.krx.co.kr/?code=4" target="_blank" rel="noopener">한국거래소 지수 PER·PBR 자료</a></p>
+      </section>
+      <section class="panel" aria-labelledby="iv-title">
+        <h2 id="iv-title">지수 종가와 환산 가격</h2>
+        <div class="index-value-metrics" id="iv-metrics"></div>
+        <p class="hint" id="iv-status" role="status"></p>
+        <div class="legend index-value-legend"><span style="--c:var(--accent)">지수 종가</span><span style="--c:var(--ma5)">PER (긴 점선)</span><span style="--c:var(--ma200)">PBR (짧은 점선)</span></div>
+        <div id="iv-chart" class="index-value-chart"></div>
+        <p class="hint">기준 지수값 ÷ 기준 배수로 EPS·BPS를 환산하고, 각각 원하는 PER·PBR 배수를 곱해 가격선을 그립니다. 선택한 기준일의 EPS·BPS를 차트 전체에 고정하므로 과거 실제 배수 추이는 별도 데이터가 필요합니다.</p>
+        <div class="tablewrap"><table><thead><tr><th scope="col">가격선</th><th scope="col">환산 지수값</th></tr></thead><tbody id="iv-bands"></tbody></table></div>
+      </section>
+    </div>
+  </div>
   </main>
 </div>
 
 <script src="valuation.js"></script>
+<script src="index-valuation.js" defer></script>
 <script src="market.js" defer></script>
 <script src="position.js?v=20261105-logic" defer></script>
 <!--API--><script>
@@ -935,8 +987,9 @@ try {
 function save() { try { localStorage.setItem(LS, JSON.stringify({ sym: st.sym, tf: st.tf, range: st.range, on: [...st.on], sort: st.sort, log: st.log, dim: st.dim, bb: st.bb, rsi: st.rsi, perBands: st.perBands, pbrBands: st.pbrBands, perLevels: st.perLevels, pbrLevels: st.pbrLevels })); } catch (e) {} }
 
 /* ---------- 탭 ---------- */
+const tabs = ["dca", "ma", "value"];
 function showTab(which) {
-  for (const t of ["dca", "ma"]) {
+  for (const t of tabs) {
     $("tab-btn-" + t).setAttribute("aria-selected", t === which ? "true" : "false");
     $("tab-btn-" + t).tabIndex = t === which ? 0 : -1;
     $("tab-" + t).hidden = t !== which;
@@ -944,15 +997,14 @@ function showTab(which) {
   try { localStorage.setItem(LS_TAB, which); } catch (e) {}
   if (which === "ma" && !st.loaded) { st.loaded = true; loadSym(st.sym); }
   else if (which === "ma") requestAnimationFrame(draw);
+  if (which === "value") window.dispatchEvent(new Event("indexvaluationopen"));
 }
-$("tab-btn-dca").addEventListener("click", () => showTab("dca"));
-$("tab-btn-ma").addEventListener("click", () => showTab("ma"));
+for (const tab of tabs) $("tab-btn-" + tab).addEventListener("click", () => showTab(tab));
 document.querySelector('.tabs').addEventListener('keydown', e => {
   if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
   e.preventDefault();
-  const tabs = ['dca', 'ma'];
   const current = tabs.findIndex(t => $("tab-btn-" + t).getAttribute('aria-selected') === 'true');
-  const next = e.key === 'Home' ? 0 : e.key === 'End' ? 1 : (current + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+  const next = e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (current + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
   showTab(tabs[next]);
   $("tab-btn-" + tabs[next]).focus();
 });
@@ -1515,7 +1567,7 @@ window.addEventListener("themechange", () => draw());
 /* ---------- 시작 ---------- */
 renderChips();
 let startTab = "dca"; try { startTab = localStorage.getItem(LS_TAB) || "dca"; } catch (e) {}
-showTab(startTab === "ma" ? "ma" : "dca");
+showTab(tabs.includes(startTab) ? startTab : "dca");
 })();
 </script>
 <script src="portfolio.js"></script>

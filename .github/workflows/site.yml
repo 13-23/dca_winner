@@ -44,7 +44,7 @@ jobs:
         id: package
         run: |
           mkdir _site
-          cp index.html styles.css market.js position.js portfolio.js portfolio-ui.js valuation.js POSITION_V2_METHOD.md POSITION_V2_RESULTS.md _site/
+          cp index.html styles.css market.js position.js portfolio.js portfolio-ui.js valuation.js index-valuation.js POSITION_V2_METHOD.md POSITION_V2_RESULTS.md _site/
           cp -r data _site/
           revision=$(git rev-parse HEAD)
           printf '{"revision":"%s"}\n' "$revision" > _site/release.json
