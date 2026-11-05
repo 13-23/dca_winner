@@ -351,6 +351,7 @@
           </select>
         </div>
         <div class="field"><label for="iv-range">차트 기간</label><select id="iv-range"><option value="3">3개월</option><option value="12" selected>1년</option><option value="36">3년</option><option value="60">5년</option></select></div>
+        <div class="field"><label for="iv-basis">배수 기준</label><select id="iv-basis"><option value="trailing">공표 실적·장부가치</option><option value="forward">선행 추정치</option></select></div>
         <div class="field"><label class="check"><input id="iv-per-on" type="checkbox" checked><span>PER 가격 밴드</span></label><label for="iv-per-levels">PER 배수</label><input id="iv-per-levels" placeholder="예: 15, 20, 25"></div>
         <div class="field"><label class="check"><input id="iv-pbr-on" type="checkbox" checked><span>PBR 가격 밴드</span></label><label for="iv-pbr-levels">PBR 배수</label><input id="iv-pbr-levels" placeholder="예: 1, 2, 3"></div>
         <p class="hint">배수는 쉼표로 최대 5개를 입력하세요. 비우면 기준 배수의 80%, 100%, 120%를 사용합니다.</p>
@@ -358,7 +359,7 @@
         <details id="iv-input">
           <summary>지수 기준값 직접 입력</summary>
           <form id="iv-form" class="stack index-value-form">
-            <p class="hint">같은 날짜의 지수값과 배수를 입력하세요. 저장한 값은 선택한 지수에만 적용됩니다.</p>
+            <p class="hint">같은 날짜의 지수값과 배수를 입력하세요. 선행 추정치는 출처에 추정 기간도 적어 주세요. 저장한 값은 선택한 지수와 배수 기준에 적용됩니다.</p>
             <div class="field"><label for="iv-date">기준일</label><input id="iv-date" type="date" required></div>
             <div class="field"><label for="iv-price">기준 지수값</label><input id="iv-price" type="number" step="any" min="0.000001" required></div>
             <div class="field"><label for="iv-per">기준 PER</label><input id="iv-per" type="number" step="any" min="0.000001"></div>
@@ -374,9 +375,10 @@
         <h2 id="iv-title">지수 종가와 환산 가격</h2>
         <div class="index-value-metrics" id="iv-metrics"></div>
         <p class="hint" id="iv-status" role="status"></p>
+        <p class="hint" id="iv-sources" hidden></p>
         <div class="legend index-value-legend"><span style="--c:var(--accent)">지수 종가</span><span style="--c:var(--ma5)">PER (긴 점선)</span><span style="--c:var(--ma200)">PBR (짧은 점선)</span></div>
         <div id="iv-chart" class="index-value-chart"></div>
-        <p class="hint">기준 지수값 ÷ 기준 배수로 EPS·BPS를 환산하고, 각각 원하는 PER·PBR 배수를 곱해 가격선을 그립니다. 선택한 기준일의 EPS·BPS를 차트 전체에 고정하므로 과거 실제 배수 추이는 별도 데이터가 필요합니다.</p>
+        <p class="hint">기준 지수값 ÷ 기준 배수로 EPS·BPS를 환산하고, 원하는 PER·PBR 배수를 곱합니다. 선행 PER은 예상 이익, 선행 PBR은 예상 순자산 기준입니다. 각 밴드는 해당 기준일의 EPS·BPS를 차트 전체에 고정합니다.</p>
         <div class="tablewrap"><table><thead><tr><th scope="col">가격선</th><th scope="col">환산 지수값</th></tr></thead><tbody id="iv-bands"></tbody></table></div>
       </section>
     </div>
@@ -385,7 +387,7 @@
 </div>
 
 <script src="valuation.js"></script>
-<script src="index-valuation.js" defer></script>
+<script src="index-valuation.js?v=2" defer></script>
 <script src="market.js" defer></script>
 <script src="position.js?v=20261105-logic" defer></script>
 <!--API--><script>

@@ -7,15 +7,28 @@
   const number = new Intl.NumberFormat("ko-KR", {maximumFractionDigits: 2});
   const datePattern = /^\d{4}-\d{2}-\d{2}$/;
   let manual = {}, days = [], automatic = null, request = 0, loaded = false;
-  let snapshotRequest, warning = "";
+  let snapshotRequest, referenceRequest, references = {}, warning = "";
 
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey));
     if (saved && typeof saved === "object" && !Array.isArray(saved)) manual = saved;
   } catch {}
 
+  function manualKey() {
+    const symbol = $("index").value;
+    return $("basis").value === "forward" ? symbol + ":forward" : symbol;
+  }
+
   function snapshot() {
-    return manual[$("index").value] || automatic;
+    const symbol = $("index").value, basis = $("basis").value;
+    return manual[manualKey()] || references[basis]?.[symbol] || (basis === "trailing" ? automatic : null);
+  }
+
+  function readJson(path) {
+    return fetch(path, {cache: "no-cache"}).then(response => {
+      if (!response.ok) throw Error("지수 배수 자료를 불러오지 못했습니다.");
+      return response.json();
+    });
   }
 
   function draw(series, bands) {
@@ -43,8 +56,9 @@
 
   function render() {
     const last = days.at(-1), base = snapshot();
+    const prefix = $("basis").value === "forward" ? "선행 " : "";
     const metrics = [["최근 종가", last?.[1], ""]];
-    metrics.push(["기준 PER", base?.per, "배"], ["기준 PBR", base?.pbr, "배"]);
+    metrics.push([prefix + "PER", base?.per, "배"], [prefix + "PBR", base?.pbr, "배"]);
     $("metrics").replaceChildren(...metrics.map(([label, value, unit]) => {
       const cell = document.createElement("div");
       const title = document.createElement("span"), data = document.createElement("strong");
@@ -58,6 +72,19 @@
       ? (base.status === "stale" ? "이전 자료 · " : "") + base.asOf + " · " + base.source + (base.basis ? " · " + base.basis : "")
       : "지수 배수 자료 없음. 기준값을 입력하면 가격선을 표시합니다.";
     $("status").textContent = warning || priceNote + sourceNote;
+    const sources = $("sources");
+    sources.replaceChildren();
+    for (const [label, address] of Object.entries(base?.sourceUrls || {})) {
+      if (typeof address !== "string" || !address.startsWith("https://")) continue;
+      if (sources.childNodes.length) sources.append(" · ");
+      const link = document.createElement("a");
+      link.href = address;
+      link.target = "_blank";
+      link.rel = "noopener";
+      link.textContent = label + " 원문";
+      sources.append(link);
+    }
+    sources.hidden = !sources.childNodes.length;
     let bands = [];
     const errors = [];
     for (const type of ["per", "pbr"]) {
@@ -71,7 +98,7 @@
     bands = bands.filter(line => model.positive(line.price));
     $("band-error").textContent = errors.join(" ");
     $("band-error").hidden = !errors.length;
-    const rows = bands.length ? bands.map(line => [line.type + " " + number.format(line.multiple) + "배", number.format(line.price)]) : [["표시할 가격선 없음", "—"]];
+    const rows = bands.length ? bands.map(line => [prefix + line.type + " " + number.format(line.multiple) + "배", number.format(line.price)]) : [["표시할 가격선 없음", "—"]];
     $("bands").replaceChildren(...rows.map(values => {
       const row = document.createElement("tr");
       for (const value of values) {
@@ -105,17 +132,19 @@
     render();
     $("form").querySelector("button[type=submit]").disabled = true;
     $("reset").disabled = true;
-    snapshotRequest ||= fetch("data/valuations.json", {cache: "no-cache"}).then(response => {
-      if (!response.ok) throw Error("지수 배수 자료를 불러오지 못했습니다.");
-      return response.json();
-    }).catch(() => {
+    snapshotRequest ||= readJson("data/valuations.json").catch(() => {
       snapshotRequest = null;
       return null;
     });
-    const [prices, snapshots] = await Promise.allSettled([window.API.getChart(symbol), snapshotRequest]);
+    referenceRequest ||= readJson("data/valuation-references.json").catch(() => {
+      referenceRequest = null;
+      return null;
+    });
+    const [prices, snapshots, published] = await Promise.allSettled([window.API.getChart(symbol), snapshotRequest, referenceRequest]);
     if (current !== request) return;
     days = prices.status === "fulfilled" ? prices.value.data.filter(row => datePattern.test(row[0]) && model.positive(row[1])) : [];
     automatic = snapshots.status === "fulfilled" ? snapshots.value?.items?.find(item => item.symbol === symbol && model.positive(item.referencePrice)) : null;
+    if (published.status === "fulfilled" && published.value) references = published.value;
     warning = days.length ? "" : "지수 시세를 불러오지 못했습니다. 지수를 다시 선택해 주세요.";
     $("form").querySelector("button[type=submit]").disabled = false;
     $("reset").disabled = false;
@@ -139,17 +168,22 @@
       $("input-status").textContent = "기준일, 출처, 양수인 기준 지수값과 PER 또는 PBR을 입력해 주세요.";
       return;
     }
-    manual[$("index").value] = {asOf, source, referencePrice, per: model.positive(per) ? per : null, pbr: model.positive(pbr) ? pbr : null, basis: "직접 입력"};
+    manual[manualKey()] = {asOf, source, referencePrice, per: model.positive(per) ? per : null, pbr: model.positive(pbr) ? pbr : null, basis: "직접 입력"};
     $("input-status").textContent = save() ? "이 지수의 기준값을 저장했습니다." : "이 화면에 적용했습니다. 브라우저에 저장하지 못했습니다.";
     render();
   });
   $("reset").addEventListener("click", () => {
-    delete manual[$("index").value];
+    delete manual[manualKey()];
     $("input-status").textContent = save() ? "직접 입력값을 지웠습니다." : "이 화면에서 지웠습니다. 브라우저 저장값은 수정하지 못했습니다.";
     fillForm();
     render();
   });
   $("index").addEventListener("change", load);
+  $("basis").addEventListener("change", () => {
+    $("input-status").textContent = "";
+    fillForm();
+    render();
+  });
   for (const field of ["range", "per-on", "pbr-on", "per-levels", "pbr-levels"]) $(field).addEventListener("input", render);
   new ResizeObserver(() => { if (loaded && !tab.hidden) render(); }).observe($("chart"));
   window.addEventListener("indexvaluationopen", () => { if (!loaded) load(); });
