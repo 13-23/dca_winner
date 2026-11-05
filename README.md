@@ -68,6 +68,8 @@ KORU, 카카오(035720.KS), 네이버(035420.KS), LG생활건강(051900.KS)을 �
 - `POSITION_V2_RESULTS.md`: 시장·단계·시기별 결과, 목표 민감도와 공통 기간 비교.
 - v1의 `market_position.py`, `POSITION_METHOD.md`, `POSITION_RESULTS.md`는 이전 연구의 재현용으로 보존합니다. v1과 v2의 다른 모델·기간 정의를 혼합하지 않습니다.
 
+원시 누락값이 보완된 시가·고가·저가는 별도 기록해 연구에서 제외합니다. 파일별 수집 시각으로 미확정 당일봉도 제외합니다. Actions의 `research_only`를 켜면 연구용 지수 6개만 새로 수집하고 재검증합니다.
+
 재계산은 `python market_position_v2.py`이며 Python 표준 라이브러리만 사용합니다. 기존 시세 업데이트 Actions에도 연결되어 있습니다. 가격지수 기준으로 배당·비용·환율 효과를 제외하며, 수정 가능한 역사 자료·결과 기간 중첩·설계에 이미 본 자료가 포함되는 한계가 있습니다.
 
 ## PER · PBR 밸류에이션
@@ -88,7 +90,7 @@ github.com 오른쪽 위 **+ → New repository**
 
 ### 2. 파일 올리기
 만든 저장소 화면에서 **uploading an existing file** 링크(또는 **Add file → Upload files**)를 누르고,
-`index.html`, `styles.css`, `market.js`, `update_market.py`, `position.js`, `market_position.py`, `market_position_v2.py`, `update_position_inputs.py`, `POSITION_METHOD.md`, `POSITION_V2_METHOD.md`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
+`index.html`, `styles.css`, `market.js`, `update_market.py`, `position.js`, `market_position.py`, `market_position_v2.py`, `update_position_prices.py`, `update_position_inputs.py`, `POSITION_METHOD.md`, `POSITION_V2_METHOD.md`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
 
 ### 3. 자동 실행 설정 파일 만들기
 `.github` 폴더는 숨김 폴더라 끌어다 놓기로는 잘 안 올라갑니다. 직접 만드는 게 확실해요.

@@ -676,7 +676,7 @@ function run() {
     $("restag").hidden = true; $("resnote").textContent = ""; $("txbody").innerHTML = ""; $("txcount").textContent = ""; $("more").hidden = true; drawChart(); return;
   }
   const cur = r.a.currency;
-  $("restag").hidden = false; $("restag").textContent = `${r.lastT} 종가 기준`;
+  $("restag").hidden = false; $("restag").textContent = `${r.lastT} 일별 시세 기준`;
   const plA = r.valueA - r.costA, rtA = r.costA ? plA / r.costA : 0;
   const plK = r.valueK - r.costK, rtK = r.costK ? plK / r.costK : 0;
   let h = "";
@@ -1188,7 +1188,7 @@ function renderSide() {
   const L = latest(); if (!L) return;
   const chg = L.price - L.prev, cr = L.prev ? chg / L.prev : 0;
   const cc = chg > 0 ? "up" : chg < 0 ? "down" : "";
-  $("ma-quote").innerHTML = `<span class="nm"></span><span class="px">${nf2.format(L.price)}</span><span class="meta"><span class="${cc}">${chg > 0 ? "▲" : chg < 0 ? "▼" : ""} ${nf2.format(Math.abs(chg))} (${pct(cr)})</span> · ${L.t} 종가</span>`;
+  $("ma-quote").innerHTML = `<span class="nm"></span><span class="px">${nf2.format(L.price)}</span><span class="meta"><span class="${cc}">${chg > 0 ? "▲" : chg < 0 ? "▼" : ""} ${nf2.format(Math.abs(chg))} (${pct(cr)})</span> · ${L.t} 일별 시세</span>`;
   $("ma-quote").querySelector(".nm").textContent = NAMES[st.sym] || st.sym;
 
   const valid = L.items.filter(x => x.val != null);
