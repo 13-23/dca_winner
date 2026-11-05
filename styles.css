@@ -348,6 +348,15 @@ tbody tr:hover { background: var(--accent-soft); }
 .position-observations { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px 24px; margin: 0 0 14px; }
 .position-observations dt { color: var(--muted); font-size: 12px; }
 .position-observations dd { margin: 4px 0 0; font-size: 23px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.position-observations small { display: block; font-size: 11px; color: var(--muted); line-height: 1.7; margin-top: 5px; }
+.position-market-field { max-width: 540px; }
+.position-hindsight { border-top: 1px solid var(--line); padding-top: 20px; }
+.position-hindsight h3 { font-size: 14px; margin: 0 0 14px; }
+.position-cases-table { min-width: 850px; }
+.position-cases-table small, .position-table small { display: block; font-size: 11px; color: var(--muted); font-weight: 400; }
+.position-cases-table tbody th { position: static; }
+.position-report-links { margin: 0; font-size: 13px; }
+.position-rule { line-height: 1.8; }
 .position-panel details { font-size: 13px; }
 .position-panel summary { cursor: pointer; font-weight: 600; min-height: 32px; }
 .position-panel details > *:not(summary) { margin-top: 14px; }

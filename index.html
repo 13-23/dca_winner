@@ -423,6 +423,7 @@ function syncForm(modeChanged) {
 /* ---------- 종목 불러오기 ---------- */
 async function selectSymbol(sym, label) {
   sym = sym.trim().toUpperCase(); if (!sym) return;
+  window.dispatchEvent(new CustomEvent("positionmarketcontext", { detail: { symbol: sym } }));
   st.sym = sym; const my = ++st.req;
   $("assetinfo").innerHTML = `<b></b><small>시세 불러오는 중…</small>`; $("assetinfo").querySelector("b").textContent = label || sym;
   document.querySelector("#single-mode > .stack:last-child").classList.add("loading");

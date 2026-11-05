@@ -31,7 +31,7 @@
     const heading = 'market-heading-'+index, select = 'market-series-'+index;
     panel.setAttribute('aria-labelledby', heading);
     panel.removeAttribute('aria-label');
-    panel.innerHTML = `<div class="market-heading"><h2 id="${heading}">시장 보조지표</h2><button class="btn market-refresh" type="button" ${loading?'disabled':''}>${loading?'불러오는 중…':'새로고침'}</button></div>
+    panel.innerHTML = `<div class="market-heading"><h2 id="${heading}">미국 시장 참고지표</h2><button class="btn market-refresh" type="button" ${loading?'disabled':''}>${loading?'불러오는 중…':'새로고침'}</button></div>
       <div class="market-context"><p class="hint">미국 주식시장 기준입니다. 선택 종목·적립 기간과 별개인 최신 일별 자료이며 실시간 시세는 아닙니다.</p>
       <p class="hint market-updated" role="status" aria-live="polite">${error?'저장된 지표 파일을 읽지 못했습니다. 잠시 후 새로고침해 주세요.':snapshot?.updated?'자료 수집: '+escape(new Intl.DateTimeFormat('ko-KR',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Seoul'}).format(new Date(snapshot.updated)))+' KST · 표의 기준일은 미국 시장 날짜입니다.':'지표를 불러오는 중…'}</p></div>
       <div class="tablewrap" role="region" tabindex="0" aria-label="시장 보조지표 표. 좁은 화면에서는 좌우로 스크롤할 수 있습니다."><table class="market-table"><thead><tr><th scope="col">지표</th><th scope="col">최근 값 / 이전 대비</th><th scope="col">기준일 / 출처</th><th scope="col">자료 상태</th></tr></thead><tbody>${items.map(item => {

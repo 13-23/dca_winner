@@ -50,21 +50,25 @@ KORU, 카카오(035720.KS), 네이버(035420.KS), LG생활건강(051900.KS)을 �
 
 기존 시세 업데이트 작업이 `update_market.py`를 함께 실행해 `data/market.json`을 갱신합니다. Actions 수동 실행 시 `market_only`를 켜면 보조지표만 갱신합니다. 웹 화면의 새로고침은 저장된 JSON을 다시 읽으며 외부 기관의 실시간 자료를 직접 요청하지 않습니다. 로컬에서는 `python update_market.py`로 수집할 수 있습니다. Python 표준 라이브러리만 사용합니다.
 
-## 시장 위치 연구 — 실험적 10단계
+## 시장별 6개월 반등 검증 v2
 
-바닥·발목·무릎·허벅지·허리·가슴·목·입·눈·정수리의 10단계를 표시하고, 단계를 누르면 해당 단계에서 출발한 과거 수익률과 추가 하락을 확인할 수 있습니다. 현재 단계는 미국 S&P 500 기준이며 선택한 개별 종목의 매매 신호가 아닙니다.
+현재 화면은 S&P 500·나스닥 종합·나스닥100·코스피·코스닥·다우를 각각 자기 지수의 이력으로 분류합니다. 지수를 바꾸면 해당 시장 기준이 자동 적용됩니다. 알려진 ETF는 관련 기준시장을 참고로 연결하되 상품 자체와 동일한 검증이라고 표시하지 않습니다. 미등록 미국 종목과 혼합 포트폴리오는 비교 시장을 직접 선택합니다.
 
-`POSITION_METHOD.md`는 분석 전에 고정한 규칙입니다. 가격·일봉/이전 완료 주 RSI·VIX 상대 위치를 동일 비중으로 합산하고, 매년 그 이전 점수로 경계를 정합니다. 외부 보조지표는 최소 1거래일 지연합니다. 다음 거래일 시가 진입과 미래 126거래일 종가 수익률로 순차 평가합니다. 공포탐욕 확장형은 2024년 이후 공통 날짜에서 별도로 비교하며, 풋/콜은 이력이 부족해 점수에 포함하지 않습니다.
+공통 점수는 각 지수의 가격 위치·일봉/이전 완료 주 RSI·20일 실현변동성의 역백분위입니다. VIX·VXN·VKOSPI와 다른 실현변동성이며 미국 VIX/CNN을 코스피 점수로 대체하지 않습니다. 시장마다 과거 1,260개 관측값으로 정규화하고 매년 이전 연도까지만으로 10단계 경계를 만듭니다. 코스피는 현재 이력과 사전 요건상 2009년부터 검증하므로 2008년 금융위기는 포함하지 못합니다.
 
-첫 검증에서 낮은 단계가 이후 수익률 우위를 보인다는 가설은 지지되지 않았습니다. 화면에 판별력 미확인을 표시하며, 관측된 상승 비율을 미래 확률로 표현하지 않습니다. 월별 표본도 수익률 기간이 겹치고 현재 확보한 수정 가능한 과거 자료를 사용하므로 실제 당시 발표본을 이용한 실거래 검증과 다릅니다.
+반등은 **다음 거래일 시가 진입 후 달력상 6개월 안에 종가 +10% 도달 여부**로 정의합니다. 전략 손익은 도달 종가를 확인한 다음 거래일 시가 청산(만기일 도달 시 사전 지정한 만기 종가), 미도달 시 만기 종가 청산으로 계산하며 실패 손익과 밤사이 갭도 포함합니다. +5%/+20% 목표 민감도도 비교합니다.
 
-- `update_position_inputs.py`: Cboe VIX 전체 이력과 2021년 이후 CNN 공개 아카이브 확보. 원자료 해시·출처·수집 상태 보존.
-- `market_position.py`: 표준 라이브러리만으로 재현 가능한 순차 검증 및 최신 단계 계산.
-- `data/position.json`: 화면용 요약. `data/position-signals.json`: 기본형 월별 신호와 결과.
-- `POSITION_RESULTS.md`: 단계별·비교군별·방향별·시기별 전체 결과.
-- `position.js`: 실험 표시, 현재 단계, 단계별 관측 통계와 계산 근거.
+6개월 최저가는 일별 저가의 최솟값입니다. 최저가 뒤 최대 반등과 +10% 반등 관측은 원래 6개월 창 안에서 계산합니다. 이는 미래 최저가를 알아야 하는 사후 참고치로, 실행 가능한 기대수익과 분리합니다. 최저가가 마지막 날이면 후속 반등 미관측으로 별도 집계합니다. 전략 청산 이후의 가격도 최저가 경로에는 포함될 수 있습니다.
 
-재계산: `python update_position_inputs.py`, `python market_position.py`. 기존 시세 업데이트 Actions에도 연결되어 있습니다. 과거 수익률 계산은 배당·수수료·세금을 제외합니다. 추가 하락은 진입 후 63거래일 최저 **종가**를 진입 **시가**와 비교한 손실이며 MDD나 장중 최저 손실과 다릅니다.
+화면에는 단계별 표본 수·비중첩 사례·95% 이동블록 부트스트랩 구간, 만기 손익·최저가 하락·전략 손익, 실제 진입·최저가·청산 사례, 계산 근거, 네 핵심 시장의 공통 기간 비교를 표시합니다. 관측 비율을 확정된 미래 확률로 표현하지 않습니다.
+
+- `POSITION_V2_METHOD.md`: 계산 전 고정한 정의와 검증 규칙.
+- `market_position_v2.py`: 시장별 단계 및 반등 검증. `position.js`: 현재 화면.
+- `data/position-v2.json`: 화면용 요약. `data/position-v2-signals.json`: 월별 신호와 관측 결과.
+- `POSITION_V2_RESULTS.md`: 시장·단계·시기별 결과, 목표 민감도와 공통 기간 비교.
+- v1의 `market_position.py`, `POSITION_METHOD.md`, `POSITION_RESULTS.md`는 이전 연구의 재현용으로 보존합니다. v1과 v2의 다른 모델·기간 정의를 혼합하지 않습니다.
+
+재계산은 `python market_position_v2.py`이며 Python 표준 라이브러리만 사용합니다. 기존 시세 업데이트 Actions에도 연결되어 있습니다. 가격지수 기준으로 배당·비용·환율 효과를 제외하며, 수정 가능한 역사 자료·결과 기간 중첩·설계에 이미 본 자료가 포함되는 한계가 있습니다.
 
 ## PER · PBR 밸류에이션
 
@@ -84,7 +88,7 @@ github.com 오른쪽 위 **+ → New repository**
 
 ### 2. 파일 올리기
 만든 저장소 화면에서 **uploading an existing file** 링크(또는 **Add file → Upload files**)를 누르고,
-`index.html`, `styles.css`, `market.js`, `update_market.py`, `position.js`, `market_position.py`, `update_position_inputs.py`, `POSITION_METHOD.md`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
+`index.html`, `styles.css`, `market.js`, `update_market.py`, `position.js`, `market_position.py`, `market_position_v2.py`, `update_position_inputs.py`, `POSITION_METHOD.md`, `POSITION_V2_METHOD.md`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
 
 ### 3. 자동 실행 설정 파일 만들기
 `.github` 폴더는 숨김 폴더라 끌어다 놓기로는 잘 안 올라갑니다. 직접 만드는 게 확실해요.
