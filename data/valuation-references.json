@@ -26,6 +26,17 @@
     }
   },
   "forward": {
+    "^KS11": {
+      "referencePrice": 5730.74,
+      "per": 4.14,
+      "pbr": 1.09,
+      "asOf": "2026-10-30",
+      "source": "미래에셋증권 리서치 · FnGuide",
+      "basis": "12개월 선행 추정 · 11월 2일자 보고 수치를 10월 30일 종가로 환산",
+      "sourceUrls": {
+        "선행 PER·PBR": "https://t.me/eqmirae/3274"
+      }
+    },
     "^GSPC": {
       "referencePrice": 7720.39,
       "per": 18.7,
