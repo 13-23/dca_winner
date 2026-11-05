@@ -48,6 +48,9 @@
           <p class="hint">매번 납입금을 비중대로 나눠 매수합니다. 기존 보유분은 매도하거나 리밸런싱하지 않습니다.</p>
           <div class="pf-row-label hint" aria-hidden="true"><span>종목</span><span>비중 (%)</span><span></span></div>
           <div id="pf-assets"></div>
+          <div class="field"><label for="pf-search">다른 종목 찾아 추가</label><input type="search" id="pf-search" placeholder="종목명 · AAPL · 005930" autocomplete="off" aria-describedby="pf-search-hint"></div>
+          <p class="hint" id="pf-search-hint">나스닥·뉴욕·코스피·코스닥 종목 검색 · 최대 10종목</p>
+          <div id="pf-search-results" class="asset-search-results" aria-live="polite"></div>
           <div class="row"><button type="button" class="btn" id="pf-add">종목 추가</button><strong id="pf-total" aria-live="polite"></strong></div>
         </section>
         <section class="panel">
@@ -341,11 +344,17 @@ window.API = (() => {
     if (!r.ok) throw new Error("data/index.json을 찾지 못했습니다. GitHub Actions에서 '시세 업데이트'를 한 번 실행했는지 확인해 주세요.");
     return r.json();
   }).catch(e => { idx = null; throw e; }));
+  const remote = async (action, value) => {
+    const base = window.QUOTE_API || "https://dca-winner-market.vercel.app/api/quotes";
+    const r = await fetch(base + "?action=" + action + "&" + (action === "chart" ? "symbol" : "q") + "=" + encodeURIComponent(value));
+    if (!r.ok) { let j; try { j = await r.json(); } catch {} throw Error(j?.error || "전체 시장 조회에 연결하지 못했습니다. 잠시 후 다시 검색해 주세요."); }
+    return r.json();
+  };
   return {
     web: true, index,
     async getChart(sym) {
       const list = await index();
-      if (!list.items.some(x => x.symbol === sym)) throw new Error(`'${sym}'은(는) 업데이트 목록에 없는 종목입니다. tickers.json에 추가하면 다음 업데이트부터 볼 수 있어요.`);
+      if (!list.items.some(x => x.symbol === sym)) return remote("chart", sym);
       const r = await fetch(file(sym), { cache: "no-cache" });
       if (!r.ok) throw new Error("시세 파일을 불러오지 못했습니다 (" + r.status + ")");
       return r.json();
@@ -353,12 +362,21 @@ window.API = (() => {
     async search(q) {
       const list = await index();
       const norm = v => (v || "").normalize("NFKC").toLowerCase().replace(/\s+/g, "");
+      const original = q.trim();
       q = norm(q);
       if (!q) return { quotes: [] };
       const fields = x => [x.symbol, x.symbol.split(".")[0], x.label, x.name, ...(x.aliases || [])].map(norm);
       const score = x => fields(x).some(v => v === q) ? 0 : fields(x).some(v => v.startsWith(q)) ? 1 : 2;
       const hit = x => !x.hidden && fields(x).some(v => v.includes(q));
-      return { quotes: list.items.filter(hit).sort((a, b) => score(a) - score(b)).slice(0, 12).map(x => ({ symbol: x.symbol, name: x.label || x.name, type: x.group, exchange: x.currency })) };
+      const local = list.items.filter(hit).sort((a, b) => score(a) - score(b)).map(x => ({ symbol: x.symbol, name: x.label || x.name, type: x.group, exchange: x.currency }));
+      try {
+        const external = await remote("search", original);
+        const symbols = new Set(local.map(x => x.symbol));
+        return { quotes: [...local, ...(external.quotes || []).filter(x => !symbols.has(x.symbol))].slice(0, 20) };
+      } catch (e) {
+        if (!local.length) throw e;
+        return { quotes: local.slice(0, 20), warning: "전체 시장 연결 지연 · 저장된 종목만 표시합니다." };
+      }
     }
   };
 })();
@@ -434,7 +452,7 @@ async function selectSymbol(sym, label) {
     const info = $("assetinfo"); info.innerHTML = "<b></b><small></small><small></small>";
     info.children[0].textContent = (label && label !== sym ? label + " · " : "") + (a.name || sym);
     info.children[1].textContent = `${sym} · ${a.currency} · ${a.data[0].t} ~ ${a.data[a.data.length - 1].t}`;
-    info.children[2].textContent = sym.startsWith("^") ? "지수는 직접 살 수 없어 지수 값을 1주 가격으로 보고 계산합니다." : (a.exchange || "");
+    info.children[2].textContent = sym.startsWith("^") ? "지수는 직접 살 수 없어 지수 값을 1주 가격으로 보고 계산합니다." : (a.exchange || "") + (a.source && a.fetchedAt ? " · " + a.source + " · 조회 " + new Date(a.fetchedAt).toLocaleString("ko-KR") : "");
     const first = a.data[0].t, last = a.data[a.data.length - 1].t;
     if (!$("start").value || $("start").value < first || $("start").value > last) $("start").value = first;
     if (!$("end").value || $("end").value > last || $("end").value < first || st.endWasLatest) { $("end").value = last; }
@@ -468,7 +486,8 @@ $("q").addEventListener("input", () => {
       const j = await API.search(q);
       if ($("q").value.trim() !== q) return;
       const box = $("results"); box.innerHTML = "";
-      if (!j.quotes.length) { box.innerHTML = '<p class="hint">등록된 종목에서 찾지 못했습니다. 종목명이나 코드로 다시 검색해 주세요.</p>'; return; }
+      if (!j.quotes.length) { box.innerHTML = '<p class="hint">검색 결과가 없습니다. 영문명·티커 또는 국내 6자리 코드로 다시 검색해 주세요.</p>'; return; }
+      if (j.warning) { const p = document.createElement("p"); p.className = "hint warn"; p.textContent = j.warning; box.append(p); }
       for (const x of j.quotes) {
         const b = document.createElement("button"); b.type = "button";
         const n = document.createElement("span"); n.textContent = x.name || x.symbol;
@@ -487,7 +506,7 @@ $("q").addEventListener("keydown", async e => {
     const j = await API.search(q);
     if ($("q").value.trim() !== q) return;
     if (j.quotes.length) pickCustom(j.quotes[0].symbol, j.quotes[0].name);
-    else { $("results").innerHTML = '<p class="hint">등록된 종목에서 찾지 못했습니다. 종목명이나 코드로 다시 검색해 주세요.</p>'; }
+    else { $("results").innerHTML = '<p class="hint">검색 결과가 없습니다. 영문명·티커 또는 국내 6자리 코드로 다시 검색해 주세요.</p>'; }
   } catch (e) { $("results").textContent = e.message; }
 });
 function pickCustom(sym, name) {
@@ -829,7 +848,7 @@ async function buildWebList() {
     const o = document.createElement("option"); o.value = x.symbol; o.textContent = x.label || x.name || x.symbol; groups.get(x.group).append(o);
   }
   $("q").placeholder = "종목명·코드 검색 (예: 카카오, 035420, KORU)";
-  $("q-hint").textContent = `업데이트되는 ${list.items.filter(x => !x.hidden).length}개 종목을 한글명·영문명·코드로 검색합니다. 결과를 누르거나 Enter로 첫 결과를 선택하세요.`;
+  $("q-hint").textContent = "나스닥·뉴욕·코스피·코스닥 종목을 검색합니다. 한글명·영문명·티커·국내 6자리 코드로 찾아보세요. 새 종목의 시세는 선택할 때 조회합니다.";
   const up = $("data-updated");
   if (up && list.updated) { up.hidden = false; up.textContent = `시세 업데이트: ${list.updated} (매일 자동)`; }
   return list;

@@ -385,3 +385,11 @@ tbody tr:hover { background: var(--accent-soft); }
   .market-table thead th:nth-child(4) { width: 100px; }
   .market-table th, .market-table td { padding: 12px; }
 }
+
+/* Shared market search follows the existing single-asset result list. */
+.asset-search-results{display:grid;gap:6px;margin-block:8px 16px;max-height:320px;overflow:auto}
+.asset-search-results button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--sheet);color:var(--ink);font:inherit;cursor:pointer;overflow-wrap:anywhere}
+.asset-search-results button:hover{background:var(--accent-soft)}
+.asset-search-results small{color:var(--muted)}
+.asset-search-results button:disabled{opacity:.6;cursor:default}
+.pf-row > button{white-space:nowrap;padding-inline:8px}
