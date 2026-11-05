@@ -40,6 +40,20 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_*.py'
           node --test tests/*.test.cjs
+      - name: Probe public valuation sources
+        if: github.event_name == 'pull_request'
+        run: |
+          python - <<'PY'
+          from urllib.request import urlopen, Request
+          from urllib.parse import urlencode
+          for group in ('02', '03'):
+              try:
+                  req = Request('https://data.krx.co.kr/comm/bldAttendant/getJsonData.cmd', data=urlencode(dict(bld='dbms/MDC/STAT/standard/MDCSTAT00701', trdDd='20261104', idxIndMidclssCd=group, locale='ko_KR')).encode(), headers={'Referer':'https://data.krx.co.kr/contents/MDC/MDI/mdiLoader/index.cmd', 'User-Agent':'Mozilla/5.0'})
+                  with urlopen(req, timeout=12) as r:
+                      print(group, r.status, r.read(600).decode(errors='replace'))
+              except Exception as error:
+                  print(group, type(error).__name__, str(error))
+          PY
       - name: 공개 파일 묶기
         id: package
         run: |
