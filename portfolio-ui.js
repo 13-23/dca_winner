@@ -17,8 +17,9 @@ function renderRows(){
  entries.forEach((entry,i)=>{
   const row=document.createElement('div');row.className='pf-row';
   const symbol=document.createElement('select');symbol.setAttribute('aria-label',(i+1)+'번째 종목');
-  const groups=new Map();for(const t of list){if(!groups.has(t.group)){const g=document.createElement('optgroup');g.label=t.group||'기타';groups.set(t.group,g);symbol.append(g);}groups.get(t.group).append(new Option(t.label||t.name||t.symbol,t.symbol));}
-  if(!list.some(t=>t.symbol===entry.symbol))symbol.append(new Option(entry.label||entry.symbol,entry.symbol));
+  const optionLabel=t=>{const name=t.label||t.name||t.symbol;return name.includes(t.symbol)?name:t.symbol+' · '+name;};
+  const groups=new Map();for(const t of list){if(!groups.has(t.group)){const g=document.createElement('optgroup');g.label=t.group||'기타';groups.set(t.group,g);symbol.append(g);}groups.get(t.group).append(new Option(optionLabel(t),t.symbol));}
+  if(!list.some(t=>t.symbol===entry.symbol))symbol.append(new Option(optionLabel(entry),entry.symbol));
   symbol.value=entry.symbol;symbol.title=symbol.selectedOptions[0]?.textContent||entry.symbol;symbol.addEventListener('change',()=>{entry.symbol=symbol.value;entry.label=symbol.selectedOptions[0]?.textContent||entry.symbol;symbol.title=symbol.selectedOptions[0]?.textContent||entry.symbol;changed();});
   const weight=document.createElement('input');weight.type='number';weight.min='0.01';weight.max='100';weight.step='any';weight.value=entry.weight;weight.setAttribute('aria-label',(i+1)+'번째 비중 (%)');weight.addEventListener('input',()=>{entry.weight=+weight.value;changed();});
   const remove=document.createElement('button');remove.type='button';remove.className='btn';remove.textContent='삭제';remove.setAttribute('aria-label',(i+1)+'번째 종목 삭제');remove.disabled=entries.length===1;remove.addEventListener('click',()=>{entries.splice(i,1);renderRows();changed();});
@@ -85,6 +86,7 @@ function addAsset(x){
  entries.push({symbol:x.symbol,label:x.name||x.label||x.symbol,weight:0});
  if(!list.some(t=>t.symbol===x.symbol))list.push({symbol:x.symbol,label:x.name||x.label||x.symbol,group:'검색한 종목'});
  $('pf-search').value='';++searchVersion;clearTimeout(searchTimer);box.replaceChildren();renderRows();changed();
+ box.textContent=x.symbol+' 추가 완료 · 새 종목의 비중을 입력하고 합계를 100%로 맞춰 주세요.';
  $('pf-assets').lastElementChild.querySelector('input').focus();
 }
 async function addFromSearch(){
