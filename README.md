@@ -50,6 +50,22 @@ KORU, 카카오(035720.KS), 네이버(035420.KS), LG생활건강(051900.KS)을 �
 
 기존 시세 업데이트 작업이 `update_market.py`를 함께 실행해 `data/market.json`을 갱신합니다. Actions 수동 실행 시 `market_only`를 켜면 보조지표만 갱신합니다. 웹 화면의 새로고침은 저장된 JSON을 다시 읽으며 외부 기관의 실시간 자료를 직접 요청하지 않습니다. 로컬에서는 `python update_market.py`로 수집할 수 있습니다. Python 표준 라이브러리만 사용합니다.
 
+## 시장 위치 연구 — 실험적 10단계
+
+바닥·발목·무릎·허벅지·허리·가슴·목·입·눈·정수리의 10단계를 표시하고, 단계를 누르면 해당 단계에서 출발한 과거 수익률과 추가 하락을 확인할 수 있습니다. 현재 단계는 미국 S&P 500 기준이며 선택한 개별 종목의 매매 신호가 아닙니다.
+
+`POSITION_METHOD.md`는 분석 전에 고정한 규칙입니다. 가격·일봉/이전 완료 주 RSI·VIX 상대 위치를 동일 비중으로 합산하고, 매년 그 이전 점수로 경계를 정합니다. 외부 보조지표는 최소 1거래일 지연합니다. 다음 거래일 시가 진입과 미래 126거래일 종가 수익률로 순차 평가합니다. 공포탐욕 확장형은 2024년 이후 공통 날짜에서 별도로 비교하며, 풋/콜은 이력이 부족해 점수에 포함하지 않습니다.
+
+첫 검증에서 낮은 단계가 이후 수익률 우위를 보인다는 가설은 지지되지 않았습니다. 화면에 판별력 미확인을 표시하며, 관측된 상승 비율을 미래 확률로 표현하지 않습니다. 월별 표본도 수익률 기간이 겹치고 현재 확보한 수정 가능한 과거 자료를 사용하므로 실제 당시 발표본을 이용한 실거래 검증과 다릅니다.
+
+- `update_position_inputs.py`: Cboe VIX 전체 이력과 2021년 이후 CNN 공개 아카이브 확보. 원자료 해시·출처·수집 상태 보존.
+- `market_position.py`: 표준 라이브러리만으로 재현 가능한 순차 검증 및 최신 단계 계산.
+- `data/position.json`: 화면용 요약. `data/position-signals.json`: 기본형 월별 신호와 결과.
+- `POSITION_RESULTS.md`: 단계별·비교군별·방향별·시기별 전체 결과.
+- `position.js`: 실험 표시, 현재 단계, 단계별 관측 통계와 계산 근거.
+
+재계산: `python update_position_inputs.py`, `python market_position.py`. 기존 시세 업데이트 Actions에도 연결되어 있습니다. 과거 수익률 계산은 배당·수수료·세금을 제외합니다. 추가 하락은 진입 후 63거래일 최저 **종가**를 진입 **시가**와 비교한 손실이며 MDD나 장중 최저 손실과 다릅니다.
+
 ## PER · PBR 밸류에이션
 
 이평선 화면에서 최신 종가를 기준으로 환산한 PER·PBR과 고정 가격 밴드를 볼 수 있습니다. PER 밴드는 `기준 지수값 ÷ 기준 PER × 목표 PER`, PBR 밴드는 `기준 지수값 ÷ 기준 PBR × 목표 PBR`로 계산합니다. 기준일의 EPS/BPS를 고정한 참고 가격선이며, 과거 실제 PER/PBR 시계열이나 적정가격 판정이 아닙니다.
@@ -68,7 +84,7 @@ github.com 오른쪽 위 **+ → New repository**
 
 ### 2. 파일 올리기
 만든 저장소 화면에서 **uploading an existing file** 링크(또는 **Add file → Upload files**)를 누르고,
-`index.html`, `styles.css`, `market.js`, `update_market.py`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
+`index.html`, `styles.css`, `market.js`, `update_market.py`, `position.js`, `market_position.py`, `update_position_inputs.py`, `POSITION_METHOD.md`, `portfolio.js`, `portfolio-ui.js`, `valuation.js`, `tickers.json`, `update_data.py`, `update_valuations.py`, `valuation_sources.py`, `README.md`, `.nojekyll` 파일를 끌어다 놓은 뒤 **Commit changes**.
 
 ### 3. 자동 실행 설정 파일 만들기
 `.github` 폴더는 숨김 폴더라 끌어다 놓기로는 잘 안 올라갑니다. 직접 만드는 게 확실해요.

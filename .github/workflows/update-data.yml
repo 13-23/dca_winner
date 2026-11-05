@@ -42,11 +42,14 @@ jobs:
       - name: 시장 위치 연구용 이력 받기
         run: python update_position_inputs.py
 
+      - name: 시장 위치 순차 검증 갱신
+        run: python market_position.py
+
       - name: 바뀐 시세 저장
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898341+github-actions[bot]@users.noreply.github.com"
-          git add data
+          git add data POSITION_RESULTS.md
           if git diff --cached --quiet; then
             echo "바뀐 시세 없음"
           else

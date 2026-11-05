@@ -332,6 +332,41 @@ tbody tr:hover { background: var(--accent-soft); }
 .market-panel details { color: var(--muted); font-size: 13px; }
 .market-panel summary { cursor: pointer; min-height: 32px; font-weight: 600; }
 .market-panel details p { margin: 10px 0 0; max-width: 74ch; }
+.position-current { display: flex; gap: 8px; flex-wrap: wrap; align-items: baseline; margin: 0; font-size: 22px; }
+.position-current strong { font-family: var(--font-display); font-size: 30px; }
+.position-current > span { font-size: 14px; color: var(--muted); margin-left: auto; }
+.position-evidence { background: var(--accent-soft); border-radius: 8px; padding: 16px; font-size: 13px; line-height: 1.8; }
+.position-evidence strong { font-size: 14px; }
+.position-evidence p { margin: 8px 0 0; max-width: 75ch; }
+.position-scale { display: grid; grid-template-columns: repeat(10,minmax(0,1fr)); gap: 4px; }
+.position-scale button { display: grid; gap: 2px; align-content: center; justify-items: center; min-height: 76px; border: 1px solid var(--line); border-radius: 6px; background: var(--sheet); padding: 8px 2px; font-size: 12px; cursor: pointer; }
+.position-scale button > span { color: var(--muted); font-size: 11px; }
+.position-scale button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+.position-scale .is-current { border-color: var(--accent); }
+.position-scale small { font-size: 10px; color: var(--accent); }
+.position-observation h3 { font-size: 14px; margin: 0 0 14px; }
+.position-observations { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px 24px; margin: 0 0 14px; }
+.position-observations dt { color: var(--muted); font-size: 12px; }
+.position-observations dd { margin: 4px 0 0; font-size: 23px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.position-panel details { font-size: 13px; }
+.position-panel summary { cursor: pointer; font-weight: 600; min-height: 32px; }
+.position-panel details > *:not(summary) { margin-top: 14px; }
+.position-panel .tablewrap:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.position-table { min-width: 740px; }
+.position-table tbody th, .position-feature-table tbody th { position: static; text-align: left; color: var(--ink); }
+.position-feature-table { min-width: 580px; }
+.position-feature-table td { font-family: var(--font-body); }
+@media (max-width:1100px) {
+  .position-scale { grid-template-columns: repeat(5,minmax(0,1fr)); }
+  .position-scale button { min-height: 64px; }
+}
+@media (max-width:620px) {
+  .position-current { font-size: 18px; }
+  .position-current strong { font-size: 26px; }
+  .position-evidence { padding: 14px; }
+  .position-observations dd { font-size: 20px; }
+  .position-observations { gap: 16px; }
+}
 @media (max-width:620px) {
   .market-heading h2 { font-size: 16px; }
   .market-table { min-width: 580px; width: 580px; table-layout: fixed; }
