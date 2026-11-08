@@ -1,5 +1,6 @@
 """Check the public release and the data services used by the calculator."""
 import json
+import hashlib
 import os
 import time
 from datetime import date, datetime, timedelta, timezone
@@ -31,6 +32,16 @@ def check():
     study = json.loads(get(SITE + 'data/position-v2.json?v=' + revision))
     if study.get('version') != 'research-v2' or not all(m.get('latest') for m in study['markets'].values()):
         raise ValueError('Market position study is unavailable')
+    drawdown = json.loads(get(SITE + 'data/drawdown.json?v=' + revision))
+    ndx_raw = get(SITE + 'data/_NDX.json?v=' + revision)
+    if drawdown.get('version') != 'drawdown-v1' or not drawdown.get('views', {}).get('20'):
+        raise ValueError('Drawdown study is unavailable')
+    if drawdown.get('sourceSha256') != hashlib.sha256(ndx_raw).hexdigest():
+        raise ValueError('Drawdown study does not match published Nasdaq-100 source prices')
+    if drawdown['asOf'] > json.loads(ndx_raw)['data'][-1][0]:
+        raise ValueError('Drawdown study uses a date after the published source prices')
+    if 'tab-btn-drawdown' not in page or b'drawdown-v1' not in get(SITE + 'drawdown-ui.js?v=' + revision):
+        raise ValueError('Drawdown tab assets are missing')
     search = json.loads(get(API + '?action=search&q=PSQ'))
     if not any(row['symbol'] == 'PSQ' for row in search['quotes']):
         raise ValueError('Market search did not return PSQ')

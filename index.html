@@ -20,6 +20,7 @@
     <button type="button" role="tab" id="tab-btn-ma" aria-controls="tab-ma" aria-selected="false">이평선 지지·저항</button>
     <button type="button" role="tab" id="tab-btn-value" aria-controls="tab-value" aria-selected="false" tabindex="-1">지수 PER·PBR</button>
     <button type="button" role="tab" id="tab-btn-tv" aria-controls="tab-tv" aria-selected="false" tabindex="-1">TradingView 차트</button>
+    <button type="button" role="tab" id="tab-btn-drawdown" aria-controls="tab-drawdown" aria-selected="false" tabindex="-1">하락·회복 분석</button>
   </nav>
   <div class="seg seg-sm theme-seg" role="group" aria-label="화면 테마" id="theme">
     <button type="button" data-v="light">밝게</button>
@@ -406,6 +407,21 @@
       <p id="tv-status" class="hint" role="status" hidden></p>
       <p class="hint"><a id="tv-open" href="https://kr.tradingview.com/symbols/KRX-KOSPI/" target="_blank" rel="noopener">TradingView에서 열기</a></p>
     </section>
+  </div>
+  <div id="tab-drawdown" role="tabpanel" aria-labelledby="tab-btn-drawdown" class="tabpanel" hidden>
+    <header class="tool-intro"><h1>하락·회복 분석</h1><p>나스닥100이 과거에 얼마나 자주, 깊게, 오래 하락했는지 확인합니다. 많이 하락한 가격과 펀더멘털 저평가는 서로 다릅니다.</p></header>
+    <section class="panel dd-controls"><div class="field"><label for="dd-window">통계 기간</label><select id="dd-window"><option value="20">최근 20년</option><option value="10">최근 10년</option><option value="all">전체 가용 이력</option></select></div><div class="field"><label for="dd-level">자세히 볼 고점 대비 낙폭</label><select id="dd-level"><option value="5">−5%</option><option value="10" selected>−10%</option><option value="15">−15%</option><option value="20">−20%</option><option value="30">−30%</option></select></div><button class="btn" type="button" id="dd-retry">새로 불러오기</button></section>
+    <p class="hint" id="dd-status" role="status" aria-live="polite">탭을 열면 관측 통계를 불러옵니다.</p>
+    <p id="dd-boundary" class="hint warn" hidden></p>
+    <div id="dd-content" class="stack" hidden>
+      <section class="panel"><h2>현재의 기술적 위치</h2><div class="kpis" id="dd-current"></div><p class="hint" id="dd-source"></p><p class="hint">펀더멘털 저평가 점수는 제공하지 않습니다. 나스닥100의 검증된 PER·PBR 역사 자료가 없어 가격 위치와 분리했습니다. 아래 값은 회복일·매수 승률의 예측이 아닙니다.</p></section>
+      <section class="panel"><h2>고점 대비 낙폭 이력</h2><div class="dd-chartbox" id="dd-chartbox"><canvas id="dd-chart" aria-label="나스닥100 일별 종가의 누적 고점 대비 낙폭"></canvas></div><p class="hint" id="dd-hover">차트 위에서 움직이면 날짜와 낙폭을 볼 수 있습니다.</p></section>
+      <section class="panel"><h2>하락 단계별 빈도와 고점 회복</h2><p class="hint">같은 고점을 회복하기 전까지는 하나의 사건입니다. 단계별 사건은 겹칠 수 있어 합산하지 않습니다. 고점은 표시 기간 이전의 가용 가격까지 반영합니다.</p><div class="tablewrap"><table><thead><tr><th>낙폭 최초 도달</th><th>기간 내 신규 사건</th><th>연평균</th><th>기간 전 진입·이월</th><th>해당 낙폭 이하 체류일 비중</th><th>완료 / 진행</th><th>고점 회복 중앙값</th><th>완료 구간 평균</th><th>완료 구간 최장</th><th>검열 보정 중앙값</th></tr></thead><tbody id="dd-frequency"></tbody></table></div><p class="hint">회복 기간은 각 낙폭 단계에 처음 도달한 날부터 이전 고점을 회복하기까지의 거래일입니다. 완료 통계는 완료 사건만, 검열 보정 중앙값은 진행 중 사건의 관측 길이도 반영한 Kaplan–Meier 추정입니다. 중앙값을 추정할 수 없으면 —로 표시하며 현재 회복 예정일을 뜻하지 않습니다.</p></section>
+      <section class="panel"><h2>이동평균선 이탈은 별도 사건입니다</h2><div class="tablewrap"><table><thead><tr><th>기준</th><th>신규 이탈</th><th>선 아래 체류일 비중</th><th>유효 거래일</th><th>완료 / 진행</th><th>완료 중앙값</th><th>완료 평균</th><th>완료 최장</th></tr></thead><tbody id="dd-ma"></tbody></table></div><p class="hint">종가가 선 아래로 내려간 첫날부터 선 이상으로 마감한 날 전까지 셉니다. 하루 회복 뒤 재이탈도 새 구간입니다. 60주선은 완료된 59주 종가와 해당일 종가로 계산합니다. 기간 전 진입·초기 관측 부족 구간은 신규 횟수와 기간 통계에서 제외합니다. 선 회복은 이전 고점·매수가 회복과 다릅니다.</p></section>
+      <section class="panel"><h2 id="dd-outcome-title">비슷한 낙폭 이후의 실제 분포</h2><p class="hint">단계 최초 도달을 확인한 뒤 다음 거래일 종가를 진입 기준으로 삼습니다. 같은 분석 기간의 신규 사건을 사용하고, 각 보유 기간 안에서 앞선 사례의 관측 창과 겹치는 진입은 제외합니다. 이는 특정 매도 전략의 검증이나 미래 수익 확률이 아닙니다.</p><div class="tablewrap"><table><thead><tr><th>이후 기간</th><th>유효 사건</th><th>관측 미완료 제외</th><th>겹침 제외</th><th>수익률 중앙값</th><th>과거 10~90백분위</th><th>손실 비율</th><th>진입 후 최악의 추가 종가낙폭</th></tr></thead><tbody id="dd-forward"></tbody></table></div><p class="hint">3·6·12개월은 달력 기준입니다. 원자료가 만기 날짜까지 도달한 사례만 사용합니다. 통화 기준 종가 수익률이며 배당·환율·세금·수수료를 제외합니다. 과거 백분위는 미래 예측구간이 아니며, 표본이 적으면 해석에 특히 주의해야 합니다. 레버리지 ETF의 결과로 대신 사용할 수 없습니다.</p></section>
+      <section class="panel"><h2>실제 사건과 계산기 연결</h2><p class="hint">최종 낙폭·저점·고점 회복일은 사후에 관측한 결과이며 진입 판단에 쓰지 않았습니다. 진행 중 사건의 최종 결과는 아직 알 수 없습니다. 계산기로 보낼 기간을 고르면 종목·금액·주기를 바꿔 직접 비교할 수 있습니다.</p><div class="tablewrap"><table><thead><tr><th>최초 도달일</th><th>직전 고점</th><th>해당 사건의 관측 최저 낙폭</th><th>고점 회복일</th><th>관측 거래일</th><th>구분</th></tr></thead><tbody id="dd-events"></tbody></table></div><div class="field"><label for="dd-event-select">계산기로 보낼 사건</label><select id="dd-event-select"></select></div><div class="row"><button class="btn" type="button" id="dd-single">단일 종목 계산기로</button><button class="btn" type="button" id="dd-portfolio">포트폴리오 계산기로</button></div><p class="hint">기간은 최초 도달일~고점 회복일(진행 중이면 최신일)로 전달합니다. 다른 종목을 섞으면 공통 데이터 기간으로 조정될 수 있고, 기존 적립 조건을 사용하므로 위의 일시 투자 통계와 결과가 다릅니다.</p></section>
+      <details class="panel"><summary>연도별 신규 횟수와 계산 방법</summary><div class="tablewrap"><table><thead><tr><th>연도</th><th>신규 최초 도달 사건</th></tr></thead><tbody id="dd-annual"></tbody></table></div><p class="hint">첫해·마지막 해는 부분 연도일 수 있습니다. 분석 기간 전에 시작한 미회복 사건은 별도 이월 항목으로 표시합니다. 가격 이력 시작 전의 고점은 알 수 없으며, 최근 20년만 보면 닷컴 붕괴 진입 시점이 포함되지 않습니다.</p><p class="hint"><a href="DRAWDOWN_METHOD.md" target="_blank" rel="noopener">분석 방법·제한 보기</a></p></details>
+    </div>
   </div>
 </main>
 </div>
@@ -933,6 +949,15 @@ async function buildWebList() {
   return list;
 }
 
+window.addEventListener("drawdowncalculator", async e => {
+  const d = e.detail; if (!d || d.mode !== "single") return;
+  $("preset").value = "^NDX";
+  await selectSymbol("^NDX", "나스닥 100");
+  if (!st.asset || st.sym !== "^NDX") return;
+  $("start").value = d.start; $("end").value = d.end;
+  st.endWasLatest = d.end === st.asset.data.at(-1).t; syncForm(); run();
+});
+
 /* ---------- 시작 ---------- */
 (async () => {
   $("mday").value = "1";
@@ -1013,7 +1038,7 @@ try {
 function save() { try { localStorage.setItem(LS, JSON.stringify({ sym: st.sym, tf: st.tf, range: st.range, on: [...st.on], sort: st.sort, log: st.log, dim: st.dim, bb: st.bb, rsi: st.rsi, perBands: st.perBands, pbrBands: st.pbrBands, perLevels: st.perLevels, pbrLevels: st.pbrLevels })); } catch (e) {} }
 
 /* ---------- 탭 ---------- */
-const tabs = ["dca", "ma", "value", "tv"];
+const tabs = ["dca", "ma", "value", "tv", "drawdown"];
 let tradingViewKey = "";
 function showTradingView() {
   if ($("tab-tv").hidden) return;
@@ -1069,6 +1094,7 @@ function showTab(which) {
   else if (which === "ma") requestAnimationFrame(draw);
   if (which === "value") window.dispatchEvent(new Event("indexvaluationopen"));
   if (which === "tv") showTradingView();
+  if (which === "drawdown") window.dispatchEvent(new Event("drawdownopen"));
 }
 for (const tab of tabs) $("tab-btn-" + tab).addEventListener("click", () => showTab(tab));
 document.querySelector('.tabs').addEventListener('keydown', e => {
@@ -1643,5 +1669,6 @@ showTab(tabs.includes(startTab) ? startTab : "dca");
 </script>
 <script src="portfolio.js"></script>
 <script src="portfolio-ui.js?v=20261105-psq2"></script>
+<script src="drawdown-ui.js" defer></script>
 </body>
 </html>
