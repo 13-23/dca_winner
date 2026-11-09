@@ -57,8 +57,9 @@
   function render() {
     const last = days.at(-1), base = snapshot();
     const prefix = $("basis").value === "forward" ? "선행 " : "";
+    const normalized = model.evaluate(base, last?.[1]);
     const metrics = [["최근 종가", last?.[1], ""]];
-    metrics.push([prefix + "PER", base?.per, "배"], [prefix + "PBR", base?.pbr, "배"]);
+    metrics.push([prefix + "PER · 최근 종가 환산", normalized.per, "배"], [prefix + "PBR · 최근 종가 환산", normalized.pbr, "배"]);
     $("metrics").replaceChildren(...metrics.map(([label, value, unit]) => {
       const cell = document.createElement("div");
       const title = document.createElement("span"), data = document.createElement("strong");
@@ -72,6 +73,17 @@
       ? (base.status === "stale" ? "이전 자료 · " : "") + base.asOf + " · " + base.source + (base.basis ? " · " + base.basis : "")
       : "지수 배수 자료 없음. 기준값을 입력하면 가격선을 표시합니다.";
     $("status").textContent = warning || priceNote + sourceNote;
+    const provenance = [];
+    if (base) {
+      provenance.push(manual[manualKey()] ? "직접 입력" : base.estimated ? "자동 수집 · 제공처 추정치" : "공개 기준 자료");
+      provenance.push("출처 기준 지수값 " + number.format(base.referencePrice) + " · PER " + (model.positive(base.per) ? number.format(base.per) + "배" : "없음") + " · PBR " + (model.positive(base.pbr) ? number.format(base.pbr) + "배" : "없음"));
+      if (base.bookValueAsOf) provenance.push("장부가 기준 " + base.bookValueAsOf);
+      if (last && model.positive(base.referencePrice)) provenance.push("출처 기준값과 최근 종가 차이 " + number.format((last[1] / base.referencePrice - 1) * 100) + "% · 동일 EPS·BPS를 가정해 위 배수를 환산했습니다");
+    }
+    $("provenance").textContent = provenance.join(" · ");
+    $("provenance").hidden = !base;
+    $("scenario-note").textContent = "가격 시나리오: 빈 배수 칸은 출처 기준 배수의 80%·100%·120%입니다. 같은 기준 가격에서 환산하므로 기본 PER·PBR 선은 겹칩니다. 두 개의 독립적인 저평가 근거나 역사적 적정가 밴드가 아닙니다. 직접 배수를 입력해 가정을 바꿀 수 있습니다.";
+
     const sources = $("sources");
     sources.replaceChildren();
     for (const [label, address] of Object.entries(base?.sourceUrls || {})) {

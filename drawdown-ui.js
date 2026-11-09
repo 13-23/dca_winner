@@ -12,6 +12,7 @@ function render(){
  if(!data)return;const {view,level}=selected(),c=data.current;
  try{localStorage.setItem('drawdown-view-v1',JSON.stringify({window:$('dd-window').value,level:$('dd-level').value}));}catch(e){}
  $('dd-content').hidden=false;
+ $('dd-quick').hidden=false;$('dd-quick').textContent='나스닥100 · '+data.asOf+' | 고점 대비 '+pct(c.drawdown)+' | 60주선 대비 '+pct(c.gap60w)+' · 가격 위치이며 저평가 판정은 아닙니다.';
  $('dd-boundary').hidden=!level.carriedIn;$('dd-boundary').textContent=level.carriedIn?'기간 시작 전에 이미 −'+level.level+'%에 진입한 미회복 사건 '+level.carriedIn+'건은 아래 신규 횟수·회복기간·이후 성과의 표본에 포함되지 않습니다. 실제 사건 표의 이월 행과 전체 가용 이력도 확인해 주세요.':'';
  const cards=[['확보된 이력의 고점 대비 낙폭',pct(c.drawdown),'고점일 '+c.peakDate],['고점 미회복 연속 기간',days(c.underwaterDays),'종가가 고점 아래였던 관측 일수'],['200일선 대비 거리',pct(c.gap200),'선 회복은 고점 회복과 다릅니다'],['60주선 대비 거리',pct(c.gap60w),'현재 주는 해당일 종가까지 반영'],['현재 낙폭 이하였던 과거 비중',view.ranks.drawdown.percentile==null?'—':nf.format(view.ranks.drawdown.percentile)+'%',view.ranks.drawdown.n.toLocaleString()+'개 과거 거래일 · 현재일 제외'],['최근 21일 실현변동성',rate(c.volatility21),'일별 수익률 표준편차 · 연율화']];
  $('dd-current').innerHTML=cards.map(([label,value,sub])=>'<div class="kpi"><span class="lbl">'+esc(label)+'</span><span class="val">'+esc(value)+'</span><span class="sub">'+esc(sub)+'</span></div>').join('');
@@ -44,13 +45,49 @@ function draw(){
 async function load(force=false){
  if(loading)return;if(data&&!force){render();return;}loading=true;$('dd-status').textContent='확정 종가의 하락·회복 통계를 불러오는 중…';$('dd-status').className='hint';
  try{const r=await fetch('data/drawdown.json',{cache:'no-cache'});if(!r.ok)throw Error('통계 파일 조회 실패 ('+r.status+')');const j=await r.json();if(j.version!=='drawdown-v1'||!j.views?.all||!j.history?.length)throw Error('통계 형식을 확인할 수 없습니다.');data=j;render();}
- catch(e){data=null;chart=null;$('dd-content').hidden=true;$('dd-status').className='hint warn';$('dd-status').textContent=e.message+' · 시세 업데이트가 완료됐는지 확인하거나 새로 불러오기를 눌러 주세요.';}
+ catch(e){data=null;chart=null;$('dd-content').hidden=true;$('dd-quick').hidden=true;$('dd-status').className='hint warn';$('dd-status').textContent=e.message+' · 시세 업데이트가 완료됐는지 확인하거나 새로 불러오기를 눌러 주세요.';}
  finally{loading=false;}
 }
 $('dd-chart').addEventListener('pointermove',e=>{if(!chart)return;const {history,p,W}=chart;const x=e.clientX-e.currentTarget.getBoundingClientRect().left,i=Math.max(0,Math.min(history.length-1,Math.round((x-p.l)/(W-p.l-p.r)*(history.length-1)))),row=history[i];$('dd-hover').textContent=row[0]+' · 지수 '+nf.format(row[1])+' · 고점 대비 '+pct(row[2]);});
 for(const id of ['dd-window','dd-level'])$(id).addEventListener('change',()=>data&&render());
 $('dd-retry').addEventListener('click',()=>load(true));window.addEventListener('drawdownopen',()=>load());
-function calculator(mode){const event=events[+$('dd-event-select').value];if(!event)return;$('tab-btn-dca').click();if(mode==='single')document.querySelector('#dca-kind [data-v="single"]').click();window.dispatchEvent(new CustomEvent('drawdowncalculator',{detail:{mode,start:event.signal,end:event.recovery||data.asOf}}));}
+let reviewMode=null,previewRequest=0;
+async function preview(){
+ const mine=++previewRequest;
+ const start=$('dd-review-start').value,end=$('dd-review-end').value,frequency=$('dd-review-frequency').value;
+ let valid=!!start&&!!end&&start<=end&&start>=data.historyStart&&end<=data.asOf;
+ let note='기간은 '+data.historyStart+' ~ '+data.asOf+' 안에서 시작일이 종료일보다 늦지 않게 선택해 주세요.';
+ if(valid&&reviewMode==='single'){
+  const detail={days:data.history,start,end,frequency,count:null};window.dispatchEvent(new CustomEvent('drawdownpreview',{detail}));
+  valid=detail.count>0;note='나스닥100 거래일 기준 매수 예정 '+detail.count+'회.'+(valid?' 기존 회당 금액을 사용합니다.':' 이 기간에는 매수일이 없습니다. 주기를 매일로 바꾸거나 기간을 늘려 주세요.');
+ }else if(valid){
+  $('dd-review-apply').disabled=true;$('dd-review-count').textContent='기존 종목·비중과 공통 시세·환율 이력으로 납입 횟수를 확인하는 중…';
+  const detail={start,end,frequency};window.dispatchEvent(new CustomEvent('drawdownportfoliopreview',{detail}));
+  try{
+   if(!detail.result)throw Error('포트폴리오 준비가 완료되지 않았습니다. 다시 시도해 주세요.');
+   const result=await detail.result;if(mine!==previewRequest)return;
+   note='공통 거래 기간 '+result.start+' ~ '+result.end+' · 납입 예정 '+result.count+'회. 기존 종목·비중·회당 금액을 유지합니다.';
+  }catch(error){if(mine!==previewRequest)return;valid=false;note=error.message+' 기간·주기 또는 포트폴리오 조건을 확인해 주세요.';}
+ }
+ $('dd-review-count').textContent=note;$('dd-review-apply').disabled=!valid;
+}
+function calculator(mode){
+ const event=events[+$('dd-event-select').value];if(!event)return;reviewMode=mode;
+ $('dd-review-start').value=event.signal;$('dd-review-end').value=event.recovery||data.asOf;
+ $('dd-review-frequency').value=mode==='single'?document.querySelector('#freq [aria-pressed="true"]').dataset.v:$('pf-frequency').value;
+ const frequency=$('dd-review-frequency').value;
+ const setting=frequency==='month'?'매월 '+$(mode==='single'?'mday':'pf-monthday').selectedOptions[0].text:frequency==='week'?$(mode==='single'?'weekday':'pf-weekday').selectedOptions[0].text:'거래일마다';
+ $('dd-review-context').textContent=(mode==='single'?'나스닥100 단일 종목':'기존 혼합 포트폴리오')+' · 현재 주기: '+setting+' · 선택 사건 '+event.signal+' ~ '+(event.recovery||data.asOf);
+ preview();$('dd-review').showModal();
+}
+for(const id of ['dd-review-start','dd-review-end','dd-review-frequency'])$(id).addEventListener('input',preview);
+$('dd-review-cancel').addEventListener('click',()=>$('dd-review').close());
+$('dd-review').querySelector('form').addEventListener('submit',async e=>{
+ e.preventDefault();const expected=previewRequest+1;await preview();if(expected!==previewRequest||!$('dd-review').open||$('dd-review-apply').disabled)return;
+ const detail={mode:reviewMode,start:$('dd-review-start').value,end:$('dd-review-end').value,frequency:$('dd-review-frequency').value};
+ $('dd-review').close();$('tab-btn-dca').click();if(reviewMode==='single')document.querySelector('#dca-kind [data-v="single"]').click();
+ window.dispatchEvent(new CustomEvent('drawdowncalculator',{detail}));
+});
 $('dd-single').addEventListener('click',()=>calculator('single'));$('dd-portfolio').addEventListener('click',()=>calculator('portfolio'));
 new ResizeObserver(draw).observe($('dd-chartbox'));window.addEventListener('themechange',draw);if(!$('tab-drawdown').hidden)load();
 })();

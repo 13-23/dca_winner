@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=20261109-review">
 </head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -376,7 +376,8 @@
       <section class="panel" aria-labelledby="iv-title">
         <h2 id="iv-title">지수 종가와 환산 가격</h2>
         <div class="index-value-metrics" id="iv-metrics"></div>
-        <p class="hint" id="iv-status" role="status"></p>
+        <p class="hint" id="iv-status" role="status"></p><p class="hint" id="iv-provenance"></p>
+        <p class="hint evidence-note" id="iv-scenario-note"></p>
         <p class="hint" id="iv-sources" hidden></p>
         <div class="legend index-value-legend"><span style="--c:var(--accent)">지수 종가</span><span style="--c:var(--ma5)">PER (긴 점선)</span><span style="--c:var(--ma200)">PBR (짧은 점선)</span></div>
         <div id="iv-chart" class="index-value-chart"></div>
@@ -410,11 +411,12 @@
   </div>
   <div id="tab-drawdown" role="tabpanel" aria-labelledby="tab-btn-drawdown" class="tabpanel" hidden>
     <header class="tool-intro"><h1>하락·회복 분석</h1><p>나스닥100이 과거에 얼마나 자주, 깊게, 오래 하락했는지 확인합니다. 많이 하락한 가격과 펀더멘털 저평가는 서로 다릅니다.</p></header>
+    <p class="dd-quick" id="dd-quick" hidden></p>
     <section class="panel dd-controls"><div class="field"><label for="dd-window">통계 기간</label><select id="dd-window"><option value="20">최근 20년</option><option value="10">최근 10년</option><option value="all">전체 가용 이력</option></select></div><div class="field"><label for="dd-level">자세히 볼 고점 대비 낙폭</label><select id="dd-level"><option value="5">−5%</option><option value="10" selected>−10%</option><option value="15">−15%</option><option value="20">−20%</option><option value="30">−30%</option></select></div><button class="btn" type="button" id="dd-retry">새로 불러오기</button></section>
     <p class="hint" id="dd-status" role="status" aria-live="polite">탭을 열면 관측 통계를 불러옵니다.</p>
-    <p id="dd-boundary" class="hint warn" hidden></p>
+    <p id="dd-boundary" class="hint evidence-note" hidden></p>
     <div id="dd-content" class="stack" hidden>
-      <section class="panel"><h2>현재의 기술적 위치</h2><div class="kpis" id="dd-current"></div><p class="hint" id="dd-source"></p><p class="hint">펀더멘털 저평가 점수는 제공하지 않습니다. 나스닥100의 검증된 PER·PBR 역사 자료가 없어 가격 위치와 분리했습니다. 아래 값은 회복일·매수 승률의 예측이 아닙니다.</p></section>
+      <section class="panel"><h2>현재의 기술적 위치</h2><div class="kpis" id="dd-current"></div><details><summary>출처·집계 조건</summary><p class="hint" id="dd-source"></p></details><p class="hint">펀더멘털 저평가 점수는 제공하지 않습니다. 나스닥100의 검증된 PER·PBR 역사 자료가 없어 가격 위치와 분리했습니다. 아래 값은 회복일·매수 승률의 예측이 아닙니다.</p></section>
       <section class="panel"><h2>고점 대비 낙폭 이력</h2><div class="dd-chartbox" id="dd-chartbox"><canvas id="dd-chart" aria-label="나스닥100 일별 종가의 누적 고점 대비 낙폭"></canvas></div><p class="hint" id="dd-hover">차트 위에서 움직이면 날짜와 낙폭을 볼 수 있습니다.</p></section>
       <section class="panel"><h2>하락 단계별 빈도와 고점 회복</h2><p class="hint">같은 고점을 회복하기 전까지는 하나의 사건입니다. 단계별 사건은 겹칠 수 있어 합산하지 않습니다. 고점은 표시 기간 이전의 가용 가격까지 반영합니다.</p><div class="tablewrap"><table><thead><tr><th>낙폭 최초 도달</th><th>기간 내 신규 사건</th><th>연평균</th><th>기간 전 진입·이월</th><th>해당 낙폭 이하 체류일 비중</th><th>완료 / 진행</th><th>고점 회복 중앙값</th><th>완료 구간 평균</th><th>완료 구간 최장</th><th>검열 보정 중앙값</th></tr></thead><tbody id="dd-frequency"></tbody></table></div><p class="hint">회복 기간은 각 낙폭 단계에 처음 도달한 날부터 이전 고점을 회복하기까지의 거래일입니다. 완료 통계는 완료 사건만, 검열 보정 중앙값은 진행 중 사건의 관측 길이도 반영한 Kaplan–Meier 추정입니다. 중앙값을 추정할 수 없으면 —로 표시하며 현재 회복 예정일을 뜻하지 않습니다.</p></section>
       <section class="panel"><h2>이동평균선 이탈은 별도 사건입니다</h2><div class="tablewrap"><table><thead><tr><th>기준</th><th>신규 이탈</th><th>선 아래 체류일 비중</th><th>유효 거래일</th><th>완료 / 진행</th><th>완료 중앙값</th><th>완료 평균</th><th>완료 최장</th></tr></thead><tbody id="dd-ma"></tbody></table></div><p class="hint">종가가 선 아래로 내려간 첫날부터 선 이상으로 마감한 날 전까지 셉니다. 하루 회복 뒤 재이탈도 새 구간입니다. 60주선은 완료된 59주 종가와 해당일 종가로 계산합니다. 기간 전 진입·초기 관측 부족 구간은 신규 횟수와 기간 통계에서 제외합니다. 선 회복은 이전 고점·매수가 회복과 다릅니다.</p></section>
@@ -423,13 +425,22 @@
       <details class="panel"><summary>연도별 신규 횟수와 계산 방법</summary><div class="tablewrap"><table><thead><tr><th>연도</th><th>신규 최초 도달 사건</th></tr></thead><tbody id="dd-annual"></tbody></table></div><p class="hint">첫해·마지막 해는 부분 연도일 수 있습니다. 분석 기간 전에 시작한 미회복 사건은 별도 이월 항목으로 표시합니다. 가격 이력 시작 전의 고점은 알 수 없으며, 최근 20년만 보면 닷컴 붕괴 진입 시점이 포함되지 않습니다.</p><p class="hint"><a href="DRAWDOWN_METHOD.md" target="_blank" rel="noopener">분석 방법·제한 보기</a></p></details>
     </div>
   </div>
+<dialog id="dd-review" aria-labelledby="dd-review-title">
+  <form method="dialog"><h2 id="dd-review-title">계산 조건 확인</h2><p id="dd-review-context" class="hint"></p>
+  <div class="field"><label for="dd-review-start">시작일</label><input type="date" id="dd-review-start" required></div>
+  <div class="field"><label for="dd-review-end">종료일</label><input type="date" id="dd-review-end" required></div>
+  <div class="field"><label for="dd-review-frequency">매수 주기</label><select id="dd-review-frequency"><option value="month">매월 · 기존 지정일 유지</option><option value="week">매주 · 기존 요일 유지</option><option value="day">매일 · 거래일 기준</option></select></div>
+  <p id="dd-review-count" class="hint" role="status" aria-live="polite"></p>
+  <p class="hint">기간을 늘리면 원래 하락 사건 밖의 날짜도 포함됩니다. 매수 주기를 바꾸면 기간 중 총 적립 원금도 달라질 수 있습니다.</p>
+  <div class="row"><button type="button" class="btn" id="dd-review-cancel">취소</button><button class="btn" id="dd-review-apply" value="apply">조건 적용하고 계산기로</button></div></form>
+</dialog>
 </main>
 </div>
 
 <script src="valuation.js"></script>
-<script src="index-valuation.js?v=2" defer></script>
+<script src="index-valuation.js?v=20261109-review" defer></script>
 <script src="market.js" defer></script>
-<script src="position.js?v=20261105-logic" defer></script>
+<script src="position.js?v=20261109-review" defer></script>
 <!--API--><script>
 /* 데이터 가져오기: 웹 버전. data/ 폴더의 시세 파일을 읽습니다 (매일 GitHub Actions가 갱신) */
 window.API = (() => {
@@ -618,15 +629,15 @@ function fxAt(series, t) {
   if (i < series.length && series[i].t === t) return series[i].c;
   return i > 0 ? series[i - 1].c : series[0].c;
 }
-function schedule(days, startT, endT) {
+function schedule(days, startT, endT, frequency = st.freq) {
   const idx = [];
   const s = lowerBound(days, startT);
   let e = lowerBound(days, endT); if (e < days.length && days[e].t === endT) e++;
   if (s >= e) return idx;
   const push = target => { const i = lowerBound(days, target); if (i < e && i >= s && (!idx.length || idx[idx.length - 1] < i)) idx.push(i); };
-  if (st.freq === "day") { for (let i = s; i < e; i++) idx.push(i); return idx; }
+  if (frequency === "day") { for (let i = s; i < e; i++) idx.push(i); return idx; }
   const d0 = parseISO(startT), d1 = parseISO(endT);
-  if (st.freq === "week") {
+  if (frequency === "week") {
     const wd = +$("weekday").value; const d = new Date(d0);
     while (d.getUTCDay() !== wd) d.setUTCDate(d.getUTCDate() + 1);
     for (; d <= d1; d.setUTCDate(d.getUTCDate() + 7)) push(iso(d));
@@ -949,11 +960,16 @@ async function buildWebList() {
   return list;
 }
 
+window.addEventListener("drawdownpreview", e => {
+  const d = e.detail;
+  d.count = schedule(d.days.map(row => ({t: row[0]})), d.start, d.end, d.frequency).length;
+});
 window.addEventListener("drawdowncalculator", async e => {
   const d = e.detail; if (!d || d.mode !== "single") return;
   $("preset").value = "^NDX";
   await selectSymbol("^NDX", "나스닥 100");
   if (!st.asset || st.sym !== "^NDX") return;
+  if (d.frequency) { st.freq = d.frequency; $("freq").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === st.freq))); }
   $("start").value = d.start; $("end").value = d.end;
   st.endWasLatest = d.end === st.asset.data.at(-1).t; syncForm(); run();
 });
@@ -1668,7 +1684,7 @@ showTab(tabs.includes(startTab) ? startTab : "dca");
 })();
 </script>
 <script src="portfolio.js"></script>
-<script src="portfolio-ui.js?v=20261105-psq2"></script>
-<script src="drawdown-ui.js" defer></script>
+<script src="portfolio-ui.js?v=20261109-review"></script>
+<script src="drawdown-ui.js?v=20261109-review" defer></script>
 </body>
 </html>

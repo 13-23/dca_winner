@@ -131,6 +131,15 @@ for(const f of [...fields,'fractional','adjusted'])$('pf-'+f).addEventListener('
 async function mode(portfolio){active=portfolio;$('single-mode').hidden=active;$('portfolio-mode').hidden=!active;for(const b of $('dca-kind').querySelectorAll('button'))b.setAttribute('aria-pressed',String((b.dataset.v==='portfolio')===active));save();if(active){try{const index=await API.index();list=index.items.filter(t=>!t.hidden);if(!list.length)throw Error('사용할 수 있는 종목이 없습니다.');renderRows();calculate();}catch(e){$('pf-status').className='hint warn';$('pf-status').textContent='시세 목록을 불러오지 못했습니다: '+e.message;}}}
 $('dca-kind').addEventListener('click',e=>{const b=e.target.closest('button');if(b)mode(b.dataset.v==='portfolio');});
 new ResizeObserver(()=>draw()).observe($('pf-chartbox'));window.addEventListener('themechange',draw);
-window.addEventListener('drawdowncalculator',e=>{const d=e.detail;if(!d||d.mode!=='portfolio')return;$('pf-start').value=d.start;$('pf-end').value=d.end;conditions();mode(true);});
+window.addEventListener('drawdownportfoliopreview',e=>{
+ const d=e.detail;
+ d.result=(async()=>{
+  const assets=await Promise.all(entries.map(async entry=>({...await load(entry.symbol),weight:entry.weight})));
+  const fx={};await Promise.all([...new Set(assets.map(a=>a.currency).filter(c=>c!=='KRW'))].map(async c=>{fx[c]=(await load(c==='USD'?'KRW=X':c+'KRW=X')).data;}));
+  const preview=PortfolioEngine.simulate({assets,fx,amount:+$('pf-amount').value,start:d.start,end:d.end,frequency:d.frequency,weekday:+$('pf-weekday').value,monthday:+$('pf-monthday').value,fractional:$('pf-fractional').checked,adjusted:$('pf-adjusted').checked});
+  return {count:preview.contributions,start:preview.start,end:preview.end};
+ })();
+});
+window.addEventListener('drawdowncalculator',e=>{const d=e.detail;if(!d||d.mode!=='portfolio')return;$('pf-start').value=d.start;$('pf-end').value=d.end;if(d.frequency)$('pf-frequency').value=d.frequency;conditions();mode(true);});
 conditions();if(saved?.active)mode(true);
 })();
