@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=20261109-review">
+<link rel="stylesheet" href="styles.css?v=20261109-markets">
 </head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -52,7 +52,7 @@
           <div class="pf-row-label hint" aria-hidden="true"><span>종목</span><span>비중 (%)</span><span></span></div>
           <div id="pf-assets"></div>
           <div class="field"><label for="pf-search">다른 종목 찾아 추가</label><input type="search" id="pf-search" placeholder="종목명 · AAPL · 005930" autocomplete="off" aria-describedby="pf-search-hint"></div>
-          <p class="hint" id="pf-search-hint">나스닥·뉴욕·코스피·코스닥 종목 검색 · 최대 10종목</p>
+          <p class="hint" id="pf-search-hint">주식·ETF·비트코인·이더리움 검색 · 최대 10종목</p>
           <div id="pf-search-results" class="asset-search-results" aria-live="polite"></div>
           <div class="row"><button type="button" class="btn" id="pf-add">종목 추가</button><strong id="pf-total" aria-live="polite"></strong></div>
         </section>
@@ -62,13 +62,13 @@
             <div class="field"><label for="pf-start">시작일</label><input type="date" id="pf-start" value="2016-01-01"></div>
             <div class="field"><label for="pf-end">종료일 (비워두면 최신 공통일)</label><input type="date" id="pf-end"></div>
           </div>
-          <div class="field"><label for="pf-frequency">매수 주기</label><select id="pf-frequency"><option value="month">매월</option><option value="week">매주</option><option value="day">매일 (두 시장 중 거래일)</option></select></div>
+          <div class="field"><label for="pf-frequency">매수 주기</label><select id="pf-frequency"><option value="month">매월</option><option value="week">매주</option><option value="day">매일 (구성 종목 중 거래일)</option></select></div>
           <div class="field" id="pf-month-field"><label for="pf-monthday">매수일</label><select id="pf-monthday"></select></div>
-          <div class="field" id="pf-week-field" hidden><label for="pf-weekday">요일</label><select id="pf-weekday"><option value="1">월요일</option><option value="2">화요일</option><option value="3">수요일</option><option value="4">목요일</option><option value="5">금요일</option></select></div>
+          <div class="field" id="pf-week-field" hidden><label for="pf-weekday">요일</label><select id="pf-weekday"><option value="1">월요일</option><option value="2">화요일</option><option value="3">수요일</option><option value="4">목요일</option><option value="5">금요일</option><option value="6">토요일</option><option value="0">일요일</option></select></div>
           <div class="field"><label for="pf-amount">회당 총 투자금 (원)</label><input type="number" id="pf-amount" value="1000000" min="1" step="10000"></div>
           <label class="check"><input type="checkbox" id="pf-fractional" checked><span>소수점 수량 허용</span></label>
           <label class="check"><input type="checkbox" id="pf-adjusted"><span>배당 재투자 가정 (수정주가)</span></label>
-          <p class="hint">해외 종목은 매수일·평가일의 실제 환율로 원화 환산합니다. 각 시장의 휴장일에는 배정금을 원화로 보관하고 다음 거래일에 매수합니다. 정수 주 매수의 잔액도 원화로 이월합니다.</p>
+          <p class="hint">해외 종목은 매수일·평가일의 실제 환율로 원화 환산합니다. 각 시장의 휴장일에는 배정금을 원화로 보관하고 다음 거래일에 매수합니다. 정수 수량 매수의 잔액도 원화로 이월합니다.</p>
           <button type="button" class="btn" id="pf-calculate">계산 / 시세 다시 불러오기</button>
           <p id="pf-status" class="hint" role="status" aria-live="polite"></p>
         </section>
@@ -76,7 +76,8 @@
       <div class="stack" id="pf-results" hidden>
         <section class="panel"><h2>포트폴리오 결과</h2><div class="kpis" id="pf-kpis"></div><p class="hint" id="pf-period"></p></section>
         <section class="panel"><h2>포트폴리오와 단일 종목 비교</h2><p class="hint">같은 날짜에 같은 총금액을 납입해 각 종목에 전액 투자한 경우와 비교합니다. 평가에는 해당 날짜까지의 시세만 사용합니다.</p><div class="pf-legend" id="pf-legend"></div><div class="pf-chart" id="pf-chartbox"><canvas id="pf-chart" aria-label="포트폴리오와 단일 종목 평가금액 비교"></canvas></div><p class="hint" id="pf-hover"></p><div class="tablewrap"><table><thead><tr><th>구성</th><th>평가금액</th><th>손익</th><th>수익률</th><th>XIRR</th><th>MDD</th></tr></thead><tbody id="pf-comparison"></tbody></table></div></section>
-        <section class="panel position-panel" data-position-panel></section>
+        <p class="hint">코인 원화 항목은 Yahoo Finance의 원화 표시 시세로 국내 거래소 체결가와 다를 수 있습니다. 코인은 주말 포함 UTC 일봉이며 당일 미완성 봉은 제외합니다. 달러 항목의 원화 환산은 휴일에 직전 가용 환율을 사용합니다.</p>
+      <section class="panel position-panel" data-position-panel></section>
         <section class="panel market-panel" data-market-panel aria-label="미국 시장 보조지표"></section>
         <section class="panel"><h2>종목별 결과</h2><div class="tablewrap"><table><thead><tr><th>종목</th><th>목표 / 최종 비중</th><th>납입 원금</th><th>평가금액</th><th>손익</th><th>수익률</th><th>보유 수량</th><th>평균 단가 (현지 통화)</th><th>원화 잔액</th></tr></thead><tbody id="pf-holdings"></tbody></table></div></section>
         <section class="panel"><div class="statement-head"><h2>매수 내역</h2><span class="hint" id="pf-tx-count"></span></div><div class="tablewrap"><table><thead><tr><th>날짜</th><th>종목</th><th>수량</th><th>단가 (현지 통화)</th><th>환율</th><th>매수금액 (원)</th></tr></thead><tbody id="pf-transactions"></tbody></table></div><button type="button" class="btn" id="pf-more" hidden>더 보기</button></section>
@@ -123,6 +124,7 @@
               <option value="TECL">TECL (기술주 3배)</option>
               <option value="FNGU">FNGU (FANG+ 3배 ETN)</option>
             </optgroup>
+            <optgroup label="가상자산"><option value="BTC-KRW">비트코인(원화)</option><option value="BTC-USD">비트코인(달러)</option><option value="ETH-KRW">이더리움(원화)</option><option value="ETH-USD">이더리움(달러)</option></optgroup>
             <optgroup label="개별 종목">
               <option value="005930.KS">삼성전자</option>
               <option value="000660.KS">SK하이닉스</option>
@@ -161,7 +163,7 @@
           <label for="weekday">요일</label>
           <select id="weekday">
             <option value="1">월요일</option><option value="2">화요일</option><option value="3">수요일</option>
-            <option value="4">목요일</option><option value="5">금요일</option>
+            <option value="4">목요일</option><option value="5">금요일</option><option value="6">토요일</option><option value="0">일요일</option>
           </select>
         </div>
         <div class="field" id="f-month">
@@ -180,7 +182,7 @@
           <div class="field" style="flex:2"><label for="amt">회당 매수</label><input type="number" id="amt" min="0" step="any" value="10"></div>
           <div class="field" style="flex:1.2"><label for="unit">단위</label><select id="unit"></select></div>
         </div>
-        <label class="check" id="f-frac"><input type="checkbox" id="frac" checked> <span>소수점 수량 허용 (끄면 정수 주만 사고 남은 돈은 다음 회차로 이월)</span></label>
+        <label class="check" id="f-frac"><input type="checkbox" id="frac" checked> <span>소수점 수량 허용 (끄면 정수 수량만 사고 남은 돈은 다음 회차로 이월)</span></label>
         <label class="check"><input type="checkbox" id="adj"> <span>배당 재투자 가정 (수정주가 사용, 단가도 수정주가 기준)</span></label>
         <div class="field" id="f-fx" hidden>
           <label for="fxsrc">원화 환산 환율</label>
@@ -224,6 +226,7 @@
         <div class="chartbox" id="chartbox"><canvas id="chart" aria-label="누적 원금과 평가금액 추이" aria-describedby="mdd-guide"></canvas><div class="tip" id="tip" hidden></div></div>
         <p class="hint" id="mdd-guide"><strong>MDD 구간 (최대 낙폭)</strong>은 그래프에서 가장 크게 하락한 고점부터 저점까지의 기간입니다. 예를 들어 입금 효과를 뺀 수익률 지수가 100에서 75까지 떨어졌다면 최대 낙폭은 −25%입니다. 파란 음영은 그 하락 구간을 표시하며, 이전 고점을 회복하기까지의 기간은 수익·위험 지표에서 따로 확인할 수 있습니다.</p>
       </section>
+      <p class="hint">코인 원화 항목은 Yahoo Finance의 원화 표시 시세로 국내 거래소 체결가와 다를 수 있습니다. 코인은 주말 포함 UTC 일봉이며 당일 미완성 봉은 제외합니다. 달러 항목의 원화 환산은 휴일에 직전 가용 환율을 사용합니다.</p>
       <section class="panel position-panel" data-position-panel></section>
         <section class="panel market-panel" data-market-panel aria-label="미국 시장 보조지표"></section>
       <section class="panel" aria-labelledby="h-tx">
@@ -410,13 +413,13 @@
     </section>
   </div>
   <div id="tab-drawdown" role="tabpanel" aria-labelledby="tab-btn-drawdown" class="tabpanel" hidden>
-    <header class="tool-intro"><h1>하락·회복 분석</h1><p>나스닥100이 과거에 얼마나 자주, 깊게, 오래 하락했는지 확인합니다. 많이 하락한 가격과 펀더멘털 저평가는 서로 다릅니다.</p></header>
+    <header class="tool-intro"><h1>하락·회복 분석</h1><p>나스닥100·코스피·코스닥이 과거에 얼마나 자주, 깊게, 오래 하락했는지 확인합니다. 많이 하락한 가격과 펀더멘털 저평가는 서로 다릅니다.</p></header>
     <p class="dd-quick" id="dd-quick" hidden></p>
-    <section class="panel dd-controls"><div class="field"><label for="dd-window">통계 기간</label><select id="dd-window"><option value="20">최근 20년</option><option value="10">최근 10년</option><option value="all">전체 가용 이력</option></select></div><div class="field"><label for="dd-level">자세히 볼 고점 대비 낙폭</label><select id="dd-level"><option value="5">−5%</option><option value="10" selected>−10%</option><option value="15">−15%</option><option value="20">−20%</option><option value="30">−30%</option></select></div><button class="btn" type="button" id="dd-retry">새로 불러오기</button></section>
+    <section class="panel dd-controls"><div class="field"><label for="dd-market">분석 시장</label><select id="dd-market"><option value="^NDX">나스닥100</option><option value="^KS11">코스피</option><option value="^KQ11">코스닥</option></select></div><div class="field"><label for="dd-window">통계 기간</label><select id="dd-window"><option value="20">최근 20년</option><option value="10">최근 10년</option><option value="all">전체 가용 이력</option></select></div><div class="field"><label for="dd-level">자세히 볼 고점 대비 낙폭</label><select id="dd-level"><option value="5">−5%</option><option value="10" selected>−10%</option><option value="15">−15%</option><option value="20">−20%</option><option value="30">−30%</option></select></div><button class="btn" type="button" id="dd-retry">새로 불러오기</button></section>
     <p class="hint" id="dd-status" role="status" aria-live="polite">탭을 열면 관측 통계를 불러옵니다.</p>
     <p id="dd-boundary" class="hint evidence-note" hidden></p>
     <div id="dd-content" class="stack" hidden>
-      <section class="panel"><h2>현재의 기술적 위치</h2><div class="kpis" id="dd-current"></div><details><summary>출처·집계 조건</summary><p class="hint" id="dd-source"></p></details><p class="hint">펀더멘털 저평가 점수는 제공하지 않습니다. 나스닥100의 검증된 PER·PBR 역사 자료가 없어 가격 위치와 분리했습니다. 아래 값은 회복일·매수 승률의 예측이 아닙니다.</p></section>
+      <section class="panel"><h2>현재의 기술적 위치</h2><div class="kpis" id="dd-current"></div><details><summary>출처·집계 조건</summary><p class="hint" id="dd-source"></p></details><p class="hint">펀더멘털 저평가 점수는 제공하지 않습니다. 이 분석은 가격 이력을 사용하며 PER·PBR 기반 가치 평가와 분리했습니다. 아래 값은 회복일·매수 승률의 예측이 아닙니다.</p></section>
       <section class="panel"><h2>고점 대비 낙폭 이력</h2><div class="dd-chartbox" id="dd-chartbox"><canvas id="dd-chart" aria-label="나스닥100 일별 종가의 누적 고점 대비 낙폭"></canvas></div><p class="hint" id="dd-hover">차트 위에서 움직이면 날짜와 낙폭을 볼 수 있습니다.</p></section>
       <section class="panel"><h2>하락 단계별 빈도와 고점 회복</h2><p class="hint">같은 고점을 회복하기 전까지는 하나의 사건입니다. 단계별 사건은 겹칠 수 있어 합산하지 않습니다. 고점은 표시 기간 이전의 가용 가격까지 반영합니다.</p><div class="tablewrap"><table><thead><tr><th>낙폭 최초 도달</th><th>기간 내 신규 사건</th><th>연평균</th><th>기간 전 진입·이월</th><th>해당 낙폭 이하 체류일 비중</th><th>완료 / 진행</th><th>고점 회복 중앙값</th><th>완료 구간 평균</th><th>완료 구간 최장</th><th>검열 보정 중앙값</th></tr></thead><tbody id="dd-frequency"></tbody></table></div><p class="hint">회복 기간은 각 낙폭 단계에 처음 도달한 날부터 이전 고점을 회복하기까지의 거래일입니다. 완료 통계는 완료 사건만, 검열 보정 중앙값은 진행 중 사건의 관측 길이도 반영한 Kaplan–Meier 추정입니다. 중앙값을 추정할 수 없으면 —로 표시하며 현재 회복 예정일을 뜻하지 않습니다.</p></section>
       <section class="panel"><h2>이동평균선 이탈은 별도 사건입니다</h2><div class="tablewrap"><table><thead><tr><th>기준</th><th>신규 이탈</th><th>선 아래 체류일 비중</th><th>유효 거래일</th><th>완료 / 진행</th><th>완료 중앙값</th><th>완료 평균</th><th>완료 최장</th></tr></thead><tbody id="dd-ma"></tbody></table></div><p class="hint">종가가 선 아래로 내려간 첫날부터 선 이상으로 마감한 날 전까지 셉니다. 하루 회복 뒤 재이탈도 새 구간입니다. 60주선은 완료된 59주 종가와 해당일 종가로 계산합니다. 기간 전 진입·초기 관측 부족 구간은 신규 횟수와 기간 통계에서 제외합니다. 선 회복은 이전 고점·매수가 회복과 다릅니다.</p></section>
@@ -438,9 +441,9 @@
 </div>
 
 <script src="valuation.js"></script>
-<script src="index-valuation.js?v=20261109-review" defer></script>
+<script src="index-valuation.js?v=20261109-markets" defer></script>
 <script src="market.js" defer></script>
-<script src="position.js?v=20261109-review" defer></script>
+<script src="position.js?v=20261109-markets" defer></script>
 <!--API--><script>
 /* 데이터 가져오기: 웹 버전. data/ 폴더의 시세 파일을 읽습니다 (매일 GitHub Actions가 갱신) */
 window.API = (() => {
@@ -522,7 +525,7 @@ function syncForm(modeChanged) {
   const a = st.asset, cur = a ? a.currency : "KRW", foreign = cur !== "KRW";
   const unit = $("unit"), prev = unit.value;
   let opts;
-  if (st.mode === "shares") opts = [["sh", "주"]];
+  if (st.mode === "shares") opts = [["sh", /^(BTC|ETH)-(KRW|USD)$/.test(st.sym) ? "개" : "주"]];
   else if (foreign) opts = [["man", "만원"], ["won", "원"], ["cur", cur]];
   else opts = [["man", "만원"], ["won", "원"]];
   unit.innerHTML = opts.map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
@@ -749,7 +752,7 @@ function metrics(r) {
     const mean = rets.reduce((a, b) => a + b, 0) / rets.length;
     const v = rets.reduce((a, b) => a + (b - mean) ** 2, 0) / (rets.length - 1);
     const perYear = rets.length / Math.max(years, 1 / 365);
-    vol = Math.sqrt(v * Math.min(perYear, 260));
+    vol = Math.sqrt(v * Math.min(perYear, /^(BTC|ETH)-(KRW|USD)$/.test(r.a.symbol) ? 365.25 : 260));
   }
   // XIRR
   const flows = S.filter(s => s.flow > 0).map(s => ({ t: s.t, v: -s.flow }));
@@ -812,16 +815,16 @@ function run() {
     h += kpi("평균 단가", price(r.avgA, cur), `원화 환산 ${won(r.avgK)}`);
     h += kpi("현재가", price(r.lastP, cur), `${r.lastT} · 환율 ${nf2.format(r.rLast)}`);
     h += kpi("총 투자 원금", won(r.costK), `${fc(r.costA, cur)} · ${korShort(r.costK)}`);
-    h += kpi("보유 수량", nfq.format(r.qty) + "주", `${r.tx.length.toLocaleString()}회 매수`);
+    h += kpi("보유 수량", nfq.format(r.qty) + (/^(BTC|ETH)-(KRW|USD)$/.test(r.a.symbol) ? "개" : "주"), `${r.tx.length.toLocaleString()}회 매수`);
   } else {
     h += kpi("현재 평가금액", won(r.valueA), korShort(r.valueA), "hero");
     h += kpi("수익률", `<span class="${cls(rtA)}">${pct(rtA)}</span>`, `<span class="${cls(plA)}">${signed(plA, won)}</span>`, "hero");
     h += kpi("평균 단가", price(r.avgA, cur), `현재가가 평단보다 ${pct(r.avgA ? r.lastP / r.avgA - 1 : 0)}`);
     h += kpi("현재가", price(r.lastP, cur), r.lastT);
     h += kpi("총 투자 원금", won(r.costA), korShort(r.costA));
-    h += kpi("보유 수량", nfq.format(r.qty) + "주", `${r.tx.length.toLocaleString()}회 매수`);
+    h += kpi("보유 수량", nfq.format(r.qty) + (/^(BTC|ETH)-(KRW|USD)$/.test(r.a.symbol) ? "개" : "주"), `${r.tx.length.toLocaleString()}회 매수`);
   }
-  if (r.cash > 1e-6) h += kpi("미투자 잔액", fc(r.cash, cur), "정수 주 매수 후 남은 돈 (평가금액에 포함)");
+  if (r.cash > 1e-6) h += kpi("미투자 잔액", fc(r.cash, cur), "정수 수량 매수 후 남은 돈 (평가금액에 포함)");
   $("kpis").innerHTML = h;
   r.m = metrics(r); renderRisk(r);
   const notes = [...r.notes];
@@ -954,7 +957,7 @@ async function buildWebList() {
     const o = document.createElement("option"); o.value = x.symbol; o.textContent = x.label || x.name || x.symbol; groups.get(x.group).append(o);
   }
   $("q").placeholder = "종목명·코드 검색 (예: 카카오, 035420, KORU)";
-  $("q-hint").textContent = "나스닥·뉴욕·코스피·코스닥 종목을 검색합니다. 한글명·영문명·티커·국내 6자리 코드로 찾아보세요. 새 종목의 시세는 선택할 때 조회합니다.";
+  $("q-hint").textContent = "주식·ETF·비트코인·이더리움을 검색합니다. 코인은 원화·달러 시세를 각각 선택할 수 있습니다.";
   const up = $("data-updated");
   if (up && list.updated) { up.hidden = false; up.textContent = `시세 업데이트: ${list.updated} (매일 자동)`; }
   return list;
@@ -966,9 +969,10 @@ window.addEventListener("drawdownpreview", e => {
 });
 window.addEventListener("drawdowncalculator", async e => {
   const d = e.detail; if (!d || d.mode !== "single") return;
-  $("preset").value = "^NDX";
-  await selectSymbol("^NDX", "나스닥 100");
-  if (!st.asset || st.sym !== "^NDX") return;
+  const symbol = ["^NDX", "^KS11", "^KQ11"].includes(d.symbol) ? d.symbol : "^NDX";
+  $("preset").value = symbol;
+  await selectSymbol(symbol, d.name || symbol);
+  if (!st.asset || st.sym !== symbol) return;
   if (d.frequency) { st.freq = d.frequency; $("freq").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === st.freq))); }
   $("start").value = d.start; $("end").value = d.end;
   st.endWasLatest = d.end === st.asset.data.at(-1).t; syncForm(); run();
@@ -1683,8 +1687,8 @@ let startTab = "dca"; try { startTab = localStorage.getItem(LS_TAB) || "dca"; } 
 showTab(tabs.includes(startTab) ? startTab : "dca");
 })();
 </script>
-<script src="portfolio.js"></script>
-<script src="portfolio-ui.js?v=20261109-review"></script>
-<script src="drawdown-ui.js?v=20261109-review" defer></script>
+<script src="portfolio.js?v=20261109-markets"></script>
+<script src="portfolio-ui.js?v=20261109-markets"></script>
+<script src="drawdown-ui.js?v=20261109-markets" defer></script>
 </body>
 </html>

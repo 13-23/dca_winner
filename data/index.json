@@ -341,6 +341,66 @@
    "first": "2003-12-01",
    "last": "2026-11-06",
    "hidden": true
+  },
+  {
+   "symbol": "BTC-KRW",
+   "label": "비트코인(원화)",
+   "name": "Bitcoin KRW",
+   "group": "가상자산",
+   "aliases": [
+    "BTC",
+    "비트코인",
+    "bitcoin",
+    "비트코인 원화"
+   ],
+   "currency": "KRW",
+   "first": "2014-09-17",
+   "last": "2026-11-07"
+  },
+  {
+   "symbol": "BTC-USD",
+   "label": "비트코인(달러)",
+   "name": "Bitcoin USD",
+   "group": "가상자산",
+   "aliases": [
+    "BTC",
+    "비트코인",
+    "bitcoin",
+    "비트코인 달러"
+   ],
+   "currency": "USD",
+   "first": "2014-09-17",
+   "last": "2026-11-07"
+  },
+  {
+   "symbol": "ETH-KRW",
+   "label": "이더리움(원화)",
+   "name": "Ethereum KRW",
+   "group": "가상자산",
+   "aliases": [
+    "ETH",
+    "이더리움",
+    "ethereum",
+    "이더리움 원화"
+   ],
+   "currency": "KRW",
+   "first": "2017-11-11",
+   "last": "2026-11-07"
+  },
+  {
+   "symbol": "ETH-USD",
+   "label": "이더리움(달러)",
+   "name": "Ethereum USD",
+   "group": "가상자산",
+   "aliases": [
+    "ETH",
+    "이더리움",
+    "ethereum",
+    "이더리움 달러"
+   ],
+   "currency": "USD",
+   "first": "2017-11-09",
+   "last": "2026-11-07"
   }
  ]
 }

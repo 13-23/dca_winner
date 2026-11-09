@@ -42,6 +42,19 @@ def check():
         raise ValueError('Drawdown study uses a date after the published source prices')
     if 'tab-btn-drawdown' not in page or b'drawdown-v1' not in get(SITE + 'drawdown-ui.js?v=' + revision):
         raise ValueError('Drawdown tab assets are missing')
+    for symbol, stat_file, price_file in [('^KS11', 'drawdown-kospi.json', '_KS11.json'), ('^KQ11', 'drawdown-kosdaq.json', '_KQ11.json')]:
+        stat = json.loads(get(SITE + 'data/' + stat_file + '?v=' + revision))
+        raw = get(SITE + 'data/' + price_file + '?v=' + revision)
+        if stat.get('symbol') != symbol or stat.get('sourceSha256') != hashlib.sha256(raw).hexdigest():
+            raise ValueError('Korean drawdown market/source mismatch: ' + symbol)
+    for symbol in ['BTC-KRW', 'BTC-USD', 'ETH-KRW', 'ETH-USD']:
+        coin = json.loads(get(SITE + 'data/' + symbol + '.json?v=' + revision))
+        if not any(item['symbol'] == symbol for item in index['items']) or coin['currency'] != symbol.split('-')[1]:
+            raise ValueError('Crypto listing/currency mismatch: ' + symbol)
+        if coin['data'][-1][0] >= datetime.now(timezone.utc).date().isoformat():
+            raise ValueError('Crypto UTC candle is not completed: ' + symbol)
+        if date.today() - date.fromisoformat(coin['data'][-1][0]) > timedelta(days=7):
+            raise ValueError('Crypto history is stale: ' + symbol)
     search = json.loads(get(API + '?action=search&q=PSQ'))
     if not any(row['symbol'] == 'PSQ' for row in search['quotes']):
         raise ValueError('Market search did not return PSQ')
@@ -50,7 +63,7 @@ def check():
         raise ValueError('PSQ price history is unavailable')
     if date.today() - date.fromisoformat(chart['data'][-1][0]) > timedelta(days=7):
         raise ValueError('PSQ price history is stale')
-    print('Public release, default prices, position study, and external PSQ search/history verified')
+    print('Public release, three drawdown markets, four crypto histories, and external PSQ search/history verified')
 
 
 if __name__ == '__main__':

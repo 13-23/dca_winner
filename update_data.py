@@ -116,6 +116,10 @@ def fetch(symbol):
         # [날짜, 종가, 수정종가, 시가, 고가, 저가, 거래량]
         rows[d] = [d, round(cl, 4), round(a, 4), round(o, 4), round(h, 4), round(l, 4), int(v)]
     data = [rows[k] for k in sorted(rows)]
+    if symbol in {"BTC-KRW", "BTC-USD", "ETH-KRW", "ETH-USD"}:
+        # Crypto trades every day; the provider's UTC candle closes at next midnight.
+        today = datetime.now(timezone.utc).date().isoformat()
+        data = [row for row in data if row[0] < today]
     if len(data) < 2:
         raise RuntimeError("too few rows")
     return {
@@ -131,7 +135,7 @@ def fetch(symbol):
 
 def mock(symbol):
     rnd = random.Random(symbol)
-    cur = "KRW" if symbol.endswith((".KS", ".KQ")) or symbol in ("^KS11", "^KQ11", "KRW=X") or symbol.endswith("KRW=X") else "USD"
+    cur = "KRW" if symbol.endswith((".KS", ".KQ", "-KRW")) or symbol in ("^KS11", "^KQ11", "KRW=X") or symbol.endswith("KRW=X") else "USD"
     p = 1200.0 if symbol == "KRW=X" else (2000.0 if cur == "KRW" else 100.0)
     d, end, data = datetime(2005, 1, 3), datetime(2026, 10, 23), []
     while d <= end:

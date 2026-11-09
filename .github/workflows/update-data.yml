@@ -7,7 +7,7 @@ on:
       - tickers.json
   schedule:
     - cron: "10 8 * * 1-5"    # 평일 17:10 KST — 연구용 한국 종가 확정 기준 이후
-    - cron: "10 22 * * 1-5"   # 화~토 07:10 KST — 연구용 미국 종가 확정 기준 이후
+    - cron: "10 22 * * *"     # 매일 07:10 KST — 주말 코인 포함, UTC 확정 일봉 갱신
   workflow_dispatch:           # Actions 탭에서 "Run workflow"로 바로 실행
     inputs:
       market_only:
@@ -57,7 +57,7 @@ jobs:
       - name: 시장별 6개월 반등 검증 갱신
         run: python market_position_v2.py
 
-      - name: 나스닥100 하락·회복 통계 갱신
+      - name: 나스닥100·코스피·코스닥 하락·회복 통계 갱신
         run: python drawdown_analysis.py
 
       - name: 바뀐 시세 저장

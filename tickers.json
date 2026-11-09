@@ -189,5 +189,49 @@
       "LG H&H",
       "LG Household & Health Care"
     ]
+  },
+  {
+    "symbol": "BTC-KRW",
+    "label": "비트코인(원화)",
+    "group": "가상자산",
+    "aliases": [
+      "BTC",
+      "비트코인",
+      "bitcoin",
+      "비트코인 원화"
+    ]
+  },
+  {
+    "symbol": "BTC-USD",
+    "label": "비트코인(달러)",
+    "group": "가상자산",
+    "aliases": [
+      "BTC",
+      "비트코인",
+      "bitcoin",
+      "비트코인 달러"
+    ]
+  },
+  {
+    "symbol": "ETH-KRW",
+    "label": "이더리움(원화)",
+    "group": "가상자산",
+    "aliases": [
+      "ETH",
+      "이더리움",
+      "ethereum",
+      "이더리움 원화"
+    ]
+  },
+  {
+    "symbol": "ETH-USD",
+    "label": "이더리움(달러)",
+    "group": "가상자산",
+    "aliases": [
+      "ETH",
+      "이더리움",
+      "ethereum",
+      "이더리움 달러"
+    ]
   }
 ]

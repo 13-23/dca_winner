@@ -17,3 +17,7 @@ test('search resolves Korean names, bare codes, English aliases and spaces', asy
 test('empty and unknown queries return no matches', async () => {
   for (const q of ['', '  ', 'unknown-symbol']) assert.equal((await context.window.API.search(q)).quotes.length, 0);
 });
+
+test('Korean crypto queries distinguish quote currencies and English tickers',async()=>{
+ for(const [q,symbol] of [['비트코인 원화','BTC-KRW'],['비트코인 달러','BTC-USD'],['이더리움 원화','ETH-KRW'],['이더리움 달러','ETH-USD'],['ETH-USD','ETH-USD']])assert.equal((await context.window.API.search(q)).quotes[0].symbol,symbol);
+});

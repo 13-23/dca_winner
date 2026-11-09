@@ -67,3 +67,14 @@ test('invalid allocations, dates, FX, empty histories and amounts are rejected',
  assert.throws(()=>simulate({...options(),assets:[asset('US',[100,100,100],100,'USD')]}));
  assert.throws(()=>simulate({...options(),assets:[]}));
 });
+
+test('crypto weekend purchases use preceding FX and weekly Sunday is selectable',()=>{
+ const ds=['2026-11-06','2026-11-07','2026-11-08'];
+ const assets=[asset('BTC-USD',[100,100,100],100,'USD',ds)];
+ const fx={USD:[['2026-11-06',1000],['2026-11-09',2000]]};
+ const daily=simulate({assets,fx,amount:1000,frequency:'day'});
+ assert.equal(daily.contributions,3);near(daily.holdings[0].qty,.03);
+ assert.deepEqual(daily.transactions.map(t=>t.rate),[1000,1000,1000]);
+ const sunday=simulate({assets,fx,amount:1000,frequency:'week',weekday:0});
+ assert.equal(sunday.contributions,1);assert.equal(sunday.transactions[0].t,'2026-11-08');
+});

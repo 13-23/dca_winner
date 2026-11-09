@@ -1,4 +1,4 @@
-"""Observed Nasdaq-100 drawdown/MA episodes. No fitted forecasts or fair-value score."""
+"""Observed index drawdown/MA episodes. No fitted forecasts or fair-value score."""
 from bisect import bisect_left, bisect_right
 from collections import deque
 from datetime import date, datetime, timezone
@@ -10,6 +10,11 @@ import json
 import math
 
 LEVELS = [5, 10, 15, 20, 30]
+MARKETS = {
+    '^NDX': ('나스닥100', '_NDX.json', 'drawdown.json', 22),
+    '^KS11': ('코스피', '_KS11.json', 'drawdown-kospi.json', 8),
+    '^KQ11': ('코스닥', '_KQ11.json', 'drawdown-kosdaq.json', 8),
+}
 
 
 def quantile(values, p):
@@ -138,7 +143,9 @@ def forward_summary(rows, triggers, months):
             'worstAdditionalDecline': min((x['additionalDecline'] for x in values), default=None), 'events': values}
 
 
-def build(rows):
+def build(rows, symbol="^NDX"):
+    if symbol not in MARKETS:
+        raise ValueError("Unsupported drawdown market")
     if len(rows) < 201:
         raise ValueError('At least 201 confirmed daily closes are required')
     if any(not isinstance(r[1], (int, float)) or isinstance(r[1], bool) or not math.isfinite(r[1]) or r[1] <= 0 for r in rows):
@@ -198,31 +205,33 @@ def build(rows):
             ranks[name] = {'percentile': sum(v <= now for v in history) / len(history) * 100 if history and now is not None else None, 'n': len(history)}
         views[key] = {'start': first, 'end': as_of, 'sessions': len(rows) - start_i, 'years': years,
                       'levels': levels, 'movingAverages': averages, 'ranks': ranks}
-    return {'version': 'drawdown-v1', 'symbol': '^NDX', 'name': '나스닥100', 'asOf': as_of,
+    return {'version': 'drawdown-v1', 'symbol': symbol, 'name': MARKETS[symbol][0], 'asOf': as_of,
             'historyStart': dates[0], 'source': 'Yahoo Finance · 저장된 일별 종가', 'current': current, 'views': views,
             'history': [[d, round(p, 4), round(decline, 7)] for d, p, decline in zip(dates, prices, dd)]}
 
 
-def update(directory):
+def update(directory, symbol="^NDX"):
+    name, source_file, output_file, close_hour = MARKETS[symbol]
     directory = Path(directory)
-    path = directory / '_NDX.json'
+    path = directory / source_file
     raw = path.read_bytes()
     payload = json.loads(raw)
     rows = payload['data']
-    # Match the repository's conservative US final-close cut-off; never include a developing candle.
+    # Conservative close cutoffs: US 22:00 UTC, Korea 08:00 UTC (17:00 KST).
     stamp = payload.get('fetchedAt')
     if not stamp:
-        raise ValueError('NDX capture timestamp is missing; refresh research prices first')
+        raise ValueError(symbol + ' capture timestamp is missing; refresh research prices first')
     captured = datetime.fromisoformat(stamp.replace('Z', '+00:00'))
     if captured.tzinfo is None:
         raise ValueError('Capture timestamp must include a timezone')
-    rows = [r for r in rows if datetime.fromisoformat(r[0] + 'T22:00:00+00:00') <= captured]
-    result = build(rows)
+    rows = [r for r in rows if datetime.fromisoformat(r[0] + f'T{close_hour:02d}:00:00+00:00') <= captured]
+    result = build(rows, symbol)
     result.update(generatedAt=datetime.now(timezone.utc).isoformat(), priceCapturedAt=stamp, sourceSha256=hashlib.sha256(raw).hexdigest())
-    (directory / 'drawdown.json').write_text(json.dumps(result, ensure_ascii=False, separators=(',', ':'), allow_nan=False), encoding='utf-8')
-    print('Drawdown analysis:', result['asOf'], len(rows), 'confirmed closes')
+    (directory / output_file).write_text(json.dumps(result, ensure_ascii=False, separators=(',', ':'), allow_nan=False), encoding='utf-8')
+    print('Drawdown analysis:', name, result['asOf'], len(rows), 'confirmed closes')
     return result
 
 
 if __name__ == '__main__':
-    update(Path(__file__).parent / 'data')
+    for symbol in MARKETS:
+        update(Path(__file__).parent / 'data', symbol)

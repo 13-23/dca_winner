@@ -41,7 +41,7 @@ function simulate(options) {
   if(new Set(assets.map(a=>a.symbol)).size!==assets.length)throw Error('같은 종목을 중복해서 선택할 수 없습니다.');
   if(!Number.isFinite(amount)||amount<=0)throw Error('회당 총 투자금은 0보다 큰 숫자로 입력해 주세요.');
   if(assets.some(a=>!Number.isFinite(a.weight)||a.weight<=0)||Math.abs(assets.reduce((s,a)=>s+a.weight,0)-100)>1e-6)throw Error('각 비중은 0보다 커야 하며 합계는 100%여야 합니다.');
-  if(!['day','week','month'].includes(frequency)||!Number.isInteger(weekday)||weekday<1||weekday>5||!Number.isInteger(monthday)||monthday<1||monthday>31)throw Error('매수 주기와 날짜를 확인해 주세요.');
+  if(!['day','week','month'].includes(frequency)||!Number.isInteger(weekday)||weekday<0||weekday>6||!Number.isInteger(monthday)||monthday<1||monthday>31)throw Error('매수 주기와 날짜를 확인해 주세요.');
   const histories=assets.map(a=>a.data);
   for(const a of assets){if(!a.data?.length)throw Error(a.symbol+' 시세가 없습니다.');if(a.currency!=='KRW'){if(!fx[a.currency]?.length)throw Error(a.currency+' 환율 데이터가 없습니다.');histories.push(fx[a.currency]);}}
   const first=histories.reduce((v,h)=>h[0][0]>v?h[0][0]:v,'0000-01-01');

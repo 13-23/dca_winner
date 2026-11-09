@@ -92,6 +92,20 @@ class DrawdownTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 update(folder)
 
+    def test_korean_markets_use_own_source_and_seventeen_kst_close(self):
+        end = date(2026, 11, 6)
+        rows = [[(end - timedelta(days=201-i)).isoformat(), 100] for i in range(202)]
+        with tempfile.TemporaryDirectory() as folder:
+            for symbol, filename, output in [('^KS11', '_KS11.json', 'drawdown-kospi.json'), ('^KQ11', '_KQ11.json', 'drawdown-kosdaq.json')]:
+                p = Path(folder) / filename
+                for stamp, expected in [('2026-11-06T07:59:00+00:00','2026-11-05'), ('2026-11-06T08:00:00+00:00','2026-11-06')]:
+                    p.write_text(json.dumps({'data': rows, 'fetchedAt': stamp}))
+                    result = update(folder, symbol)
+                    self.assertEqual(result['symbol'],symbol)
+                    self.assertEqual(result['asOf'],expected)
+                    saved=json.loads((Path(folder)/output).read_text())
+                    self.assertEqual(saved['sourceSha256'],result['sourceSha256'])
+
     def test_invalid_prices_or_duplicate_dates_fail(self):
         with self.assertRaises(ValueError):
             build(history(200))
