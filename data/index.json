@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-12 01:07 KST",
+ "updated": "2026-11-12 11:55 KST",
  "items": [
   {
    "symbol": "^KS11",
@@ -8,7 +8,7 @@
    "group": "지수",
    "currency": "KRW",
    "first": "1996-12-11",
-   "last": "2026-11-10"
+   "last": "2026-11-12"
   },
   {
    "symbol": "^KQ11",
@@ -17,7 +17,7 @@
    "group": "지수",
    "currency": "KRW",
    "first": "2000-10-16",
-   "last": "2026-11-10"
+   "last": "2026-11-12"
   },
   {
    "symbol": "^IXIC",
@@ -62,7 +62,7 @@
    "group": "국내 ETF",
    "currency": "KRW",
    "first": "2007-01-29",
-   "last": "2026-11-11"
+   "last": "2026-11-12"
   },
   {
    "symbol": "122630.KS",
@@ -71,7 +71,7 @@
    "group": "국내 ETF",
    "currency": "KRW",
    "first": "2010-02-22",
-   "last": "2026-11-11"
+   "last": "2026-11-12"
   },
   {
    "symbol": "233740.KS",
@@ -80,7 +80,7 @@
    "group": "국내 ETF",
    "currency": "KRW",
    "first": "2015-12-17",
-   "last": "2026-11-11"
+   "last": "2026-11-12"
   },
   {
    "symbol": "229200.KS",
@@ -89,7 +89,7 @@
    "group": "국내 ETF",
    "currency": "KRW",
    "first": "2015-10-01",
-   "last": "2026-11-11"
+   "last": "2026-11-12"
   },
   {
    "symbol": "133690.KS",
@@ -98,7 +98,7 @@
    "group": "국내 ETF",
    "currency": "KRW",
    "first": "2010-10-18",
-   "last": "2026-11-11"
+   "last": "2026-11-12"
   },
   {
    "symbol": "360750.KS",
@@ -107,7 +107,7 @@
    "group": "국내 ETF",
    "currency": "KRW",
    "first": "2020-08-07",
-   "last": "2026-11-11"
+   "last": "2026-11-12"
   },
   {
    "symbol": "QQQ",
@@ -233,7 +233,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2000-01-04",
-   "last": "2026-11-10"
+   "last": "2026-11-12"
   },
   {
    "symbol": "000660.KS",
@@ -242,7 +242,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2000-01-04",
-   "last": "2026-11-10"
+   "last": "2026-11-12"
   },
   {
    "symbol": "AAPL",
@@ -301,7 +301,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2000-02-11",
-   "last": "2026-11-10",
+   "last": "2026-11-12",
    "aliases": [
     "Kakao"
    ]
@@ -313,7 +313,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2002-10-29",
-   "last": "2026-11-10",
+   "last": "2026-11-12",
    "aliases": [
     "NAVER"
    ]
@@ -325,7 +325,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2001-04-25",
-   "last": "2026-11-10",
+   "last": "2026-11-12",
    "aliases": [
     "엘지생활건강",
     "LG H&H",
@@ -399,7 +399,7 @@
    "group": "환율",
    "currency": "KRW",
    "first": "2003-12-01",
-   "last": "2026-11-11",
+   "last": "2026-11-12",
    "hidden": true
   }
  ]
