@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-14 01:16 KST",
+ "updated": "2026-11-14 11:20 KST",
  "items": [
   {
    "symbol": "^KS11",
@@ -8,7 +8,7 @@
    "group": "지수",
    "currency": "KRW",
    "first": "1996-12-11",
-   "last": "2026-11-12"
+   "last": "2026-11-13"
   },
   {
    "symbol": "^KQ11",
@@ -188,7 +188,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2025-02-20",
-   "last": "2026-11-13"
+   "last": "2026-11-12"
   },
   {
    "symbol": "SPY",
@@ -233,7 +233,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2000-01-04",
-   "last": "2026-11-12"
+   "last": "2026-11-13"
   },
   {
    "symbol": "000660.KS",
@@ -242,7 +242,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2000-01-04",
-   "last": "2026-11-12"
+   "last": "2026-11-13"
   },
   {
    "symbol": "AAPL",
@@ -287,7 +287,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2013-04-10",
-   "last": "2026-11-13",
+   "last": "2026-11-12",
    "aliases": [
     "한국",
     "코루",
@@ -301,7 +301,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2000-02-11",
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "aliases": [
     "Kakao"
    ]
@@ -313,7 +313,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2002-10-29",
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "aliases": [
     "NAVER"
    ]
@@ -325,7 +325,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2001-04-25",
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "aliases": [
     "엘지생활건강",
     "LG H&H",
