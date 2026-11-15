@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-14 11:20 KST",
+ "updated": "2026-11-15 10:50 KST",
  "items": [
   {
    "symbol": "^KS11",
@@ -17,7 +17,7 @@
    "group": "지수",
    "currency": "KRW",
    "first": "2000-10-16",
-   "last": "2026-11-12"
+   "last": "2026-11-13"
   },
   {
    "symbol": "^IXIC",
@@ -188,7 +188,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2025-02-20",
-   "last": "2026-11-12"
+   "last": "2026-11-13"
   },
   {
    "symbol": "SPY",
@@ -287,7 +287,7 @@
    "group": "미국 레버리지 ETF·ETN",
    "currency": "USD",
    "first": "2013-04-10",
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "aliases": [
     "한국",
     "코루",
@@ -339,7 +339,7 @@
    "group": "가상자산",
    "currency": "KRW",
    "first": "2014-09-17",
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "aliases": [
     "BTC",
     "비트코인",
@@ -354,7 +354,7 @@
    "group": "가상자산",
    "currency": "USD",
    "first": "2014-09-17",
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "aliases": [
     "BTC",
     "비트코인",
@@ -369,7 +369,7 @@
    "group": "가상자산",
    "currency": "KRW",
    "first": "2017-11-11",
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "aliases": [
     "ETH",
     "이더리움",
@@ -384,7 +384,7 @@
    "group": "가상자산",
    "currency": "USD",
    "first": "2017-11-09",
-   "last": "2026-11-12",
+   "last": "2026-11-13",
    "aliases": [
     "ETH",
     "이더리움",
@@ -399,7 +399,7 @@
    "group": "환율",
    "currency": "KRW",
    "first": "2003-12-01",
-   "last": "2026-11-13",
+   "last": "2026-11-14",
    "hidden": true
   }
  ]
