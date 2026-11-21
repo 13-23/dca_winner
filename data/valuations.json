@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-20T16:56:22.712048+00:00",
+  "updated": "2026-11-21T03:10:41.747134+00:00",
   "items": [
     {
       "symbol": "^KS11",
@@ -53,11 +53,11 @@
     },
     {
       "symbol": "^GSPC",
-      "referencePrice": 7225.31,
-      "per": 24.46,
-      "pbr": 5.69,
-      "asOf": "2026-11-19",
-      "sourceTimestamp": "2026-11-19T16:00:00-05:00",
+      "referencePrice": 6955.54,
+      "per": 23.55,
+      "pbr": 5.48,
+      "asOf": "2026-11-20",
+      "sourceTimestamp": "2026-11-20T16:00:00-05:00",
       "source": "Multpl (S&P 500)",
       "sourceUrls": {
         "per": "https://www.multpl.com/s-p-500-pe-ratio",

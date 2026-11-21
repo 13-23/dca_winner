@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-21 01:56 KST",
+ "updated": "2026-11-21 12:10 KST",
  "items": [
   {
    "symbol": "^KS11",
@@ -8,7 +8,7 @@
    "group": "지수",
    "currency": "KRW",
    "first": "1996-12-11",
-   "last": "2026-11-19"
+   "last": "2026-11-20"
   },
   {
    "symbol": "^KQ11",
@@ -17,7 +17,7 @@
    "group": "지수",
    "currency": "KRW",
    "first": "2000-10-16",
-   "last": "2026-11-19"
+   "last": "2026-11-20"
   },
   {
    "symbol": "^IXIC",
@@ -233,7 +233,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2000-01-04",
-   "last": "2026-11-19"
+   "last": "2026-11-20"
   },
   {
    "symbol": "000660.KS",
@@ -242,7 +242,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2000-01-04",
-   "last": "2026-11-19"
+   "last": "2026-11-20"
   },
   {
    "symbol": "AAPL",
@@ -301,7 +301,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2000-02-11",
-   "last": "2026-11-19",
+   "last": "2026-11-20",
    "aliases": [
     "Kakao"
    ]
@@ -313,7 +313,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2002-10-29",
-   "last": "2026-11-19",
+   "last": "2026-11-20",
    "aliases": [
     "NAVER"
    ]
@@ -325,7 +325,7 @@
    "group": "개별 종목",
    "currency": "KRW",
    "first": "2001-04-25",
-   "last": "2026-11-19",
+   "last": "2026-11-20",
    "aliases": [
     "엘지생활건강",
     "LG H&H",
