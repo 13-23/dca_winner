@@ -21,4 +21,5 @@ summary.textContent="유효 지표 "+valid+"/"+rows.length+" · 주의 "+warning
 for(const r of rows)for(const el of [r.a,r.b,r.date,r.source])el.addEventListener("input",render);
 document.getElementById("ai-save").addEventListener("click",()=>{const data={};for(const r of rows)data[r.id]={current:r.a.value,previous:r.b.value,date:r.date.value,source:r.source.value};try{localStorage.setItem(key,JSON.stringify(data));render();summary.textContent+=" · 저장됨"}catch{summary.textContent="저장 실패"}});
 document.getElementById("ai-reset").addEventListener("click",()=>{if(!confirm("이 브라우저의 AI 지표 입력을 초기화할까요?"))return;try{localStorage.removeItem(key)}catch{}for(const r of rows)for(const el of [r.a,r.b,r.date,r.source])el.value="";render()});render();
+fetch("data/ai-cycle.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("unavailable");return r.json()}).then(data=>{for(const r of rows){const v=data[r.id];if(!v||[r.a,r.b,r.date,r.source].some(el=>el.value))continue;r.a.value=v.current;r.b.value=v.previous;r.date.value=v.date;r.source.value=v.source}render()}).catch(()=>{});
 })();
