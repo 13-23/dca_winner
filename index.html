@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=overview">
+<link rel="stylesheet" href="styles.css?v=scan">
 </head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -22,11 +22,12 @@
     <button type="button" role="tab" id="tab-btn-tv" aria-controls="tab-tv" aria-selected="false" tabindex="-1">TradingView 차트</button>
     <button type="button" role="tab" id="tab-btn-drawdown" aria-controls="tab-drawdown" aria-selected="false" tabindex="-1">하락·회복 분석</button>
   </nav>
+  <details class="theme-menu"><summary class="btn">테마</summary>
   <div class="seg seg-sm theme-seg" role="group" aria-label="화면 테마" id="theme">
     <button type="button" data-v="light">밝게</button>
     <button type="button" data-v="dark">어둡게</button>
     <button type="button" data-v="auto">자동</button>
-  </div>
+  </div></details>
   </div>
   <p class="hint" id="data-updated" hidden></p>
 
@@ -83,6 +84,7 @@
             <div class="field"><label for="pf-strategy-drop">추가 매수 하락 기준 (%)</label><input id="pf-strategy-drop" name="dropThreshold" type="number" min="0.01" max="99.99" step="any" value="10"></div>
           </div>
           <p class="hint" data-strategy-status role="status"></p>
+          <dl class="comparison-strip" data-strategy-differences aria-label="현금 보유 전략의 차이" hidden></dl>
           <div class="tablewrap" tabindex="0" role="region" aria-label="월 적립 전략 비교 결과" hidden>
             <table><thead><tr><th scope="col">지표</th><th scope="col">즉시 적립</th><th scope="col">현금 보유 후 추가 매수</th></tr></thead><tbody>
               <tr><th scope="row">최종 자산</th><td></td><td></td></tr>
@@ -120,7 +122,7 @@
   </div>
   <div class="stack" id="single-mode">
     <div class="grid single-overview">
-      <section class="panel" aria-labelledby="h-asset">
+      <section class="panel asset-picker" aria-labelledby="h-asset">
         <div class="statement-head"><h2 id="h-asset">종목</h2><a class="results-link" href="#single-results">결과 보기</a></div>
         <div class="field">
           <label for="preset">자주 쓰는 종목</label>
@@ -170,12 +172,12 @@
             
           </select>
         </div>
-        <div class="field">
+        <details class="asset-search"><summary class="btn">종목 검색</summary><div class="field">
           <label for="q">다른 종목 찾기</label>
           <input type="search" id="q" placeholder="종목명·코드 검색 (예: 카카오, 035420, KORU)" autocomplete="off">
           <div class="results" id="results"></div>
           <p class="hint" id="q-hint">한글명·영문명·코드로 검색하고 결과를 누르거나 Enter로 선택하세요.</p>
-        </div>
+        </div></details>
         <p class="hint" id="crypto-source-note" hidden>Yahoo Finance의 원화 표시 시세입니다. 국내 거래소 체결가와 다를 수 있습니다.</p>
         <div class="assetinfo" id="assetinfo" aria-live="polite"><b>불러오는 중…</b></div>
       </section>
@@ -183,7 +185,7 @@
       <section class="panel price-summary" id="single-price-summary" aria-labelledby="single-price-heading" hidden>
         <h2 id="single-price-heading">종합 판단 요약</h2>
         <div data-overview-content>
-          <p data-overview-quote class="overview-quote"></p>
+          <div data-overview-quote class="overview-quote"></div>
           <div class="overview-areas">
             <section><h3>가격 위치</h3><div data-overview-position></div><div data-overview-ma></div></section>
             <section><h3>밸류에이션</h3><div data-overview-valuation></div><div data-overview-value-link></div></section>
@@ -262,6 +264,7 @@
           <div class="field"><label for="single-strategy-drop">추가 매수 하락 기준 (%)</label><input id="single-strategy-drop" name="dropThreshold" type="number" min="0.01" max="99.99" step="any" value="10"></div>
         </div>
         <p class="hint" data-strategy-status role="status"></p>
+        <dl class="comparison-strip" data-strategy-differences aria-label="현금 보유 전략의 차이" hidden></dl>
         <div class="tablewrap" tabindex="0" role="region" aria-label="월 적립 전략 비교 결과" hidden>
           <table><thead><tr><th scope="col">지표</th><th scope="col">즉시 적립</th><th scope="col">현금 보유 후 추가 매수</th></tr></thead><tbody>
             <tr><th scope="row">최종 자산</th><td></td><td></td></tr>
@@ -495,6 +498,7 @@
     <p class="hint" id="dd-status" role="status" aria-live="polite">탭을 열면 관측 통계를 불러옵니다.</p>
     <p id="dd-boundary" class="hint evidence-note" hidden></p>
     <div id="dd-content" class="stack" hidden>
+      <section class="panel" aria-labelledby="dd-summary-title"><h2 id="dd-summary-title">선택한 낙폭의 과거 사례</h2><dl class="comparison-strip" id="dd-episode-summary"></dl><p class="hint" id="dd-period-mdd"></p></section>
       <section class="panel"><h2>현재의 기술적 위치</h2><div class="kpis" id="dd-current"></div><details><summary>출처·집계 조건</summary><p class="hint" id="dd-source"></p></details><p class="hint">펀더멘털 저평가 점수는 제공하지 않습니다. 이 분석은 가격 이력을 사용하며 PER·PBR 기반 가치 평가와 분리했습니다. 아래 값은 회복일·매수 승률의 예측이 아닙니다.</p></section>
       <section class="panel"><h2>고점 대비 낙폭 이력</h2><div class="dd-chartbox" id="dd-chartbox"><canvas id="dd-chart" aria-label="나스닥100 일별 종가의 누적 고점 대비 낙폭"></canvas></div><p class="hint" id="dd-hover">차트 위에서 움직이면 날짜와 낙폭을 볼 수 있습니다.</p></section>
       <section class="panel"><h2>하락 단계별 빈도와 고점 회복</h2><p class="hint">같은 고점을 회복하기 전까지는 하나의 사건입니다. 단계별 사건은 겹칠 수 있어 합산하지 않습니다. 고점은 표시 기간 이전의 가용 가격까지 반영합니다.</p><div class="tablewrap"><table><thead><tr><th>낙폭 최초 도달</th><th>기간 내 신규 사건</th><th>연평균</th><th>기간 전 진입·이월</th><th>해당 낙폭 이하 체류일 비중</th><th>완료 / 진행</th><th>고점 회복 중앙값</th><th>완료 구간 평균</th><th>완료 구간 최장</th><th>검열 보정 중앙값</th></tr></thead><tbody id="dd-frequency"></tbody></table></div><p class="hint">회복 기간은 각 낙폭 단계에 처음 도달한 날부터 이전 고점을 회복하기까지의 거래일입니다. 완료 통계는 완료 사건만, 검열 보정 중앙값은 진행 중 사건의 관측 길이도 반영한 Kaplan–Meier 추정입니다. 중앙값을 추정할 수 없으면 —로 표시하며 현재 회복 예정일을 뜻하지 않습니다.</p></section>
@@ -517,9 +521,9 @@
 </div>
 
 <script src="valuation.js"></script>
-<script src="price-summary.js?v=overview"></script>
+<script src="price-summary.js?v=scan"></script>
 <script src="portfolio.js?v=monthly-strategy"></script>
-<script src="strategy-ui.js"></script>
+<script src="strategy-ui.js?v=scan"></script>
 <script src="index-valuation.js?v=overview" defer></script>
 <script src="market.js" defer></script>
 <script src="position.js?v=20261109-markets" defer></script>
@@ -703,11 +707,14 @@ $("q").addEventListener("keydown", async e => {
     else { $("results").innerHTML = '<p class="hint">검색 결과가 없습니다. 영문명·티커 또는 국내 6자리 코드로 다시 검색해 주세요.</p>'; }
   } catch (e) { $("results").textContent = e.message; }
 });
+const searchDisclosure = $("q").closest("details");
+searchDisclosure.addEventListener("toggle", () => { if (searchDisclosure.open) $("q").focus(); });
 function pickCustom(sym, name) {
   sym = sym.toUpperCase();
   let opt = [...$("preset").options].find(o => o.value === sym);
   if (!opt) { opt = document.createElement("option"); opt.value = sym; opt.textContent = `${name} (${sym})`; (document.getElementById("og-custom") || $("preset")).append(opt); }
   $("preset").value = sym; $("results").innerHTML = ""; $("q").value = "";
+  if (searchDisclosure.open) { searchDisclosure.open = false; $("preset").focus(); }
   selectSymbol(sym, opt.textContent);
 }
 
@@ -1801,6 +1808,6 @@ showTab(tabs.includes(startTab) ? startTab : "dca");
 })();
 </script>
 <script src="portfolio-ui.js?v=overview"></script>
-<script src="drawdown-ui.js?v=monthly-strategy" defer></script>
+<script src="drawdown-ui.js?v=scan" defer></script>
 </body>
 </html>

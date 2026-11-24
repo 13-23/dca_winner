@@ -181,7 +181,25 @@
       const unit = asset.symbol.startsWith("^") ? "pt" : asset.currency || "통화 미기재";
       const price = value => number.format(value) + " " + unit;
       quote.textContent = stats ? price(stats.current.price) : "확정 종가 자료 없음";
-      if (stats) addLine(quote, stats.current.date + " · " + (crypto(asset) ? "UTC 일봉 종가" : "현지 일봉 종가") + " · " + (asset.currency || "통화 미기재"));
+      let quoteDetails = quote;
+      if (!body) {
+        const headline = document.createElement("strong");
+        headline.textContent = quote.textContent;
+        quote.replaceChildren(headline);
+        if (stats) {
+          const date = document.createElement("span");
+          date.className = "overview-date";
+          date.textContent = stats.current.date + " 확정 종가";
+          quote.append(date);
+        }
+        const disclosure = document.createElement("details");
+        const summary = document.createElement("summary");
+        summary.textContent = "시세 출처와 기준";
+        disclosure.append(summary);
+        quote.append(disclosure);
+        quoteDetails = disclosure;
+      }
+      if (stats) addLine(quoteDetails, stats.current.date + " · " + (crypto(asset) ? "UTC 일봉 종가" : "현지 일봉 종가") + " · " + (asset.currency || "통화 미기재"));
       const source = document.createElement("a");
       source.textContent = "Yahoo Finance";
       source.href = "https://finance.yahoo.com/quote/" + encodeURIComponent(asset.symbol) + "/history/";
@@ -190,24 +208,45 @@
       const provenance = document.createElement("small");
       const status = quoteStatus(asset);
       provenance.append(source, " · " + status);
-      quote.append(provenance);
-      if (Number.isFinite(Date.parse(asset.fetchedAt))) addLine(quote, "수집 " + collectedAt.format(new Date(asset.fetchedAt)) + " KST");
+      quoteDetails.append(provenance);
+      if (!body && status.startsWith("갱신 실패")) {
+        const warning = document.createElement("span");
+        warning.className = "overview-date warn";
+        warning.textContent = status;
+        quote.insertBefore(warning, quoteDetails);
+      }
+      if (Number.isFinite(Date.parse(asset.fetchedAt))) addLine(quoteDetails, "수집 " + collectedAt.format(new Date(asset.fetchedAt)) + " KST");
 
       if (asset.quoteUpdate?.status === "retained" && status.startsWith("갱신 실패") &&
           Number.isFinite(Date.parse(asset.quoteUpdate.attemptedAt))) {
-        addLine(quote, "갱신 시도 " + collectedAt.format(new Date(asset.quoteUpdate.attemptedAt)) + " KST");
+        addLine(quoteDetails, "갱신 시도 " + collectedAt.format(new Date(asset.quoteUpdate.attemptedAt)) + " KST");
       }
-      if (stats) addLine(quote, "이력 시작 " + stats.first);
+      if (stats) addLine(quoteDetails, "이력 시작 " + stats.first);
 
       const match = stats?.comparison;
       position.textContent = match ? match.date + " · " + price(match.price) : "비교 이력 부족";
-      if (match) addLine(position, (stats.withinBand ? "±1% 내 최근" : "±1% 밖 최인접") + " · 현재 대비 " + percent.format(match.gap));
-      if (match) addLine(position, comparisonAge(stats.current, match) + (stats.withinBand ? " 가격대" : " 비교 종가"));
+      if (match) {
+        const age = comparisonAge(stats.current, match) + (stats.withinBand ? " 가격대" : " 비교 종가");
+        if (body) addLine(position, age);
+        else {
+          const headline = document.createElement("strong");
+          headline.textContent = age;
+          position.replaceChildren(headline);
+          addLine(position, match.date + " · " + price(match.price));
+        }
+        addLine(position, (stats.withinBand ? "±1% 내 최근" : "±1% 밖 최인접") + " · 현재 대비 " + percent.format(match.gap));
+      }
       const gapLabel = value => value == null ? "이력 부족" : percent.format(value);
       addLine(position, "200일선 " + gapLabel(stats?.dailyGap));
       addLine(position, "60주선 " + gapLabel(stats?.weeklyGap));
       valuation.textContent = stats ? "배수 자료 확인 중…" : "자료 없음";
       risk.textContent = stats?.peakGap != null ? "최근 1년 고점 대비 " + percent.format(stats.peakGap) : "낙폭 이력 부족";
+      if (!body && stats?.peakGap != null) {
+        const headline = document.createElement("strong");
+        headline.textContent = percent.format(stats.peakGap);
+        risk.replaceChildren(headline);
+        addLine(risk, "최근 1년 고점 대비");
+      }
       if (stats?.maxDrawdown != null) {
         addLine(risk, "최대 낙폭 " + percent.format(stats.maxDrawdown));
         addLine(risk, stats.riskStart + " ~ " + stats.current.date);
@@ -228,7 +267,12 @@
         const multiple = value => value == null ? "자료 없음" : number.format(value) + "배";
         valuation.textContent = snapshot ? "PER " + multiple(per) : "제공 배수 없음";
         if (!snapshot) continue;
-        addLine(valuation, "PBR " + multiple(pbr));
+        if (body) addLine(valuation, "PBR " + multiple(pbr));
+        else {
+          const headline = document.createElement("strong");
+          headline.textContent = "PER " + multiple(per) + " · PBR " + multiple(pbr);
+          valuation.replaceChildren(headline);
+        }
         addLine(valuation, snapshot.asOf + " · " + (snapshot.source || "출처 미기재"));
         addLine(valuation, "과거 배수 비교 자료 없음");
         if (snapshot.estimated || snapshot.status === "stale") {

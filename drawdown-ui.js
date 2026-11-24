@@ -16,7 +16,23 @@ function render(){
  $('dd-content').hidden=false;$('dd-chart').setAttribute('aria-label',data.name+' 일별 종가의 누적 고점 대비 낙폭');
  $('dd-quick').hidden=false;$('dd-quick').textContent=data.name+' · '+data.asOf+' | 고점 대비 '+pct(c.drawdown)+' | 60주선 대비 '+pct(c.gap60w)+' · 가격 위치이며 저평가 판정은 아닙니다.';
  $('dd-boundary').hidden=!level.carriedIn;$('dd-boundary').textContent=level.carriedIn?'기간 시작 전에 이미 −'+level.level+'%에 진입한 미회복 사건 '+level.carriedIn+'건은 아래 신규 횟수·회복기간·이후 성과의 표본에 포함되지 않습니다. 실제 사건 표의 이월 행과 전체 가용 이력도 확인해 주세요.':'';
- const cards=[['확보된 이력의 고점 대비 낙폭',pct(c.drawdown),'고점일 '+c.peakDate],['고점 미회복 연속 기간',days(c.underwaterDays),'종가가 고점 아래였던 관측 일수'],['200일선 대비 거리',pct(c.gap200),'선 회복은 고점 회복과 다릅니다'],['60주선 대비 거리',pct(c.gap60w),'현재 주는 해당일 종가까지 반영'],['현재 낙폭 이하였던 과거 비중',view.ranks.drawdown.percentile==null?'—':nf.format(view.ranks.drawdown.percentile)+'%',view.ranks.drawdown.n.toLocaleString()+'개 과거 거래일 · 현재일 제외'],['최근 21일 실현변동성',rate(c.volatility21),'일별 수익률 표준편차 · 연율화']];
+ const forward=level.forward.find(item=>item.months===3);
+ const summary=[
+  ['기간 내 최초 도달', nf.format(level.count)+'건'],
+  ['이후 3개월 최악 추가 하락', pct(forward?.worstAdditionalDecline)],
+  ['이전 고점 회복 중앙값 · 완료건', days(level.duration.median)],
+  ['미회복 · 이월 포함', nf.format(level.duration.ongoing + level.carriedInEvents.filter(event=>!event.recovery).length)+'건']
+ ];
+ $('dd-episode-summary').innerHTML=summary.map(([label,value])=>'<div><dt>'+esc(label)+'</dt><dd>'+esc(value)+'</dd></div>').join('');
+ let peak=0,mdd=0;
+ for(const [date,close] of data.history){
+  if(date<view.start)continue;
+  if(date>view.end)break;
+  peak=Math.max(peak,close);
+  mdd=Math.min(mdd,close/peak-1);
+ }
+ $('dd-period-mdd').textContent='선택 기간 최대 낙폭 '+pct(mdd)+' · 기간 안에서 기록한 고점부터 계산';
+ const cards=[['현재 고점 대비 낙폭 · 전체 이력 기준',pct(c.drawdown),'고점일 '+c.peakDate],['고점 미회복 연속 기간',days(c.underwaterDays),'종가가 고점 아래였던 관측 일수'],['200일선 대비 거리',pct(c.gap200),'선 회복은 고점 회복과 다릅니다'],['60주선 대비 거리',pct(c.gap60w),'현재 주는 해당일 종가까지 반영'],['현재 낙폭 이하였던 과거 비중',view.ranks.drawdown.percentile==null?'—':nf.format(view.ranks.drawdown.percentile)+'%',view.ranks.drawdown.n.toLocaleString()+'개 과거 거래일 · 현재일 제외'],['최근 21일 실현변동성',rate(c.volatility21),'일별 수익률 표준편차 · 연율화']];
  $('dd-current').innerHTML=cards.map(([label,value,sub])=>'<div class="kpi"><span class="lbl">'+esc(label)+'</span><span class="val">'+esc(value)+'</span><span class="sub">'+esc(sub)+'</span></div>').join('');
  const age=(Date.now()-Date.parse(data.asOf+'T22:00:00Z'))/86400000;
  $('dd-status').className=age>7?'hint warn':'hint';$('dd-status').textContent=(age>7?'자료가 7일 이상 지났습니다. 현재 시점 판단 전 갱신 상태를 확인하세요. ':'')+data.name+' · '+data.asOf+' 확정 종가 기준 · 통계 '+view.start+' ~ '+view.end+' ('+view.sessions.toLocaleString()+'거래일)';

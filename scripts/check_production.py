@@ -25,7 +25,7 @@ def check():
     if 'pf-search' not in page or 'data-position-panel' not in page or 'mdd-guide' not in page:
         raise ValueError('Published calculator features are missing')
     summary = get(SITE + 'price-summary.js?v=' + revision)
-    if not all(marker in page for marker in ('single-price-summary', 'pf-price-summary', 'data-overview-position', 'crypto-source-note')) or b'comparisonAge' not in summary:
+    if not all(marker in page for marker in ('single-price-summary', 'pf-price-summary', 'data-overview-position', 'crypto-source-note', 'data-strategy-differences', 'dd-episode-summary')) or b'comparisonAge' not in summary:
         raise ValueError('Published price summary is missing')
     if 'single-strategy' not in page or 'pf-strategy' not in page or b'compareMonthly' not in get(SITE + 'strategy-ui.js?v=' + revision):
         raise ValueError('Published monthly strategy comparison is missing')
