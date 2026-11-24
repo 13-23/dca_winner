@@ -27,6 +27,8 @@ def check():
     summary = get(SITE + 'price-summary.js?v=' + revision)
     if 'single-price-summary' not in page or 'pf-price-summary' not in page or b'root.PriceSummary' not in summary:
         raise ValueError('Published price summary is missing')
+    if 'single-strategy' not in page or 'pf-strategy' not in page or b'compareMonthly' not in get(SITE + 'strategy-ui.js?v=' + revision):
+        raise ValueError('Published monthly strategy comparison is missing')
     index = json.loads(get(SITE + 'data/index.json?v=' + revision))
     kst = timezone(timedelta(hours=9))
     updated = datetime.strptime(index['updated'], '%Y-%m-%d %H:%M KST').replace(tzinfo=kst)
@@ -35,21 +37,18 @@ def check():
     study = json.loads(get(SITE + 'data/position-v2.json?v=' + revision))
     if study.get('version') != 'research-v2' or not all(m.get('latest') for m in study['markets'].values()):
         raise ValueError('Market position study is unavailable')
-    drawdown = json.loads(get(SITE + 'data/drawdown.json?v=' + revision))
-    ndx_raw = get(SITE + 'data/_NDX.json?v=' + revision)
-    if drawdown.get('version') != 'drawdown-v1' or not drawdown.get('views', {}).get('20'):
-        raise ValueError('Drawdown study is unavailable')
-    if drawdown.get('sourceSha256') != hashlib.sha256(ndx_raw).hexdigest():
-        raise ValueError('Drawdown study does not match published Nasdaq-100 source prices')
-    if drawdown['asOf'] > json.loads(ndx_raw)['data'][-1][0]:
-        raise ValueError('Drawdown study uses a date after the published source prices')
     if 'tab-btn-drawdown' not in page or b'drawdown-v1' not in get(SITE + 'drawdown-ui.js?v=' + revision):
         raise ValueError('Drawdown tab assets are missing')
-    for symbol, stat_file, price_file in [('^KS11', 'drawdown-kospi.json', '_KS11.json'), ('^KQ11', 'drawdown-kosdaq.json', '_KQ11.json')]:
+    markets = [('^NDX', 'drawdown.json', '_NDX.json'), ('^KS11', 'drawdown-kospi.json', '_KS11.json'),
+               ('^KQ11', 'drawdown-kosdaq.json', '_KQ11.json'), ('^GSPC', 'drawdown-sp500.json', '_GSPC.json'),
+               ('^IXIC', 'drawdown-nasdaq.json', '_IXIC.json'), ('^DJI', 'drawdown-dow.json', '_DJI.json')]
+    for symbol, stat_file, price_file in markets:
         stat = json.loads(get(SITE + 'data/' + stat_file + '?v=' + revision))
         raw = get(SITE + 'data/' + price_file + '?v=' + revision)
-        if stat.get('symbol') != symbol or stat.get('sourceSha256') != hashlib.sha256(raw).hexdigest():
-            raise ValueError('Korean drawdown market/source mismatch: ' + symbol)
+        if (stat.get('symbol') != symbol or stat.get('version') != 'drawdown-v1' or not stat.get('views', {}).get('20')
+                or stat.get('sourceSha256') != hashlib.sha256(raw).hexdigest()
+                or stat['asOf'] > json.loads(raw)['data'][-1][0]):
+            raise ValueError('Drawdown market/source mismatch: ' + symbol)
     for symbol in ['BTC-KRW', 'BTC-USD', 'ETH-KRW', 'ETH-USD']:
         coin = json.loads(get(SITE + 'data/' + symbol + '.json?v=' + revision))
         if not any(item['symbol'] == symbol for item in index['items']) or coin['currency'] != symbol.split('-')[1]:
@@ -66,7 +65,7 @@ def check():
         raise ValueError('PSQ price history is unavailable')
     if date.today() - date.fromisoformat(chart['data'][-1][0]) > timedelta(days=7):
         raise ValueError('PSQ price history is stale')
-    print('Public release, three drawdown markets, four crypto histories, and external PSQ search/history verified')
+    print('Public release, six drawdown markets, four crypto histories, and external PSQ search/history verified')
 
 
 if __name__ == '__main__':

@@ -443,3 +443,6 @@ tbody tr:hover { background: var(--accent-soft); }
 .price-summary th, .price-summary td { text-align: left; vertical-align: top; }
 .price-summary small { display: block; color: var(--muted); }
 .price-summary td, .price-summary tbody th { min-width: 8rem; }
+.price-drawdown { margin-top: .4rem; white-space: normal; }
+.strategy-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .6rem; }
+.strategy-panel th, .strategy-panel td { text-align: left; white-space: normal; }

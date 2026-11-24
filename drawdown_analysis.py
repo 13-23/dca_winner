@@ -11,6 +11,9 @@ import math
 
 LEVELS = [5, 10, 15, 20, 30]
 MARKETS = {
+    '^GSPC': ('S&P 500', '_GSPC.json', 'drawdown-sp500.json', 22),
+    '^IXIC': ('나스닥 종합', '_IXIC.json', 'drawdown-nasdaq.json', 22),
+    '^DJI': ('다우존스', '_DJI.json', 'drawdown-dow.json', 22),
     '^NDX': ('나스닥100', '_NDX.json', 'drawdown.json', 22),
     '^KS11': ('코스피', '_KS11.json', 'drawdown-kospi.json', 8),
     '^KQ11': ('코스닥', '_KQ11.json', 'drawdown-kosdaq.json', 8),

@@ -5,7 +5,7 @@ const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const pct=v=>v==null?'—':(v>0?'+':'')+nf.format(v*100)+'%',days=v=>v==null?'—':nf.format(v)+'거래일';
 const rate=v=>v==null?'—':nf.format(v*100)+'%';
 const tr=values=>'<tr>'+values.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>';
-const marketFiles={'^NDX':'drawdown.json','^KS11':'drawdown-kospi.json','^KQ11':'drawdown-kosdaq.json'};
+const marketFiles={'^GSPC':'drawdown-sp500.json','^IXIC':'drawdown-nasdaq.json','^DJI':'drawdown-dow.json','^NDX':'drawdown.json','^KS11':'drawdown-kospi.json','^KQ11':'drawdown-kosdaq.json'};
 let data=null,chart=null,events=[],loadRequest=0;
 const marketCache=new Map();
 try{const s=JSON.parse(localStorage.getItem('drawdown-view-v1')||'{}');if(marketFiles[s.market])$('dd-market').value=s.market;if(['all','20','10'].includes(s.window))$('dd-window').value=s.window;if([5,10,15,20,30].includes(+s.level))$('dd-level').value=s.level;}catch(e){}

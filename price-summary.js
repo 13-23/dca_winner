@@ -7,19 +7,23 @@
   const korea = asset => /\.(KS|KQ)$|^\^K[QS]11$/.test(asset.symbol);
   const closeDelay = asset => crypto(asset) ? day : korea(asset) ? 8 * hour : asset.currency === "USD" ? 22 * hour : day;
 
-  function summarize(asset) {
+  function confirmedRows(asset) {
     const captured = Date.parse(asset.fetchedAt);
-    if (!Number.isFinite(captured)) return null;
+    if (!Number.isFinite(captured)) return [];
     const delay = closeDelay(asset);
     const closes = new Map();
     for (const row of asset.data) {
       const [date, price] = Array.isArray(row) ? row : [row.t, row.c];
       const time = Date.parse(date);
       if (Number.isFinite(time) && time + delay <= captured && Number.isFinite(price) && price > 0) {
-        closes.set(date, {date, time, price});
+        closes.set(date, {date, time, price, row});
       }
     }
-    const history = [...closes.values()].sort((a, b) => a.time - b.time);
+    return [...closes.values()].sort((a, b) => a.time - b.time);
+  }
+
+  function summarize(asset) {
+    const history = confirmedRows(asset);
     const current = history.at(-1);
     if (!current) return null;
 
@@ -37,7 +41,16 @@
       if (Math.abs(gap) <= 0.01 + Number.EPSILON) recent = match;
       if (!nearest || Math.abs(gap) <= Math.abs(nearest.gap)) nearest = match;
     }
+    const weeks = new Map();
+    for (const close of history) {
+      const offset = (new Date(close.time).getUTCDay() + 6) % 7;
+      weeks.set(close.time - offset * day, close.price);
+    }
+    const gapToAverage = (prices, size) => prices.length < size ? null :
+      current.price / (prices.slice(-size).reduce((sum, price) => sum + price, 0) / size) - 1;
     return {
+      dailyGap: gapToAverage(history.map(close => close.price), 200),
+      weeklyGap: gapToAverage([...weeks.values()], 60),
       current, first: history[0].date, comparison: recent || nearest, withinBand: !!recent,
       peakGap: count > 1 ? current.price / peak - 1 : null,
       maxDrawdown: count > 1 ? maxDrawdown : null,
@@ -79,6 +92,24 @@
     cell.append(line);
   }
 
+  const drawdownMarkets = {"^GSPC": "S&P 500", "^IXIC": "나스닥 종합", "^DJI": "다우존스", "^NDX": "나스닥100", "^KS11": "코스피", "^KQ11": "코스닥"};
+  function drawdownLink(symbol) {
+    let market = Object.hasOwn(drawdownMarkets, symbol) ? symbol : "";
+    if (["SPY", "VOO", "SSO", "UPRO", "360750.KS"].includes(symbol)) market = "^GSPC";
+    if (symbol === "DIA") market = "^DJI";
+    if (["QQQ", "QLD", "TQQQ", "133690.KS"].includes(symbol)) market = "^NDX";
+    if (["229200.KS", "233740.KS"].includes(symbol) || symbol.endsWith(".KQ")) market = "^KQ11";
+    if (!market && symbol.endsWith(".KS")) market = "^KS11";
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn price-drawdown";
+    button.textContent = market
+      ? drawdownMarkets[market] + (market === symbol ? " 하락·회복" : " 참고 분석")
+      : "하락·회복 지수 선택";
+    button.addEventListener("click", () => window.dispatchEvent(new CustomEvent("drawdownselect", {detail: market})));
+    return button;
+  }
+
   function render(panel, assets, {portfolio = false, mdd = null} = {}) {
     panel.hidden = true;
     const body = panel.querySelector("tbody");
@@ -116,12 +147,16 @@
       position.textContent = match ? match.date + " · " + price(match.price) : "비교 이력 부족";
       if (match) addLine(position, (stats.withinBand ? "±1% 내 최근" : "±1% 밖 최인접") + " · 현재 대비 " + percent.format(match.gap));
       if (stats) addLine(position, "시세 이력 " + stats.first + "부터");
+      const gapLabel = value => value == null ? "이력 부족" : percent.format(value);
+      addLine(position, "200일선 " + gapLabel(stats?.dailyGap));
+      addLine(position, "60주선 " + gapLabel(stats?.weeklyGap));
       valuation.textContent = stats ? "배수 자료 확인 중…" : "자료 없음";
       risk.textContent = stats?.peakGap != null ? "고점 대비 " + percent.format(stats.peakGap) : "낙폭 이력 부족";
       if (stats?.maxDrawdown != null) {
         addLine(risk, "최대 낙폭 " + percent.format(stats.maxDrawdown));
         addLine(risk, stats.riskStart + " ~ " + stats.current.date);
       }
+      risk.append(drawdownLink(asset.symbol));
       return {asset, stats, valuation};
     });
     panel.hidden = false;
@@ -146,5 +181,5 @@
     });
   }
 
-  root.PriceSummary = {render};
+  root.PriceSummary = {render, confirmedRows};
 })(typeof window !== "undefined" ? window : globalThis);

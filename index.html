@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=price-summary">
+<link rel="stylesheet" href="styles.css?v=monthly-strategy">
 </head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -72,6 +72,31 @@
           <button type="button" class="btn" id="pf-calculate">계산 / 시세 다시 불러오기</button>
           <p id="pf-status" class="hint" role="status" aria-live="polite"></p>
         </section>
+        <details class="panel strategy-panel" id="pf-strategy">
+          <summary><strong>월 적립 전략 비교</strong></summary>
+          <p class="hint">위의 종목·비중, 시작일·종료일과 소수점·배당 설정을 사용합니다. 두 전략의 월 납입은 같은 날짜에 같은 원화 금액으로 이루어집니다. 지정일이 휴장일이면 다음 거래일에 납입합니다.</p>
+          <div class="strategy-controls">
+            <div class="field"><label for="pf-strategy-amount">월 납입액 (원)</label><input id="pf-strategy-amount" name="monthlyAmount" type="number" min="1" step="any" value="1000000"></div>
+            <div class="field"><label for="pf-strategy-day">매월 납입일 (31 = 말일)</label><input id="pf-strategy-day" name="monthlyDay" type="number" min="1" max="31" value="1"></div>
+            <div class="field"><label for="pf-strategy-share">현금으로 남길 비중 (%)</label><input id="pf-strategy-share" name="reserveShare" type="number" min="0" max="100" step="any" value="20"></div>
+            <div class="field"><label for="pf-strategy-drop">추가 매수 하락 기준 (%)</label><input id="pf-strategy-drop" name="dropThreshold" type="number" min="0.01" max="99.99" step="any" value="10"></div>
+          </div>
+          <p class="hint" data-strategy-status role="status"></p>
+          <div class="tablewrap" tabindex="0" role="region" aria-label="월 적립 전략 비교 결과" hidden>
+            <table><thead><tr><th scope="col">지표</th><th scope="col">즉시 적립</th><th scope="col">현금 보유 후 추가 매수</th></tr></thead><tbody>
+              <tr><th scope="row">최종 자산</th><td></td><td></td></tr>
+              <tr><th scope="row">최대 낙폭</th><td></td><td></td></tr>
+              <tr><th scope="row">원금 미달 누적 기간</th><td></td><td></td></tr>
+              <tr><th scope="row">원금 미달 최장 연속 기간</th><td></td><td></td></tr>
+              <tr><th scope="row">남은 현금</th><td></td><td></td></tr>
+              <tr><th scope="row">추가 매수에 현금 배정</th><td></td><td></td></tr>
+            </tbody></table>
+          </div>
+          <details><summary>매수 규칙과 지표 산식</summary>
+            <p class="hint">매월 종목별 배정액 중 설정한 비율을 원화로 남깁니다. 첫 납입 이후 각 종목의 현지 종가가 누적 최고 종가 대비 설정 낙폭에 처음 닿으면, 그다음 해당 종목 거래일 종가에 쌓인 현금을 투입합니다. 기준선 위로 돌아온 뒤 다시 내려가면 새 신호로 셉니다. 신호는 일반 종가, 매수와 평가는 배당 설정에 따른 가격을 사용합니다. 지수를 직접 선택하면 지수값을 매수 가격으로 가정합니다.</p>
+            <p class="hint">최종 자산에는 원화 현금과 보유 종목이 포함됩니다. 최대 낙폭 계산에서 납입 효과를 제외합니다. 원금 미달 기간은 원화 자산이 누적 납입액보다 낮았던 달력일이며 다음 평가일까지 직전 평가를 유지합니다. 수수료·세금·현금 이자는 0으로 가정합니다.</p>
+          </details>
+        </details>
       </div>
       <div class="stack" id="pf-results" hidden>
         <section class="panel"><h2>포트폴리오 결과</h2><div class="kpis" id="pf-kpis"></div><p class="hint" id="pf-period"></p></section>
@@ -79,9 +104,9 @@
           <h2 id="pf-price-heading">가격 위치 · 밸류에이션 · 하락 위험</h2>
           <p class="hint" data-price-context></p>
           <div class="tablewrap" tabindex="0" role="region" aria-labelledby="pf-price-heading">
-            <table><thead><tr><th scope="col">종목</th><th scope="col">최신 종가 · 기준일 · 출처</th><th scope="col">과거 비슷한 종가</th><th scope="col">종가 환산 PER·PBR</th><th scope="col">최근 1년 하락 위험</th></tr></thead><tbody></tbody></table>
+            <table><thead><tr><th scope="col">종목</th><th scope="col">최신 종가 · 기준일 · 출처</th><th scope="col">과거 비슷한 종가 · 이평선 이격</th><th scope="col">종가 환산 PER·PBR</th><th scope="col">최근 1년 하락 위험</th></tr></thead><tbody></tbody></table>
           </div>
-          <details><summary>비교·집계 기준</summary><p class="hint">현지 통화(지수는 포인트)로 공급처의 종가 열을 비교합니다. 최신 종가에서 30일 이상 지난 관측 중 ±1% 이내의 가장 최근 날짜를 표시합니다. 없다면 가격 차이가 가장 작은 날짜를 표시합니다. 배수는 출처의 이익·장부가치를 고정해 종가로 환산합니다. 낙폭은 최근 365일 중 확보된 종가의 고점 대비 하락과 그 구간의 최대 낙폭이며, 미래 손실을 예측하지 않습니다.</p><p class="hint">수집 시각이 한국 17:00 KST, 미국 22:00 UTC를 지난 일봉을 사용합니다. 가상자산과 그 외 시장은 일봉 표시일 다음 UTC 자정 이후 수집한 봉을 사용합니다.</p></details>
+          <details><summary>비교·집계 기준</summary><p class="hint">현지 통화(지수는 포인트)로 공급처의 종가 열을 비교합니다. 최신 종가에서 30일 이상 지난 관측 중 ±1% 이내의 가장 최근 날짜를 표시합니다. 없다면 가격 차이가 가장 작은 날짜를 표시합니다. 이평선 이격은 종가 ÷ 이동평균 − 1입니다. 200일선은 최근 200개 일봉, 60주선은 이전 59개 주의 마지막 종가와 이번 주 최신 종가를 사용합니다. 배수는 출처의 이익·장부가치를 고정해 종가로 환산합니다. 낙폭은 최근 365일 중 확보된 종가의 고점 대비 하락과 그 구간의 최대 낙폭이며, 미래 손실을 예측하지 않습니다.</p><p class="hint">수집 시각이 한국 17:00 KST, 미국 22:00 UTC를 지난 일봉을 사용합니다. 가상자산과 그 외 시장은 일봉 표시일 다음 UTC 자정 이후 수집한 봉을 사용합니다.</p></details>
         </section>
         <section class="panel"><h2>포트폴리오와 단일 종목 비교</h2><p class="hint">같은 날짜에 같은 총금액을 납입해 각 종목에 전액 투자한 경우와 비교합니다. 평가에는 해당 날짜까지의 시세만 사용합니다.</p><div class="pf-legend" id="pf-legend"></div><div class="pf-chart" id="pf-chartbox"><canvas id="pf-chart" aria-label="포트폴리오와 단일 종목 평가금액 비교"></canvas></div><p class="hint" id="pf-hover"></p><div class="tablewrap"><table><thead><tr><th>구성</th><th>평가금액</th><th>손익</th><th>수익률</th><th>XIRR</th><th>MDD</th></tr></thead><tbody id="pf-comparison"></tbody></table></div></section>
         <p class="hint">코인 원화 항목은 Yahoo Finance의 원화 표시 시세로 국내 거래소 체결가와 다를 수 있습니다. 코인은 주말 포함 UTC 일봉이며 당일 미완성 봉은 제외합니다. 달러 항목의 원화 환산은 휴일에 직전 가용 환율을 사용합니다.</p>
@@ -210,13 +235,38 @@
         <div id="kpis" class="kpis"></div>
         <p class="hint" id="resnote"></p>
       </section>
+      <details class="panel strategy-panel" id="single-strategy">
+        <summary><strong>월 적립 전략 비교</strong></summary>
+        <p class="hint">위의 종목·비중, 시작일·종료일과 소수점·배당 설정을 사용합니다. 두 전략의 월 납입은 같은 날짜에 같은 원화 금액으로 이루어집니다. 지정일이 휴장일이면 다음 거래일에 납입합니다.</p>
+        <div class="strategy-controls">
+          <div class="field"><label for="single-strategy-amount">월 납입액 (원)</label><input id="single-strategy-amount" name="monthlyAmount" type="number" min="1" step="any" value="1000000"></div>
+          <div class="field"><label for="single-strategy-day">매월 납입일 (31 = 말일)</label><input id="single-strategy-day" name="monthlyDay" type="number" min="1" max="31" value="1"></div>
+          <div class="field"><label for="single-strategy-share">현금으로 남길 비중 (%)</label><input id="single-strategy-share" name="reserveShare" type="number" min="0" max="100" step="any" value="20"></div>
+          <div class="field"><label for="single-strategy-drop">추가 매수 하락 기준 (%)</label><input id="single-strategy-drop" name="dropThreshold" type="number" min="0.01" max="99.99" step="any" value="10"></div>
+        </div>
+        <p class="hint" data-strategy-status role="status"></p>
+        <div class="tablewrap" tabindex="0" role="region" aria-label="월 적립 전략 비교 결과" hidden>
+          <table><thead><tr><th scope="col">지표</th><th scope="col">즉시 적립</th><th scope="col">현금 보유 후 추가 매수</th></tr></thead><tbody>
+            <tr><th scope="row">최종 자산</th><td></td><td></td></tr>
+            <tr><th scope="row">최대 낙폭</th><td></td><td></td></tr>
+            <tr><th scope="row">원금 미달 누적 기간</th><td></td><td></td></tr>
+            <tr><th scope="row">원금 미달 최장 연속 기간</th><td></td><td></td></tr>
+            <tr><th scope="row">남은 현금</th><td></td><td></td></tr>
+            <tr><th scope="row">추가 매수에 현금 배정</th><td></td><td></td></tr>
+          </tbody></table>
+        </div>
+        <details><summary>매수 규칙과 지표 산식</summary>
+          <p class="hint">매월 종목별 배정액 중 설정한 비율을 원화로 남깁니다. 첫 납입 이후 각 종목의 현지 종가가 누적 최고 종가 대비 설정 낙폭에 처음 닿으면, 그다음 해당 종목 거래일 종가에 쌓인 현금을 투입합니다. 기준선 위로 돌아온 뒤 다시 내려가면 새 신호로 셉니다. 신호는 일반 종가, 매수와 평가는 배당 설정에 따른 가격을 사용합니다. 지수를 직접 선택하면 지수값을 매수 가격으로 가정합니다.</p>
+          <p class="hint">최종 자산에는 원화 현금과 보유 종목이 포함됩니다. 최대 낙폭 계산에서 납입 효과를 제외합니다. 원금 미달 기간은 원화 자산이 누적 납입액보다 낮았던 달력일이며 다음 평가일까지 직전 평가를 유지합니다. 수수료·세금·현금 이자는 0으로 가정합니다.</p>
+        </details>
+      </details>
       <section class="panel price-summary" id="single-price-summary" aria-labelledby="single-price-heading" hidden>
         <h2 id="single-price-heading">가격 위치 · 밸류에이션 · 하락 위험</h2>
         <p class="hint" data-price-context></p>
         <div class="tablewrap" tabindex="0" role="region" aria-labelledby="single-price-heading">
-          <table><thead><tr><th scope="col">종목</th><th scope="col">최신 종가 · 기준일 · 출처</th><th scope="col">과거 비슷한 종가</th><th scope="col">종가 환산 PER·PBR</th><th scope="col">최근 1년 하락 위험</th></tr></thead><tbody></tbody></table>
+          <table><thead><tr><th scope="col">종목</th><th scope="col">최신 종가 · 기준일 · 출처</th><th scope="col">과거 비슷한 종가 · 이평선 이격</th><th scope="col">종가 환산 PER·PBR</th><th scope="col">최근 1년 하락 위험</th></tr></thead><tbody></tbody></table>
         </div>
-        <details><summary>비교·집계 기준</summary><p class="hint">현지 통화(지수는 포인트)로 공급처의 종가 열을 비교합니다. 최신 종가에서 30일 이상 지난 관측 중 ±1% 이내의 가장 최근 날짜를 표시합니다. 없다면 가격 차이가 가장 작은 날짜를 표시합니다. 배수는 출처의 이익·장부가치를 고정해 종가로 환산합니다. 낙폭은 최근 365일 중 확보된 종가의 고점 대비 하락과 그 구간의 최대 낙폭이며, 미래 손실을 예측하지 않습니다.</p><p class="hint">수집 시각이 한국 17:00 KST, 미국 22:00 UTC를 지난 일봉을 사용합니다. 가상자산과 그 외 시장은 일봉 표시일 다음 UTC 자정 이후 수집한 봉을 사용합니다.</p></details>
+        <details><summary>비교·집계 기준</summary><p class="hint">현지 통화(지수는 포인트)로 공급처의 종가 열을 비교합니다. 최신 종가에서 30일 이상 지난 관측 중 ±1% 이내의 가장 최근 날짜를 표시합니다. 없다면 가격 차이가 가장 작은 날짜를 표시합니다. 이평선 이격은 종가 ÷ 이동평균 − 1입니다. 200일선은 최근 200개 일봉, 60주선은 이전 59개 주의 마지막 종가와 이번 주 최신 종가를 사용합니다. 배수는 출처의 이익·장부가치를 고정해 종가로 환산합니다. 낙폭은 최근 365일 중 확보된 종가의 고점 대비 하락과 그 구간의 최대 낙폭이며, 미래 손실을 예측하지 않습니다.</p><p class="hint">수집 시각이 한국 17:00 KST, 미국 22:00 UTC를 지난 일봉을 사용합니다. 가상자산과 그 외 시장은 일봉 표시일 다음 UTC 자정 이후 수집한 봉을 사용합니다.</p></details>
       </section>
       <section class="panel" aria-labelledby="h-risk">
         <div class="statement-head"><h2 id="h-risk">수익·위험 지표</h2><span class="hint" id="riskperiod"></span></div>
@@ -429,9 +479,9 @@
     </section>
   </div>
   <div id="tab-drawdown" role="tabpanel" aria-labelledby="tab-btn-drawdown" class="tabpanel" hidden>
-    <header class="tool-intro"><h1>하락·회복 분석</h1><p>나스닥100·코스피·코스닥이 과거에 얼마나 자주, 깊게, 오래 하락했는지 확인합니다. 많이 하락한 가격과 펀더멘털 저평가는 서로 다릅니다.</p></header>
+    <header class="tool-intro"><h1>하락·회복 분석</h1><p>한국·미국 주요 6개 지수가 과거에 얼마나 자주, 깊게, 오래 하락했는지 확인합니다. 많이 하락한 가격과 펀더멘털 저평가는 서로 다릅니다.</p></header>
     <p class="dd-quick" id="dd-quick" hidden></p>
-    <section class="panel dd-controls"><div class="field"><label for="dd-market">분석 시장</label><select id="dd-market"><option value="^NDX">나스닥100</option><option value="^KS11">코스피</option><option value="^KQ11">코스닥</option></select></div><div class="field"><label for="dd-window">통계 기간</label><select id="dd-window"><option value="20">최근 20년</option><option value="10">최근 10년</option><option value="all">전체 가용 이력</option></select></div><div class="field"><label for="dd-level">자세히 볼 고점 대비 낙폭</label><select id="dd-level"><option value="5">−5%</option><option value="10" selected>−10%</option><option value="15">−15%</option><option value="20">−20%</option><option value="30">−30%</option></select></div><button class="btn" type="button" id="dd-retry">새로 불러오기</button></section>
+    <section class="panel dd-controls"><div class="field"><label for="dd-market">분석 시장</label><select id="dd-market"><option value="^NDX">나스닥100</option><option value="^GSPC">S&amp;P 500</option><option value="^IXIC">나스닥 종합</option><option value="^DJI">다우존스</option><option value="^KS11">코스피</option><option value="^KQ11">코스닥</option></select></div><div class="field"><label for="dd-window">통계 기간</label><select id="dd-window"><option value="20">최근 20년</option><option value="10">최근 10년</option><option value="all">전체 가용 이력</option></select></div><div class="field"><label for="dd-level">자세히 볼 고점 대비 낙폭</label><select id="dd-level"><option value="5">−5%</option><option value="10" selected>−10%</option><option value="15">−15%</option><option value="20">−20%</option><option value="30">−30%</option></select></div><button class="btn" type="button" id="dd-retry">새로 불러오기</button></section>
     <p class="hint" id="dd-status" role="status" aria-live="polite">탭을 열면 관측 통계를 불러옵니다.</p>
     <p id="dd-boundary" class="hint evidence-note" hidden></p>
     <div id="dd-content" class="stack" hidden>
@@ -457,7 +507,9 @@
 </div>
 
 <script src="valuation.js"></script>
-<script src="price-summary.js"></script>
+<script src="price-summary.js?v=monthly-strategy"></script>
+<script src="portfolio.js?v=monthly-strategy"></script>
+<script src="strategy-ui.js"></script>
 <script src="index-valuation.js?v=20261109-markets" defer></script>
 <script src="market.js" defer></script>
 <script src="position.js?v=20261109-markets" defer></script>
@@ -570,12 +622,14 @@ async function selectSymbol(sym, label) {
   window.dispatchEvent(new CustomEvent("positionmarketcontext", { detail: { symbol: sym } }));
   st.sym = sym; const my = ++st.req;
   $("single-price-summary").hidden = true;
+  st.strategyAsset = null;
+  StrategyUI.update($("single-strategy"), null);
   $("assetinfo").innerHTML = `<b></b><small>시세 불러오는 중…</small>`; $("assetinfo").querySelector("b").textContent = label || sym;
   document.querySelector("#single-mode > .stack:last-child").classList.add("loading");
   try {
     const a = await loadChart(sym);
     if (my !== st.req) return;
-    st.asset = a; st.fx = null; st.fxErr = null;
+    st.asset = st.strategyAsset = a; st.fx = null; st.fxErr = null;
     PriceSummary.render($("single-price-summary"), [{...a, label}]);
     const info = $("assetinfo"); info.innerHTML = "<b></b><small></small><small></small>";
     info.children[0].textContent = (label && label !== sym ? label + " · " : "") + (a.name || sym);
@@ -594,7 +648,7 @@ async function selectSymbol(sym, label) {
     }
   } catch (e) {
     if (my !== st.req) return;
-    st.asset = null;
+    st.asset = st.strategyAsset = null;
     $("assetinfo").innerHTML = "<b></b><small></small>";
     $("assetinfo").children[0].textContent = sym + " 불러오기 실패";
     $("assetinfo").children[1].textContent = e.message;
@@ -815,6 +869,23 @@ let last = null;
 const kpi = (label, val, sub, extra) => `<div class="kpi ${extra || ""}"><span class="lbl">${label}</span><span class="val">${val}</span>${sub ? `<span class="sub">${sub}</span>` : ""}</div>`;
 function run() {
   saveForm();
+  const asset = st.strategyAsset;
+  StrategyUI.update($("single-strategy"), asset && (() => {
+    const fx = {};
+    if (asset.currency !== "KRW") {
+      if ($("fxsrc").value === "fixed") {
+        const rate = +$("fxrate").value;
+        fx[asset.currency] = [[asset.data[0].t, rate], [asset.data.at(-1).t, rate]];
+      } else if (st.fx) {
+        fx[asset.currency] = st.fx.data.map(row => [row.t, row.c]);
+      }
+    }
+    return {
+      assets: [{...asset, weight: 100}], fx,
+      start: $("start").value, end: $("end").value,
+      adjusted: $("adj").checked, fractional: $("frac").checked
+    };
+  }));
   const r = simulate(); last = r;
   if (r.error) {
     $("kpis").innerHTML = `<div class="kpi" style="grid-column:1/-1"><span class="sub" style="font-size:14px;font-family:var(--font-body)"></span></div>`;
@@ -988,7 +1059,7 @@ window.addEventListener("drawdownpreview", e => {
 });
 window.addEventListener("drawdowncalculator", async e => {
   const d = e.detail; if (!d || d.mode !== "single") return;
-  const symbol = ["^NDX", "^KS11", "^KQ11"].includes(d.symbol) ? d.symbol : "^NDX";
+  const symbol = [...$("dd-market").options].some(option => option.value === d.symbol) ? d.symbol : "^NDX";
   $("preset").value = symbol;
   await selectSymbol(symbol, d.name || symbol);
   if (!st.asset || st.sym !== symbol) return;
@@ -1136,6 +1207,11 @@ function showTab(which) {
   if (which === "drawdown") window.dispatchEvent(new Event("drawdownopen"));
 }
 for (const tab of tabs) $("tab-btn-" + tab).addEventListener("click", () => showTab(tab));
+window.addEventListener("drawdownselect", e => {
+  if (e.detail) $("dd-market").value = e.detail;
+  showTab("drawdown");
+  $("dd-market").focus();
+});
 document.querySelector('.tabs').addEventListener('keydown', e => {
   if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
   e.preventDefault();
@@ -1706,8 +1782,7 @@ let startTab = "dca"; try { startTab = localStorage.getItem(LS_TAB) || "dca"; } 
 showTab(tabs.includes(startTab) ? startTab : "dca");
 })();
 </script>
-<script src="portfolio.js?v=20261109-markets"></script>
-<script src="portfolio-ui.js?v=price-summary"></script>
-<script src="drawdown-ui.js?v=20261109-markets" defer></script>
+<script src="portfolio-ui.js?v=monthly-strategy"></script>
+<script src="drawdown-ui.js?v=monthly-strategy" defer></script>
 </body>
 </html>

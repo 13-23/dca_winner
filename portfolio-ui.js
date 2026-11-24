@@ -27,19 +27,20 @@ function renderRows(){
  });total();
 }
 function conditions(){ $('pf-week-field').hidden=$('pf-frequency').value!=='week';$('pf-month-field').hidden=$('pf-frequency').value!=='month'; }
-function changed(){conditions();total();save();result=null;$('pf-results').hidden=true;$('pf-status').className='hint';$('pf-status').textContent='입력 변경 · 계산 대기 중…';request++;clearTimeout(timer);if(active)timer=setTimeout(calculate,250);}
+function changed(){conditions();total();save();result=null;StrategyUI.update($('pf-strategy'),null);$('pf-results').hidden=true;$('pf-status').className='hint';$('pf-status').textContent='입력 변경 · 계산 대기 중…';request++;clearTimeout(timer);if(active)timer=setTimeout(calculate,250);}
 async function load(symbol){if(cache.has(symbol))return cache.get(symbol);const j=await API.getChart(symbol);cache.set(symbol,j);return j;}
 async function calculate(){
- const mine=++request;clearTimeout(timer);save();$('pf-results').hidden=true;$('pf-status').className='hint';$('pf-status').textContent='시세와 환율을 불러오는 중…';result=null;
+ const mine=++request;clearTimeout(timer);save();StrategyUI.update($('pf-strategy'),null);$('pf-results').hidden=true;$('pf-status').className='hint';$('pf-status').textContent='시세와 환율을 불러오는 중…';result=null;
  try{
   const amount=+$('pf-amount').value;
   if(!entries.length||entries.some(e=>!Number.isFinite(e.weight)||e.weight<=0)||Math.abs(entries.reduce((s,e)=>s+e.weight,0)-100)>1e-6)throw Error('종목별 비중을 입력해 합계를 100%로 맞춰 주세요.');
   if(new Set(entries.map(e=>e.symbol)).size!==entries.length)throw Error('같은 종목은 한 번만 선택해 주세요.');
-  if(!Number.isFinite(amount)||amount<=0)throw Error('회당 총 투자금은 0보다 큰 숫자로 입력해 주세요.');
   const assets=await Promise.all(entries.map(async e=>{const j=await load(e.symbol);const item=list.find(t=>t.symbol===e.symbol);return {...j,weight:e.weight,label:item?.label||e.label||j.name||e.symbol};}));
   const fx={};await Promise.all([...new Set(assets.map(a=>a.currency).filter(c=>c!=='KRW'))].map(async c=>{fx[c]=(await load(c==='USD'?'KRW=X':c+'KRW=X')).data;}));
   if(mine!==request)return;
-  result=PortfolioEngine.compare({assets,fx,amount,start:$('pf-start').value,end:$('pf-end').value,frequency:$('pf-frequency').value,weekday:+$('pf-weekday').value,monthday:+$('pf-monthday').value,fractional:$('pf-fractional').checked,adjusted:$('pf-adjusted').checked});
+  const options={assets,fx,amount,start:$('pf-start').value,end:$('pf-end').value,frequency:$('pf-frequency').value,weekday:+$('pf-weekday').value,monthday:+$('pf-monthday').value,fractional:$('pf-fractional').checked,adjusted:$('pf-adjusted').checked};
+  StrategyUI.update($('pf-strategy'),()=>options);
+  result=PortfolioEngine.compare(options);
   PriceSummary.render($('pf-price-summary'), assets, {portfolio:true, mdd:result.portfolio.mdd});
   shown=100;render();$('pf-status').textContent='계산 완료 · '+result.portfolio.contributions+'회 납입';
  }catch(e){if(mine!==request)return;result=null;$('pf-results').hidden=true;$('pf-status').className='hint warn';$('pf-status').textContent=e.message;}

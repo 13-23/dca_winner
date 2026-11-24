@@ -45,3 +45,19 @@ test('uses the capture time to exclude incomplete US, Korean and crypto bars', (
   }
   assert.equal(summarize(asset(data, {fetchedAt: undefined})), null);
 });
+
+test('200-day and 60-week gaps use current confirmed close and the previous 59 weekly closes', () => {
+  const rows = Array.from({length: 420}, (_, index) => [
+    new Date(Date.UTC(2025, 0, 6 + index)).toISOString().slice(0, 10), 100
+  ]);
+  rows.pop();
+  rows.at(-1)[1] = 200;
+  rows.push(['2026-03-01', 500]);
+  const result = summarize(asset(rows, {symbol:'BTC-USD', fetchedAt:'2026-03-01T00:00:00Z'}));
+  assert.equal(result.current.price, 200);
+  assert.equal(result.dailyGap, 200 / 100.5 - 1);
+  assert.equal(result.weeklyGap, 200 / ((59 * 100 + 200) / 60) - 1);
+  const short = summarize(asset(rows.slice(-10), {symbol:'BTC-USD', fetchedAt:'2026-03-01T00:00:00Z'}));
+  assert.equal(short.dailyGap, null);
+  assert.equal(short.weeklyGap, null);
+});

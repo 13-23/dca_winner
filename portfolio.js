@@ -57,20 +57,38 @@ function simulate(options) {
   const dateSets=assets.map(a=>new Set(a.data.map(r=>r[0])));
   const px=assets.map(a=>{let i=0;return t=>{while(i+1<a.data.length&&a.data[i+1][0]<=t)i++;return a.data[i][adjusted?2:1];};});
   const rates={};for(const [cur,rows] of Object.entries(fx)){let i=0;rates[cur]=t=>{while(i+1<rows.length&&rows[i+1][0]<=t)i++;return rows[i][1];};}
-  const state=assets.map(a=>({symbol:a.symbol,label:a.label||a.symbol,currency:a.currency,weight:a.weight,qty:0,cash:0,invested:0,purchaseCost:0,due:false}));
+  const reserveRule=options.reserveRule;
+  const rawCloses=reserveRule ? assets.map(a=>new Map(a.data.map(row=>[row[0],row[1]]))) : null;
+  const state=assets.map(a=>({symbol:a.symbol,label:a.label||a.symbol,currency:a.currency,weight:a.weight,qty:0,cash:0,invested:0,purchaseCost:0,due:false,reserve:0,peak:0,below:false,releaseNext:false,releases:0}));
   const series=[],transactions=[];let invested=0;
   for(const t of calendar){
     const flow=dates.has(t)?amount:0;invested+=flow;let value=0;
     state.forEach((s,i)=>{
-      if(flow){const budget=flow*s.weight/100;s.cash+=budget;s.invested+=budget;s.due=true;}
+      if(flow){
+        const budget=flow*s.weight/100, reserved=budget*(reserveRule?.share ?? 0);
+        s.reserve+=reserved;s.cash+=budget-reserved;s.invested+=budget;s.due=true;
+      }
       const rate=s.currency==='KRW'?1:rates[s.currency](t),price=px[i](t);
       if(!Number.isFinite(rate)||rate<=0||!Number.isFinite(price)||price<=0)throw Error(s.symbol+' 가격·환율 데이터가 유효하지 않습니다.');
-      if(dateSets[i].has(t)&&s.due){
+      const trading=dateSets[i].has(t);
+      if(trading && s.releaseNext){
+        s.releaseNext=false;
+        if(s.reserve>0){s.cash+=s.reserve;s.reserve=0;s.due=true;s.releases++;}
+      }
+      if(trading&&s.due){
         s.due=false;
         const q=fractional?s.cash/(rate*price):Math.floor(s.cash/(rate*price));
         if(q>0){const spend=q*price*rate;s.qty+=q;s.cash=Math.max(0,s.cash-spend);s.purchaseCost+=q*price;transactions.push({t,symbol:s.symbol,qty:q,price,rate,spend});}
       }
-      s.price=price;s.rate=rate;s.value=s.qty*price*rate+s.cash;value+=s.value;
+      if(reserveRule && trading && s.invested>0){
+        const close=rawCloses[i].get(t);
+        if(!Number.isFinite(close)||close<=0)throw Error(s.symbol+' 하락 신호에 쓸 종가가 없습니다.');
+        s.peak=Math.max(s.peak,close);
+        const below=close <= s.peak*(1-reserveRule.threshold);
+        s.releaseNext=below&&!s.below;
+        s.below=below;
+      }
+      s.price=price;s.rate=rate;s.value=s.qty*price*rate+s.cash+s.reserve;value+=s.value;
     });
     series.push({t,flow,invested,value});
   }
@@ -85,5 +103,33 @@ function compare(options) {
   const benchmarks=options.assets.map(a=>({symbol:a.symbol,label:a.label||a.symbol,result:simulate({...options,assets:[{...a,weight:100}],start:portfolio.start,end:portfolio.end,calendar,contributionDates})}));
   return {portfolio,benchmarks};
 }
-const api={simulate,compare,metrics,xirr};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.PortfolioEngine=api;
+function compareMonthly(options) {
+  const {share,threshold}=options;
+  if(!Number.isFinite(share)||share<0||share>1||!Number.isFinite(threshold)||threshold<=0||threshold>=1) {
+    throw Error('현금 비중은 0~100%, 하락 기준은 0% 초과 100% 미만으로 입력해 주세요.');
+  }
+  const monthly={...options,frequency:'month',reserveRule:null};
+  const immediate=simulate(monthly);
+  const reserve=simulate({...monthly,reserveRule:{share,threshold}});
+  const describe=result=>{
+    let below=0,longest=0,streak=0;
+    result.series.forEach((row,i)=>{
+      if(row.invested-row.value<=Math.max(1e-7,row.invested*1e-12)){streak=0;return;}
+      const next=result.series[i+1];
+      const days=next?(date(next.t)-date(row.t))/dayMs:1;
+      below+=days;streak+=days;longest=Math.max(longest,streak);
+    });
+    return {
+      value:result.series.at(-1).value, mdd:result.mdd, below, longest,
+      cash:result.holdings.reduce((sum,h)=>sum+h.cash+h.reserve,0),
+      releases:result.holdings.reduce((sum,h)=>sum+h.releases,0)
+    };
+  };
+  return {
+    start:immediate.start,end:immediate.end,contributions:immediate.contributions,
+    invested:immediate.series.at(-1).invested,
+    immediate:describe(immediate),reserve:describe(reserve)
+  };
+}
+const api={simulate,compare,compareMonthly,metrics,xirr};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.PortfolioEngine=api;
 })(typeof window!=='undefined'?window:globalThis);

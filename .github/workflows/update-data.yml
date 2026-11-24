@@ -57,7 +57,7 @@ jobs:
       - name: 시장별 6개월 반등 검증 갱신
         run: python market_position_v2.py
 
-      - name: 나스닥100·코스피·코스닥 하락·회복 통계 갱신
+      - name: 주요 6개 지수 하락·회복 통계 갱신
         run: python drawdown_analysis.py
 
       - name: 바뀐 시세 저장
