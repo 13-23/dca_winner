@@ -22,8 +22,8 @@
   },
   "_status": {
     "yield": "ok",
-    "inventory": "ok",
-    "receivables": "ok"
+    "inventory": "retained",
+    "receivables": "retained"
   },
-  "_attempted": "2026-11-24T11:44:36.852715+00:00"
+  "_attempted": "2026-11-24T11:46:46.859371+00:00"
 }
