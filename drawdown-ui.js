@@ -8,6 +8,20 @@ const tr=values=>'<tr>'+values.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>';
 const marketFiles={'^GSPC':'drawdown-sp500.json','^IXIC':'drawdown-nasdaq.json','^DJI':'drawdown-dow.json','^NDX':'drawdown.json','^KS11':'drawdown-kospi.json','^KQ11':'drawdown-kosdaq.json'};
 let data=null,chart=null,events=[],loadRequest=0;
 const marketCache=new Map();
+function getMarket(symbol, force=false){
+ if(!marketFiles[symbol]) return Promise.reject(Error('지원 지수가 아닙니다.'));
+ if(force||!marketCache.has(symbol)){
+  const request=fetch('data/'+marketFiles[symbol],{cache:'no-cache'}).then(async response=>{
+   if(!response.ok)throw Error('통계 파일 조회 실패 ('+response.status+')');
+   const j=await response.json();
+   if(j.version!=='drawdown-v1'||j.symbol!==symbol||!j.views?.all||!j.history?.length)throw Error('선택한 시장의 통계 형식을 확인할 수 없습니다.');
+   return j;
+  }).catch(error=>{if(marketCache.get(symbol)===request)marketCache.delete(symbol);throw error;});
+  marketCache.set(symbol,request);
+ }
+ return marketCache.get(symbol);
+}
+window.DrawdownData={has:symbol=>Object.hasOwn(marketFiles,symbol),get:getMarket};
 try{const s=JSON.parse(localStorage.getItem('drawdown-view-v1')||'{}');if(marketFiles[s.market])$('dd-market').value=s.market;if(['all','20','10'].includes(s.window))$('dd-window').value=s.window;if([5,10,15,20,30].includes(+s.level))$('dd-level').value=s.level;}catch(e){}
 function selected(){const view=data.views[$('dd-window').value];return {view,level:view.levels.find(x=>x.level===+$('dd-level').value)};}
 function render(){
@@ -65,11 +79,9 @@ async function load(force=false){
  $('dd-content').hidden=true;$('dd-quick').hidden=true;$('dd-boundary').hidden=true;
  $('dd-status').textContent='확정 종가의 하락·회복 통계를 불러오는 중…';$('dd-status').className='hint';
  try{
-  let j=marketCache.get(symbol);
-  if(!j||force){const r=await fetch('data/'+marketFiles[symbol],{cache:'no-cache'});if(!r.ok)throw Error('통계 파일 조회 실패 ('+r.status+')');j=await r.json();}
+  const j=await getMarket(symbol,force);
   if(mine!==loadRequest)return;
-  if(j.version!=='drawdown-v1'||j.symbol!==symbol||!j.views?.all||!j.history?.length)throw Error('선택한 시장의 통계 형식을 확인할 수 없습니다.');
-  marketCache.set(symbol,j);data=j;render();
+  data=j;render();
  }catch(e){if(mine!==loadRequest)return;$('dd-status').className='hint warn';$('dd-status').textContent=e.message+' · 시세 업데이트가 완료됐는지 확인하거나 새로 불러오기를 눌러 주세요.';}
 }
 $('dd-chart').addEventListener('pointermove',e=>{if(!chart)return;const {history,p,W}=chart;const x=e.clientX-e.currentTarget.getBoundingClientRect().left,i=Math.max(0,Math.min(history.length-1,Math.round((x-p.l)/(W-p.l-p.r)*(history.length-1)))),row=history[i];$('dd-hover').textContent=row[0]+' · 지수 '+nf.format(row[1])+' · 고점 대비 '+pct(row[2]);});

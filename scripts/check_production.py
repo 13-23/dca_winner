@@ -29,6 +29,8 @@ def check():
         raise ValueError('Published price summary is missing')
     if 'single-strategy' not in page or 'pf-strategy' not in page or b'compareMonthly' not in get(SITE + 'strategy-ui.js?v=' + revision):
         raise ValueError('Published monthly strategy comparison is missing')
+    if 'market-context-card' not in page or b'additionalDecline' not in get(SITE + 'market-context.js?v=' + revision):
+        raise ValueError('Published market context is missing')
     index = json.loads(get(SITE + 'data/index.json?v=' + revision))
     kst = timezone(timedelta(hours=9))
     updated = datetime.strptime(index['updated'], '%Y-%m-%d %H:%M KST').replace(tzinfo=kst)

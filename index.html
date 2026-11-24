@@ -6,7 +6,7 @@
 <title>적립식 평단 계산기</title>
 <script>try { const t = localStorage.getItem("theme-v1"); if (t === "dark" || t === "auto" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
-<link rel="stylesheet" href="styles.css?v=cool-review">
+<link rel="stylesheet" href="styles.css?v=market-context">
 </head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -197,6 +197,25 @@
         </div>
         <div class="overview-actions"><button type="button" class="btn overview-cta" id="open-single-strategy" aria-controls="single-strategy">월 적립 전략 비교</button></div>
         <details><summary>비교·집계 기준</summary><p class="hint">현지 통화(지수는 포인트)로 공급처의 종가 열을 비교합니다. 최신 종가에서 30일 이상 지난 관측 중 ±1% 이내의 가장 최근 날짜를 표시합니다. 없다면 가격 차이가 가장 작은 날짜를 표시합니다. 이평선 이격은 종가 ÷ 이동평균 − 1입니다. 200일선은 최근 200개 일봉, 60주선은 이전 59개 주의 마지막 종가와 이번 주 최신 종가를 사용합니다. 배수는 출처의 이익·장부가치를 고정해 종가로 환산합니다. 낙폭은 최근 365일 중 확보된 종가의 고점 대비 하락과 그 구간의 최대 낙폭이며, 미래 손실을 예측하지 않습니다.</p><p class="hint">수집 시각이 한국 17:00 KST, 미국 22:00 UTC를 지난 일봉을 사용합니다. 가상자산과 그 외 시장은 일봉 표시일 다음 UTC 자정 이후 수집한 봉을 사용합니다.</p></details>
+      </section>
+      <section class="panel market-context-card" id="market-context-card" aria-labelledby="market-context-heading" hidden>
+        <div class="statement-head"><h2 id="market-context-heading">시장 위치와 추가 하락</h2><span class="hint" data-market-date></span></div>
+        <p role="status" class="hint" data-market-note></p>
+        <dl class="comparison-strip" data-market-position hidden></dl>
+        <p class="hint" data-market-value hidden>밸류에이션 과거 백분위 자료 없음</p>
+        <div data-market-history hidden>
+          <h3>과거 사례의 진입 후 3개월</h3>
+          <dl class="comparison-strip" data-market-outcomes></dl>
+          <p class="hint" data-market-recovery></p>
+        </div>
+        <div class="market-case-actions" data-market-actions hidden>
+          <button type="button" class="btn" data-market-detail>하락·회복 분석 보기</button>
+          <div data-market-cases hidden>
+            <div class="field"><label for="market-context-case">비교할 과거 사례</label><select id="market-context-case"></select></div>
+            <button type="button" class="btn overview-cta" data-market-apply>같은 기간 전략 비교</button>
+          </div>
+        </div>
+        <details data-market-method hidden><summary>비교 기준</summary><p class="hint">최근 20년 중 현재 낙폭이 도달한 가장 깊은 기준(5·10·15·20·30%)을 사용합니다. 이전 고점마다 최초 도달을 집계하고, 다음 거래일 종가부터 3개월 동안 진입가 대비 가장 낮은 종가를 비교합니다. 관측이 끝난 비중첩 구간에서 현재 하락 사건을 제외합니다. 하위 10%는 분포의 10분위수이며, 표본이 10건 미만이면 표시하지 않습니다.</p></details>
       </section>
     </div>
     <div class="grid single-calculator">
@@ -1104,6 +1123,7 @@ window.addEventListener("drawdowncalculator", async e => {
   if (d.frequency) { st.freq = d.frequency; $("freq").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v === st.freq))); }
   $("start").value = d.start; $("end").value = d.end;
   st.endWasLatest = d.end === st.asset.data.at(-1).t; syncForm(); run();
+  if (d.strategy) $("open-single-strategy").click();
 });
 
 /* ---------- 시작 ---------- */
@@ -1252,7 +1272,10 @@ window.addEventListener("pricesummaryopen", e => {
   $("tab-btn-" + tab).focus();
 });
 window.addEventListener("drawdownselect", e => {
-  if (e.detail) $("dd-market").value = e.detail;
+  const selection = typeof e.detail === "string" ? {symbol:e.detail} : e.detail || {};
+  if (selection.symbol) $("dd-market").value = selection.symbol;
+  if (selection.period) $("dd-window").value = selection.period;
+  if (selection.level) $("dd-level").value = selection.level;
   showTab("drawdown");
   $("dd-market").focus();
 });
@@ -1827,6 +1850,7 @@ showTab(tabs.includes(startTab) ? startTab : "dca");
 })();
 </script>
 <script src="portfolio-ui.js?v=overview"></script>
-<script src="drawdown-ui.js?v=scan" defer></script>
+<script src="drawdown-ui.js?v=market-context" defer></script>
+<script src="market-context.js" defer></script>
 </body>
 </html>
