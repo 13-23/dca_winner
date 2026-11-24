@@ -207,7 +207,7 @@
         addLine(quoteDetails, "갱신 시도 " + collectedAt.format(new Date(asset.quoteUpdate.attemptedAt)) + " KST");
       }
       if (stats) addLine(quoteDetails, "이력 시작 " + stats.first);
-      if (Object.keys(supplemental).length) addLine(quoteDetails, "이력 출처 · Yahoo Finance, 누락일 네이버 금융 보완");
+      if (Object.keys(supplemental).length) addLine(quoteDetails, "이력 출처 · Yahoo Finance, 일부 거래일 네이버 금융 대조·보완");
 
       const match = stats?.comparison;
       position.textContent = match ? match.date + " · " + price(match.price) : "비교 이력 부족";
@@ -262,6 +262,7 @@
         addLine(valuation, snapshot.asOf + (snapshot.dateBasis ? " " + snapshot.dateBasis : "") + " · " + (snapshot.source || "출처 미기재"));
         addLine(valuation, snapshot.perAverages ? "같은 출처 PER 5년 " + number.format(snapshot.perAverages[5]) +
           "배 · 10년 " + number.format(snapshot.perAverages[10]) + "배" : "과거 배수 비교 자료 없음");
+        if (snapshot.pbrReview) addLine(valuation, snapshot.pbrReview);
         if (snapshot.estimated || snapshot.status === "stale") {
           addLine(valuation, [snapshot.estimated && "출처 추정치", snapshot.status === "stale" && "이전 자료"].filter(Boolean).join(" · "));
         }

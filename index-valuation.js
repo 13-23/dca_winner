@@ -76,6 +76,7 @@
     const provenance = [];
     if (base) {
       if (model.positive(base.referencePrice)) provenance.push("출처 기준 지수 " + number.format(base.referencePrice) + " pt");
+      if (base.pbrReview) provenance.push(base.pbrReview);
       if (base.bookValueAsOf) provenance.push("장부가 기준 " + base.bookValueAsOf);
       if (eligibility.anchor) provenance.push("같은 날 차트 종가 " + number.format(eligibility.anchor) + " pt");
       if (base.perAverages) provenance.push("같은 출처 PER 평균 · 5년 " + number.format(base.perAverages[5]) + "배 · 10년 " + number.format(base.perAverages[10]) + "배");

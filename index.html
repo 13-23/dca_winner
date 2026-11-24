@@ -554,11 +554,11 @@
 </main>
 </div>
 
-<script src="valuation.js?v=source-audit"></script>
-<script src="price-summary.js?v=confirmed-data"></script>
+<script src="valuation.js?v=historical-review"></script>
+<script src="price-summary.js?v=historical-review"></script>
 <script src="portfolio.js?v=cool-review"></script>
 <script src="strategy-ui.js?v=cool-review"></script>
-<script src="index-valuation.js?v=source-audit" defer></script>
+<script src="index-valuation.js?v=historical-review" defer></script>
 <script src="market.js" defer></script>
 <script src="position.js?v=20261109-markets" defer></script>
 <!--API--><script>
@@ -1337,7 +1337,7 @@ function renderValuation(fillForm = true) {
   const source = $("valuation-source");
   source.className = assessment.reason === "mismatch" || assessment.reason === "stale" ? "hint warn" : "hint";
   source.textContent = snap ? [snap.asOf, snap.dateBasis, snap.source, snap.basis,
-    snap.bookValueAsOf && "장부가 기준 " + snap.bookValueAsOf].filter(Boolean).join(" · ") + ". " : "";
+    snap.bookValueAsOf && "장부가 기준 " + snap.bookValueAsOf, snap.pbrReview].filter(Boolean).join(" · ") + ". " : "";
   source.append(assessment.reason ? ValuationModel.reasons[assessment.reason]
     : "입력한 배수의 가격 시나리오를 " + assessment.from + "부터 표시합니다.");
   for (const [label, url] of Object.entries(snap?.sourceUrls || {})) {

@@ -91,8 +91,10 @@ def supplement_kr_index(asset, captured, cached=None):
     quotes = {row[0]: row for row in asset["data"]}
     sources = {}
     cached = cached or {}
+    corrections = cached.get("verifiedCorrections", {})
     for row in cached.get("data", []):
-        if row[0] not in quotes and row[0] in cached.get("supplementalSources", {}):
+        if row[0] <= cutoff and (row[0] in corrections or
+                               (row[0] not in quotes and row[0] in cached.get("supplementalSources", {}))):
             quotes[row[0]] = row
             sources[row[0]] = cached["supplementalSources"][row[0]]
     url = NAVER_CHART + "?" + urllib.parse.urlencode({"symbol":code,"timeframe":"day","count":60,"requestType":0})
@@ -113,7 +115,10 @@ def supplement_kr_index(asset, captured, cached=None):
             sources[day] = NAVER_SOURCE
     except Exception as error:
         print("  WARN %-12s supplemental index feed: %s" % (asset["symbol"], error))
-    return {**asset, "data": [quotes[day] for day in sorted(quotes)], "supplementalSources": sources}
+    supplemented = {**asset, "data": [quotes[day] for day in sorted(quotes)], "supplementalSources": sources}
+    if corrections:
+        supplemented["verifiedCorrections"] = corrections
+    return supplemented
 
 
 def merge_recent_us(asset, recent):

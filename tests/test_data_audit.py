@@ -60,3 +60,12 @@ class DataAuditTests(unittest.TestCase):
                          ["2026-11-20","2026-11-23"])
         recent["data"][0] = ["2026-11-20",90,80,90,90,90,10]
         self.assertIs(update_data.merge_recent_us(asset,recent),asset)
+
+    def test_verified_historical_corrections_survive_a_new_yahoo_response(self):
+        capture = datetime(2026,11,24,1,53,tzinfo=timezone.utc)
+        original = {"symbol":"^KS11","data":[["2021-04-23",3181.0801,3181.08,3173.47,3185.97,3146.54,1829400]]}
+        verified = json.loads((ROOT / "_KS11.json").read_text())
+        with patch.object(update_data, "_get", side_effect=OSError("offline")):
+            supplemented = update_data.supplement_kr_index(original,capture,verified)
+        self.assertEqual(supplemented["data"][0][:2],["2021-04-23",3186.1])
+        self.assertEqual(supplemented["verifiedCorrections"],verified["verifiedCorrections"])

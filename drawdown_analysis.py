@@ -230,7 +230,7 @@ def update(directory, symbol="^NDX"):
     rows = [r for r in rows if datetime.fromisoformat(r[0] + f'T{close_hour:02d}:00:00+00:00') <= captured]
     result = build(rows, symbol)
     if payload.get('supplementalSources'):
-        result['source'] = 'Yahoo Finance · 네이버 금융 누락일 보완'
+        result['source'] = 'Yahoo Finance · 네이버 금융 일부 거래일 대조·보완'
     result.update(generatedAt=datetime.now(timezone.utc).isoformat(), priceCapturedAt=stamp, sourceSha256=hashlib.sha256(raw).hexdigest())
     (directory / output_file).write_text(json.dumps(result, ensure_ascii=False, separators=(',', ':'), allow_nan=False), encoding='utf-8')
     print('Drawdown analysis:', name, result['asOf'], len(rows), 'confirmed closes')

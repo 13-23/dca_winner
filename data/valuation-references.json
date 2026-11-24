@@ -10,7 +10,8 @@
       "sourceUrls": {
         "PER": "https://kosis.kr/statHtml/statHtml.do?orgId=343&tblId=DT_343_2010_S0033",
         "PBR": "https://kosis.kr/statHtml/statHtml.do?orgId=343&tblId=DT_343_2010_S0034"
-      }
+      },
+      "pbrReview": "코스피 2026년 9월 PBR은 자료 간 값이 달라 원표 재검증 중입니다."
     },
     "^KQ11": {
       "referencePrice": 855.91,

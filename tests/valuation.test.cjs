@@ -42,3 +42,15 @@ test('published forward and trailing conventions never substitute for each other
  assert.equal(publishedSnapshot(refs, {per:10}, '^NDX','forward'),null);
  assert.equal(publishedSnapshot(refs, {status:'unavailable'}, '^NDX'),null);
 });
+
+test('a disputed KOSPI PBR is withheld without changing the stored source record or PER',()=>{
+ const {publishedSnapshot}=require('../valuation.js');
+ const refs=require('../data/valuation-references.json');
+ const raw=refs.trailing['^KS11'];
+ const checked=publishedSnapshot(refs,null,'^KS11');
+ assert.equal(raw.pbr,1.70);
+ assert.equal(checked.pbr,null);
+ assert.equal(checked.per,11.40);
+ assert.match(checked.pbrReview,/재검증/);
+ assert.equal(publishedSnapshot(refs,null,'^KS11','forward').pbr,1.09);
+});

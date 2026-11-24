@@ -37,7 +37,9 @@ const reasons={
  mismatch:'같은 날짜의 출처 기준값과 차트 종가가 0.5% 넘게 달라 가격 환산을 보류했습니다.'
 };
 function publishedSnapshot(references, automatic, symbol, basis='trailing'){
- return references?.[basis]?.[symbol] || (basis==='trailing'&&automatic?.status!=='unavailable'?automatic:null);
+ const snapshot=references?.[basis]?.[symbol] || (basis==='trailing'&&automatic?.status!=='unavailable'?automatic:null);
+ if(!snapshot?.pbrReview) return snapshot;
+ return {...snapshot,pbr:null};
 }
 let archiveRequest;
 function loadArchive(){
