@@ -1,5 +1,11 @@
 {
-  "functions": {"api/quotes.mjs": {"maxDuration": 60}},
-  "regions": ["icn1"],
-  "ignoreCommand": "test -n \"$VERCEL_GIT_PREVIOUS_SHA\" && git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" HEAD -- api/ vercel.json"
+  "functions": {
+    "api/quotes.mjs": {
+      "maxDuration": 60
+    }
+  },
+  "regions": [
+    "icn1"
+  ],
+  "ignoreCommand": "test -n \"$VERCEL_GIT_PREVIOUS_SHA\" && git cat-file -e \"$VERCEL_GIT_PREVIOUS_SHA^{commit}\" 2>/dev/null && git diff --quiet \"$VERCEL_GIT_PREVIOUS_SHA\" HEAD -- . \":(exclude)data\""
 }
