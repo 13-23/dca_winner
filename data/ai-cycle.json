@@ -1,0 +1,29 @@
+{
+  "yield": {
+    "current": 4.92,
+    "previous": 5.12,
+    "date": "2026-11-23",
+    "source": "미 재무부 Daily Treasury Par Yield · 2026-11-16 비교",
+    "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value_month=202611"
+  },
+  "inventory": {
+    "current": -2.4251808313421552,
+    "previous": 5.183477553242666,
+    "date": "2026-10-25",
+    "source": "SEC NVIDIA · 전년 동기 대비 · 직전 분기 2026-07-26 비교",
+    "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27pr.htm"
+  },
+  "receivables": {
+    "current": 39.465468240627864,
+    "previous": 20.91453545458659,
+    "date": "2026-10-25",
+    "source": "SEC NVIDIA · 전년 동기 대비 · 직전 분기 2026-07-26 비교",
+    "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27pr.htm"
+  },
+  "_status": {
+    "yield": "ok",
+    "inventory": "ok",
+    "receivables": "ok"
+  },
+  "_attempted": "2026-11-24T11:44:36.852715+00:00"
+}

@@ -1,67 +1,213 @@
-"""Fetch public Treasury yield observations; never synthesize missing data."""
-import csv, io, json, pathlib, urllib.request, datetime
-URL="https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10"
+"""Collect comparable public Treasury and NVIDIA observations."""
+import csv
+import datetime as dt
+import io
+import json
+import math
+import pathlib
+import re
+import urllib.request
+import xml.etree.ElementTree as ET
+from html.parser import HTMLParser
+
+FRED = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10"
+TREASURY = "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value_month="
+SEC = "https://data.sec.gov"
+EDGAR = "https://www.sec.gov/Archives/edgar/data/1045810/"
+UA = "DCA Winner financial research https://github.com/13-23/dca_winner"
+REVENUE = ("RevenueFromContractWithCustomerExcludingAssessedTax", "SalesRevenueNet", "Revenues")
+BALANCES = {"inventory": ("InventoryNet",), "receivables": ("AccountsReceivableNetCurrent",)}
+
+
+def get(url):
+    request = urllib.request.Request(url, headers={"User-Agent": UA})
+    with urllib.request.urlopen(request, timeout=20) as response:
+        return response.read()
+
+
+def yield_pair(observations, source, url):
+    rows = sorted((day, value) for day, value in observations.items() if math.isfinite(value) and 0 <= value <= 30)
+    latest, value = rows[-1]
+    prior, previous = next(row for row in reversed(rows) if row[0] <= latest - dt.timedelta(days=7))
+    return {"yield": {"current":value, "previous":previous, "date":latest.isoformat(),
+                      "source": f"{source} · {prior.isoformat()} 비교", "url": url}}
+
+
 def collect():
-    with urllib.request.urlopen(URL, timeout=30) as response:
-        rows=list(csv.DictReader(io.StringIO(response.read().decode())))
-    vals=[]
-    for row in rows:
+    today = dt.datetime.now(dt.timezone.utc).date()
+    try:
+        rows = {}
+        months = {today.strftime("%Y%m"), (today.replace(day=1) - dt.timedelta(days=1)).strftime("%Y%m")}
+        for month in sorted(months):
+            root = ET.fromstring(get(TREASURY + month))
+            for entry in root.findall(".//{*}properties"):
+                date = entry.findtext("{*}NEW_DATE")
+                value = entry.findtext("{*}BC_10YEAR")
+                if date and value and date[:10] <= today.isoformat():
+                    rows[dt.date.fromisoformat(date[:10])] = float(value)
+        return yield_pair(rows, "미 재무부 Daily Treasury Par Yield", TREASURY + max(rows).strftime("%Y%m"))
+    except Exception as error:
+        print("Treasury feed:", error)
+    rows = {}
+    for row in csv.DictReader(io.StringIO(get(FRED).decode())):
         try:
-            date=datetime.date.fromisoformat(row.get("observation_date",row.get("DATE","")))
-            value=float(row["DGS10"])
-            if 0<=value<=30: vals.append((date,value))
-        except (ValueError,KeyError,TypeError): continue
-    vals.sort()
-    date,value=vals[-1]
-    prior=next((x for x in reversed(vals) if x[0]<=date-datetime.timedelta(days=7)),None)
-    if prior is None: raise ValueError("No comparison observation")
-    return {"yield":{"current":value,"previous":prior[1],"date":date.isoformat(),"source":"FRED DGS10 / "+prior[0].isoformat()+" 비교"}}
+            day = dt.date.fromisoformat(row.get("observation_date", row.get("DATE", "")))
+            if day <= today:
+                rows[day] = float(row["DGS10"])
+        except (KeyError, ValueError, TypeError):
+            continue
+    return yield_pair(rows, "FRED DGS10", "https://fred.stlouisfed.org/series/DGS10")
+
 
 def facts(cik):
-    url=f"https://data.sec.gov/api/xbrl/companyfacts/CIK{cik:010d}.json"
-    req=urllib.request.Request(url,headers={"User-Agent":"DCA Winner research contact https://github.com/13-23/dca_winner"})
-    with urllib.request.urlopen(req,timeout=30) as response:
-        return json.load(response)["facts"]["us-gaap"]
+    return json.loads(get(f"{SEC}/api/xbrl/companyfacts/CIK{cik:010d}.json"))["facts"]["us-gaap"]
 
-def series(f, tags, flow=False):
+
+def series(facts_data, tags, flow=False):
+    out = {}
     for tag in tags:
-        rows=f.get(tag,{}).get("units",{}).get("USD",[])
-        out={}
-        for r in rows:
-            if r.get("form") not in ("10-K","10-Q"): continue
-            if flow and (not r.get("start") or not 350<= (datetime.date.fromisoformat(r["end"])-datetime.date.fromisoformat(r["start"])).days<=380): continue
-            if not flow and r.get("start"): continue
-            k=r["end"]
-            if k not in out or r["filed"]>=out[k]["filed"]: out[k]=r
-        if out: return {k:v["val"] for k,v in out.items()}
-    raise ValueError("Missing SEC fact: "+str(tags))
+        for row in facts_data.get(tag, {}).get("units", {}).get("USD", []):
+            if row.get("form") not in ("10-K", "10-Q", "10-K/A", "10-Q/A"):
+                continue
+            day = dt.date.fromisoformat(row["end"])
+            start = row.get("start")
+            if flow:
+                if not start or not 75 <= (day - dt.date.fromisoformat(start)).days <= 110:
+                    continue
+            elif start:
+                continue
+            if day not in out or row["filed"] > out[day]["filed"]:
+                out[day] = row
+    return {day: row["val"] for day, row in out.items()}
+
+
+class Release(HTMLParser):
+    def __init__(self, html):
+        super().__init__()
+        self.lines, self.text = [], []
+        self.row = None
+        self.cell = None
+        self.feed(html)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == "tr":
+            self.row = []
+        if self.row is not None and tag in ("td", "th"):
+            self.cell = []
+
+    def handle_data(self, data):
+        self.text.append(data)
+        if self.cell is not None:
+            self.cell.append(data)
+
+    def handle_endtag(self, tag):
+        if self.cell is not None and tag in ("td", "th"):
+            self.row.append(" ".join("".join(self.cell).split()))
+            self.cell = None
+        if tag == "tr" and self.row is not None:
+            self.lines.append(self.row)
+            self.row = None
+
+
+def earnings_values(html):
+    release = Release(html)
+    match = re.search(r"(?:quarter|year) ended\s+([A-Z][a-z]+\s+\d{1,2},\s+\d{4})",
+                      " ".join(" ".join(release.text).split()), re.I)
+    if not match:
+        raise ValueError("Missing financial period in SEC release")
+    period = dt.datetime.strptime(match[1], "%B %d, %Y").date()
+    values = {}
+    aliases = {"revenue":"revenue", "inventories":"inventory", "accounts receivable, net":"receivables"}
+    for row in release.lines:
+        cells = [cell for cell in row if cell]
+        if not cells or cells[0].lower() not in aliases:
+            continue
+        metric = aliases[cells[0].lower()]
+        numeric = [int(cell.replace(",", "")) for cell in cells[1:]
+                   if re.fullmatch(r"(?:\d{1,3}(?:,\d{3})+|\d+)", cell)]
+        if metric == "revenue" and not any(cell == "$" for cell in cells[1:]):
+            continue
+        if metric not in values and numeric:
+            values[metric] = numeric[0] * 1_000_000
+    if values.keys() != set(aliases.values()):
+        raise ValueError("Missing financial values in SEC release")
+    return period, values
+
+
+def supplemental_quarter(last_period):
+    recent = json.loads(get(SEC + "/submissions/CIK0001045810.json"))["filings"]["recent"]
+    for i, form in enumerate(recent["form"]):
+        if form != "8-K" or "2.02" not in recent["items"][i].split(","):
+            continue
+        filed = dt.date.fromisoformat(recent["filingDate"][i])
+        if filed <= last_period:
+            return None
+        location = EDGAR + recent["accessionNumber"][i].replace("-", "") + "/"
+        filing = get(location + recent["primaryDocument"][i]).decode("utf-8")
+        exhibit = re.search(r'href="(q[1-4]fy\d+pr\.htm)"', filing, re.I)
+        if not exhibit:
+            continue
+        url = location + exhibit[1]
+        period, values = earnings_values(get(url).decode("utf-8"))
+        if period > last_period:
+            return period, values, url
+        return None
+    return None
+
 
 def nv():
-    f=facts(1045810)
-    rev=series(f,["RevenueFromContractWithCustomerExcludingAssessedTax","SalesRevenueNet"],True)
-    result={}
-    for key,tags in [("inventory",["InventoryNet"]),("receivables",["AccountsReceivableNetCurrent"])]:
-        s=series(f,tags)
-        dates=sorted(set(s)&set(rev))
-        if len(dates)<3: raise ValueError("Insufficient annual comparisons")
-        a,b,c=dates[-3:]
-        if any(not 350<=(datetime.date.fromisoformat(y)-datetime.date.fromisoformat(x)).days<=380 for x,y in [(a,b),(b,c)]): raise ValueError("Nonannual comparison")
-        def gap(x,y): return 100*(s[y]/s[x]-rev[y]/rev[x])
-        result[key]={"current":gap(b,c),"previous":gap(a,b),"date":c,"source":"SEC NVIDIA annual companyfacts; "+b+" vs "+a}
+    company = facts(1045810)
+    revenue = series(company, REVENUE, True)
+    balances = {key: series(company, tags) for key, tags in BALANCES.items()}
+    url = "https://data.sec.gov/api/xbrl/companyfacts/CIK0001045810.json"
+    latest = max(set(revenue).intersection(*map(set, balances.values())))
+    try:
+        supplement = supplemental_quarter(latest)
+        if supplement:
+            period, values, url = supplement
+            revenue[period] = values["revenue"]
+            for key in balances:
+                balances[key][period] = values[key]
+    except Exception as error:
+        print("SEC 8-K supplemental release:", error)
+    result = {}
+    for key, balance in balances.items():
+        dates = sorted(set(balance) & set(revenue))
+        gaps = {}
+        for day in dates:
+            prior = next((previous for previous in reversed(dates) if 357 <= (day - previous).days <= 371), None)
+            if prior is not None and min(balance[prior], revenue[prior]) > 0:
+                gaps[day] = 100 * (balance[day] / balance[prior] - revenue[day] / revenue[prior])
+        latest, previous = sorted(gaps)[-2:][::-1]
+        if not 75 <= (latest - previous).days <= 110:
+            raise ValueError("Latest two comparable quarters are not consecutive")
+        result[key] = {"current":gaps[latest], "previous":gaps[previous], "date":latest.isoformat(),
+                       "source":f"SEC NVIDIA · 전년 동기 대비 · 직전 분기 {previous.isoformat()} 비교", "url":url}
     return result
 
-if __name__=="__main__":
-    p=pathlib.Path("data/ai-cycle.json")
-    p.parent.mkdir(exist_ok=True)
-    old=json.loads(p.read_text()) if p.exists() else {}
-    status={}
-    for keys,fn in [(("yield",),collect),(("inventory","receivables"),nv)]:
+
+def update(path=pathlib.Path("data/ai-cycle.json")):
+    path.parent.mkdir(exist_ok=True)
+    old = json.loads(path.read_text()) if path.exists() else {}
+    status = {}
+    for keys, collect_source in [(("yield",), collect), (tuple(BALANCES), nv)]:
         try:
-            old.update(fn())
-            for key in keys: status[key]="ok"
-        except Exception as exc:
-            for key in keys: status[key]="failed: "+str(exc)[:200]
-            print(keys,exc)
-    old["_status"]=status
-    old["_attempted"]=datetime.datetime.now(datetime.timezone.utc).isoformat()
-    p.write_text(json.dumps(old,ensure_ascii=False)+"\n",encoding="utf-8")
+            for key, item in collect_source().items():
+                if key in old and item["date"] < old[key]["date"]:
+                    status[key] = "retained"
+                    continue
+                old[key] = item
+                status[key] = "ok"
+        except Exception as error:
+            for key in keys:
+                status[key] = "retained" if key in old else "unavailable"
+            print(keys, error)
+    old.update(_status=status, _attempted=dt.datetime.now(dt.timezone.utc).isoformat())
+    temporary = path.with_suffix(".tmp")
+    temporary.write_text(json.dumps(old, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+    temporary.replace(path)
+    return old
+
+
+if __name__ == "__main__":
+    update()
