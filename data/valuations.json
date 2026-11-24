@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-23T20:07:37.715824+00:00",
+  "updated": "2026-11-24T01:53:42.458836+00:00",
   "items": [
     {
       "symbol": "^KS11",
@@ -67,7 +67,7 @@
       "basis": "TTM as-reported; latest reported book value",
       "estimated": true,
       "bookValueAsOf": "2025-09",
-      "status": "available"
+      "status": "stale"
     }
   ]
 }
