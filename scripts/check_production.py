@@ -24,6 +24,9 @@ def check():
     page = get(SITE + '?v=' + revision).decode()
     if 'pf-search' not in page or 'data-position-panel' not in page or 'mdd-guide' not in page:
         raise ValueError('Published calculator features are missing')
+    summary = get(SITE + 'price-summary.js?v=' + revision)
+    if 'single-price-summary' not in page or 'pf-price-summary' not in page or b'root.PriceSummary' not in summary:
+        raise ValueError('Published price summary is missing')
     index = json.loads(get(SITE + 'data/index.json?v=' + revision))
     kst = timezone(timedelta(hours=9))
     updated = datetime.strptime(index['updated'], '%Y-%m-%d %H:%M KST').replace(tzinfo=kst)

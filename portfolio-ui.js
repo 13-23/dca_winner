@@ -40,6 +40,7 @@ async function calculate(){
   const fx={};await Promise.all([...new Set(assets.map(a=>a.currency).filter(c=>c!=='KRW'))].map(async c=>{fx[c]=(await load(c==='USD'?'KRW=X':c+'KRW=X')).data;}));
   if(mine!==request)return;
   result=PortfolioEngine.compare({assets,fx,amount,start:$('pf-start').value,end:$('pf-end').value,frequency:$('pf-frequency').value,weekday:+$('pf-weekday').value,monthday:+$('pf-monthday').value,fractional:$('pf-fractional').checked,adjusted:$('pf-adjusted').checked});
+  PriceSummary.render($('pf-price-summary'), assets, {portfolio:true, mdd:result.portfolio.mdd});
   shown=100;render();$('pf-status').textContent='계산 완료 · '+result.portfolio.contributions+'회 납입';
  }catch(e){if(mine!==request)return;result=null;$('pf-results').hidden=true;$('pf-status').className='hint warn';$('pf-status').textContent=e.message;}
 }

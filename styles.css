@@ -438,3 +438,8 @@ tbody tr:hover { background: var(--accent-soft); }
 #dd-review .row {flex-wrap:wrap}
 .position-research>summary,.position-logic>summary {cursor:pointer;font-weight:600}
 @media(max-width:600px){.dd-quick{font-size:14px;margin:8px 0}.position-current{flex-wrap:wrap}#dd-review{padding:18px}}
+
+.price-summary .tablewrap { max-height: none; }
+.price-summary th, .price-summary td { text-align: left; vertical-align: top; }
+.price-summary small { display: block; color: var(--muted); }
+.price-summary td, .price-summary tbody th { min-width: 8rem; }
