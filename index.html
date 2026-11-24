@@ -19,6 +19,7 @@
     <button type="button" role="tab" id="tab-btn-value" aria-controls="tab-value" aria-selected="false" tabindex="-1">지수 PER·PBR</button>
     <button type="button" role="tab" id="tab-btn-tv" aria-controls="tab-tv" aria-selected="false" tabindex="-1">TradingView 차트</button>
     <button type="button" role="tab" id="tab-btn-drawdown" aria-controls="tab-drawdown" aria-selected="false" tabindex="-1">하락·회복 분석</button>
+    <button type="button" role="tab" id="tab-btn-ai" aria-controls="tab-ai" aria-selected="false" tabindex="-1">AI 사이클 모니터</button>
   </nav>
   <details class="theme-menu"><summary class="btn">테마</summary>
   <div class="seg seg-sm theme-seg" role="group" aria-label="화면 테마" id="theme">
@@ -551,6 +552,7 @@
   <p class="hint">기간을 늘리면 원래 하락 사건 밖의 날짜도 포함됩니다. 매수 주기를 바꾸면 기간 중 총 적립 원금도 달라질 수 있습니다.</p>
   <div class="row"><button type="button" class="btn" id="dd-review-cancel">취소</button><button class="btn" id="dd-review-apply" value="apply">조건 적용하고 계산기로</button></div></form>
 </dialog>
+<div id="tab-ai" role="tabpanel" aria-labelledby="tab-btn-ai" class="tabpanel" hidden><section class="panel"><h2>AI 투자 사이클 모니터</h2><p class="hint">수요 · 수익성 · 신용 여건의 변곡점을 추적합니다. 경보는 예측 확률이 아닙니다. 공개 자료가 없는 지표는 직접 입력할 수 있으며 이 브라우저에만 저장됩니다.</p><div id="ai-summary" role="status"></div><div class="tablewrap"><table><thead><tr><th>지표 / 단위</th><th>최근 값</th><th>비교 값</th><th>기준일</th><th>출처</th><th>변화 / 경보</th></tr></thead><tbody id="ai-rows"></tbody></table></div><button type="button" class="btn" id="ai-save">저장</button> <button type="button" class="btn" id="ai-reset">입력 초기화</button><p class="hint">동일 기종·계약 조건·회계 기간을 비교하세요. 35일이 지난 월간 자료와 120일이 지난 분기 자료는 경보에서 제외합니다. 비교값의 기준과 출처도 기록하세요.</p></section></div>
 </main>
 </div>
 
@@ -1217,7 +1219,7 @@ try {
 function save() { try { localStorage.setItem(LS, JSON.stringify({ sym: st.sym, tf: st.tf, range: st.range, on: [...st.on], sort: st.sort, log: st.log, dim: st.dim, bb: st.bb, rsi: st.rsi, perBands: st.perBands, pbrBands: st.pbrBands, perLevels: st.perLevels, pbrLevels: st.pbrLevels })); } catch (e) {} }
 
 /* ---------- 탭 ---------- */
-const tabs = ["dca", "ma", "value", "tv", "drawdown"];
+const tabs = ["dca", "ma", "value", "tv", "drawdown", "ai"];
 let tradingViewKey = "";
 function showTradingView() {
   if ($("tab-tv").hidden) return;
@@ -1872,5 +1874,6 @@ showTab(tabs.includes(startTab) ? startTab : "dca");
 <script src="portfolio-ui.js?v=confirmed-data"></script>
 <script src="drawdown-ui.js?v=market-context" defer></script>
 <script src="market-context.js" defer></script>
+<script src="ai-cycle.js" defer></script>
 </body>
 </html>
