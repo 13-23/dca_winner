@@ -23,7 +23,8 @@
   "_status": {
     "yield": "ok",
     "inventory": "ok",
-    "receivables": "ok"
+    "receivables": "ok",
+    "fcf": "unavailable"
   },
-  "_attempted": "2026-11-24T11:51:06.570213+00:00"
+  "_attempted": "2026-11-24T19:30:42.160288+00:00"
 }
