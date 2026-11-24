@@ -195,7 +195,7 @@ def build(root=None):
           priceHistory=dict(first=prices[0][0],last=prices[-1][0],rawLast=payload['data'][-1][0],rows=len(prices),
             excludedUnconfirmedBars=len(payload['data'])-len(prices),capturedAt=captured.isoformat(),
             ohlcProvenance='recorded' if 'ohlcEstimatedDates' in payload else 'legacy-unknown',estimatedOHLC=len(estimated),
-            sha256=hashlib.sha256(raw).hexdigest(),source='Yahoo Finance · 프로젝트 일별 OHLC'))
+            sha256=hashlib.sha256(raw).hexdigest(),source='Yahoo Finance · 네이버 금융 누락일 보완' if payload.get('supplementalSources') else 'Yahoo Finance · 프로젝트 일별 OHLC'))
         candidates=monthly(walk)
         immature=[r for r in candidates if r['i']+1>=len(prices) or add_months(prices[r['i']+1][0])>prices[-1][0]]
         markets[key]['sampleAudit']=dict(monthlySignals=len(candidates),incompleteSixMonths=len(immature),

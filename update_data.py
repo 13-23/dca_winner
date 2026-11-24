@@ -10,6 +10,7 @@ GitHub Actions가 매일 자동으로 실행하고, 직접 실행해도 됩니�
 """
 import gzip, json, math, os, random, sys, time
 import http.cookiejar
+import xml.etree.ElementTree as ET
 import urllib.error, urllib.parse, urllib.request
 from datetime import datetime, timedelta, timezone
 
@@ -77,12 +78,85 @@ def yahoo(path):
     raise RuntimeError(last or "unknown error")
 
 
-def fetch(symbol):
+KR_INDEX_SYMBOLS = {"^KS11": "KOSPI", "^KQ11": "KOSDAQ"}
+NAVER_CHART = "https://fchart.stock.naver.com/sise.nhn"
+NAVER_SOURCE = "네이버 금융"
+
+
+def supplement_kr_index(asset, captured, cached=None):
+    code = KR_INDEX_SYMBOLS.get(asset["symbol"])
+    if not code:
+        return asset
+    cutoff = (captured.astimezone(KST) - timedelta(hours=17)).date().isoformat()
+    quotes = {row[0]: row for row in asset["data"]}
+    sources = {}
+    cached = cached or {}
+    for row in cached.get("data", []):
+        if row[0] not in quotes and row[0] in cached.get("supplementalSources", {}):
+            quotes[row[0]] = row
+            sources[row[0]] = cached["supplementalSources"][row[0]]
+    url = NAVER_CHART + "?" + urllib.parse.urlencode({"symbol":code,"timeframe":"day","count":60,"requestType":0})
+    try:
+        document = ET.fromstring(_get(url).decode("euc-kr"))
+        chart = document.find("chartdata")
+        if chart is None or chart.get("symbol") != code:
+            raise ValueError("Unexpected Naver index")
+        for item in chart.findall("item"):
+            day, opening, high, low, close, volume = item.attrib["data"].split("|")
+            day = datetime.strptime(day, "%Y%m%d").date().isoformat()
+            if day > cutoff or day in quotes:
+                continue
+            o, h, l, c = map(float, [opening, high, low, close])
+            if not (0 < l <= min(o,c) <= max(o,c) <= h < math.inf):
+                raise ValueError("Invalid Naver index OHLC")
+            quotes[day] = [day,c,c,o,h,l,int(volume)]
+            sources[day] = NAVER_SOURCE
+    except Exception as error:
+        print("  WARN %-12s supplemental index feed: %s" % (asset["symbol"], error))
+    return {**asset, "data": [quotes[day] for day in sorted(quotes)], "supplementalSources": sources}
+
+
+def merge_recent_us(asset, recent):
+    cutoff = (datetime.fromisoformat(asset["fetchedAt"]) - timedelta(hours=22)).date().isoformat()
+    rows = {row[0]: row for row in asset["data"]}
+    overlap = next((row for row in reversed(recent["data"]) if row[0] <= cutoff and row[0] in rows), None)
+    if not overlap or any(abs(overlap[i] / rows[overlap[0]][i] - 1) > .005 for i in (1, 2)):
+        return asset
+    additions = [row for row in recent["data"] if overlap[0] < row[0] <= cutoff and row[0] not in rows]
+    if not additions:
+        return asset
+    rows.update((row[0], row) for row in additions)
+    end = {row[0] for row in additions}
+    return {**asset, "data": [rows[day] for day in sorted(rows)],
+            "ohlcEstimatedDates": sorted(set(asset["ohlcEstimatedDates"]) |
+                                         (set(recent["ohlcEstimatedDates"]) & end))}
+
+
+def supplement_us(asset):
+    captured = datetime.fromisoformat(asset["fetchedAt"])
+    expected = (captured - timedelta(hours=22)).date()
+    while expected.weekday() >= 5:
+        expected -= timedelta(days=1)
+    latest = confirmed_date(asset)
+    if not latest or latest >= expected.isoformat():
+        return asset
+    try:
+        return merge_recent_us(asset, fetch(asset["symbol"], recent=True))
+    except Exception as error:
+        print("  WARN %-12s short-range Yahoo feed: %s" % (asset["symbol"], error))
+        return asset
+
+
+def fetch(symbol, recent=False):
     if MOCK:
         return mock(symbol)
     now = int(time.time()) + 86400
-    j = yahoo("/v8/finance/chart/%s?period1=0&period2=%d&interval=1d&events=div%%2Csplits&includeAdjustedClose=true"
-              % (urllib.parse.quote(symbol, safe=""), now))
+    path = "/v8/finance/chart/" + urllib.parse.quote(symbol, safe="")
+    if recent:
+        j = json.loads(_get("https://query1.finance.yahoo.com" + path +
+                           "?range=5d&interval=1d&includeAdjustedClose=true"))
+    else:
+        j = yahoo(path + ("?period1=0&period2=%d&interval=1d&events=div%%2Csplits&includeAdjustedClose=true" % now))
     c = j.get("chart") or {}
     if c.get("error"):
         raise RuntimeError(c["error"].get("description") or c["error"].get("code") or "chart error")
@@ -122,15 +196,28 @@ def fetch(symbol):
         data = [row for row in data if row[0] < today]
     if len(data) < 2:
         raise RuntimeError("too few rows")
-    return {
+    captured = datetime.now(timezone.utc)
+    asset = {
         "symbol": symbol,
         "name": meta.get("longName") or meta.get("shortName") or symbol,
         "currency": (meta.get("currency") or "USD").upper(),
         "exchange": meta.get("fullExchangeName") or meta.get("exchangeName") or "",
-        "fetchedAt": datetime.now(timezone.utc).isoformat(),
+        "fetchedAt": captured.isoformat(),
         "ohlcEstimatedDates": sorted(set(estimated_ohlc_dates)),
         "data": data,
     }
+    if recent:
+        return asset
+    if symbol in KR_INDEX_SYMBOLS:
+        try:
+            with open(os.path.join(DATA,file_name(symbol)), encoding="utf-8") as f:
+                cached = json.load(f)
+        except (OSError, ValueError):
+            cached = None
+        return supplement_kr_index(asset, captured, cached)
+    if asset["currency"] == "USD" and not symbol.endswith(("-USD", "=X")):
+        return supplement_us(asset)
+    return asset
 
 
 def mock(symbol):
@@ -174,6 +261,8 @@ def collect_item(ticker, previous, hidden=False):
     try:
         asset = fetch(symbol)
         close = confirmed_date(asset)
+        if previous_close and (not close or close < previous_close):
+            raise ValueError("confirmed close regressed from %s to %s" % (previous_close, close))
         item = {"symbol": symbol, "name": asset["name"], "currency": asset["currency"],
                 "first": asset["data"][0][0], "last": asset["data"][-1][0]}
         update = {"status": "unchanged" if close and close == previous_close else "collected",

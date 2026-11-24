@@ -11,7 +11,7 @@
    "group": "지수",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:52:49.560055+00:00",
     "attemptedAt": "2026-11-24T01:52:49.602235+00:00"
    }
@@ -26,7 +26,7 @@
    "group": "지수",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:52:50.780533+00:00",
     "attemptedAt": "2026-11-24T01:52:50.816432+00:00"
    }
@@ -186,12 +186,12 @@
    "name": "Invesco QQQ Trust",
    "currency": "USD",
    "first": "1999-03-10",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "QQQ (나스닥100)",
    "group": "미국 ETF",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:04.475462+00:00",
     "attemptedAt": "2026-11-24T01:53:04.514859+00:00"
    }
@@ -201,12 +201,12 @@
    "name": "ProShares Ultra QQQ",
    "currency": "USD",
    "first": "2006-06-21",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "QLD (나스닥100 2배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:05.723186+00:00",
     "attemptedAt": "2026-11-24T01:53:05.752001+00:00"
    }
@@ -216,12 +216,12 @@
    "name": "ProShares UltraPro QQQ",
    "currency": "USD",
    "first": "2010-02-11",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "TQQQ (나스닥100 3배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:06.909882+00:00",
     "attemptedAt": "2026-11-24T01:53:06.933443+00:00"
    }
@@ -231,12 +231,12 @@
    "name": "ProShares Ultra S&P500",
    "currency": "USD",
    "first": "2006-06-21",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "SSO (S&P500 2배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:08.110266+00:00",
     "attemptedAt": "2026-11-24T01:53:08.139089+00:00"
    }
@@ -246,12 +246,12 @@
    "name": "ProShares UltraPro S&P500",
    "currency": "USD",
    "first": "2009-06-25",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "UPRO (S&P500 3배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:09.298616+00:00",
     "attemptedAt": "2026-11-24T01:53:09.324839+00:00"
    }
@@ -261,12 +261,12 @@
    "name": "ProShares Ultra Semiconductors",
    "currency": "USD",
    "first": "2007-02-01",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "USD (반도체 2배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:10.506012+00:00",
     "attemptedAt": "2026-11-24T01:53:10.534086+00:00"
    }
@@ -276,12 +276,12 @@
    "name": "Direxion Daily Semiconductor Bull 3X Shares",
    "currency": "USD",
    "first": "2010-03-11",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "SOXL (반도체 3배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:11.736088+00:00",
     "attemptedAt": "2026-11-24T01:53:11.759634+00:00"
    }
@@ -291,12 +291,12 @@
    "name": "Direxion Daily Technology Bull 3X Shares",
    "currency": "USD",
    "first": "2008-12-30",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "TECL (기술주 3배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:12.934551+00:00",
     "attemptedAt": "2026-11-24T01:53:12.959850+00:00"
    }
@@ -306,12 +306,12 @@
    "name": "MicroSectors FANG+ 3X Leveraged",
    "currency": "USD",
    "first": "2025-02-20",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "FNGU (FANG+ 3배 ETN)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:14.034211+00:00",
     "attemptedAt": "2026-11-24T01:53:14.036940+00:00"
    }
@@ -321,12 +321,12 @@
    "name": "State Street SPDR S&P 500 ETF Trust",
    "currency": "USD",
    "first": "1993-01-29",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "SPY (S&P500)",
    "group": "미국 ETF",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:15.345723+00:00",
     "attemptedAt": "2026-11-24T01:53:15.393771+00:00"
    }
@@ -336,12 +336,12 @@
    "name": "Vanguard S&P 500 ETF",
    "currency": "USD",
    "first": "2010-09-09",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "VOO (S&P500)",
    "group": "미국 ETF",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:16.593626+00:00",
     "attemptedAt": "2026-11-24T01:53:16.616578+00:00"
    }
@@ -351,12 +351,12 @@
    "name": "State Street SPDR Dow Jones Industrial Average ETF Trust",
    "currency": "USD",
    "first": "1998-01-20",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "DIA (다우30)",
    "group": "미국 ETF",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:18.015599+00:00",
     "attemptedAt": "2026-11-24T01:53:18.056618+00:00"
    }
@@ -366,12 +366,12 @@
    "name": "Schwab U.S. Dividend Equity ETF",
    "currency": "USD",
    "first": "2011-10-20",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "SCHD (배당)",
    "group": "미국 ETF",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:19.212272+00:00",
     "attemptedAt": "2026-11-24T01:53:19.233984+00:00"
    }
@@ -411,12 +411,12 @@
    "name": "Apple Inc.",
    "currency": "USD",
    "first": "1980-12-12",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "애플",
    "group": "개별 종목",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:23.094317+00:00",
     "attemptedAt": "2026-11-24T01:53:23.159339+00:00"
    }
@@ -426,12 +426,12 @@
    "name": "Microsoft Corporation",
    "currency": "USD",
    "first": "1986-03-13",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "마이크로소프트",
    "group": "개별 종목",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:24.453740+00:00",
     "attemptedAt": "2026-11-24T01:53:24.511358+00:00"
    }
@@ -441,12 +441,12 @@
    "name": "NVIDIA Corporation",
    "currency": "USD",
    "first": "1999-01-22",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "엔비디아",
    "group": "개별 종목",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:25.814545+00:00",
     "attemptedAt": "2026-11-24T01:53:25.854212+00:00"
    }
@@ -456,12 +456,12 @@
    "name": "Tesla, Inc.",
    "currency": "USD",
    "first": "2010-06-29",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "테슬라",
    "group": "개별 종목",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:27.001104+00:00",
     "attemptedAt": "2026-11-24T01:53:27.024760+00:00"
    }
@@ -471,12 +471,12 @@
    "name": "Direxion Daily South Korea Bull 3X Shares",
    "currency": "USD",
    "first": "2013-04-10",
-   "last": "2026-11-20",
+   "last": "2026-11-23",
    "label": "KORU (한국 3배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
     "status": "collected",
-    "closeDate": "2026-11-20",
+    "closeDate": "2026-11-23",
     "fetchedAt": "2026-11-24T01:53:28.181769+00:00",
     "attemptedAt": "2026-11-24T01:53:28.200972+00:00"
    },

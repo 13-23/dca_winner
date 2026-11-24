@@ -182,8 +182,12 @@
       }
       if (stats) addLine(quoteDetails, stats.current.date + " · " + (crypto(asset) ? "UTC 일봉 종가" : "현지 일봉 종가") + " · " + (asset.currency || "통화 미기재"));
       const source = document.createElement("a");
-      source.textContent = "Yahoo Finance";
-      source.href = "https://finance.yahoo.com/quote/" + encodeURIComponent(asset.symbol) + "/history/";
+      const supplemental = asset.supplementalSources || {};
+      const naver = stats && supplemental[stats.current.date] === "네이버 금융";
+      source.textContent = naver ? "네이버 금융" : "Yahoo Finance";
+      source.href = naver ? "https://finance.naver.com/sise/sise_index.naver?code=" +
+        (asset.symbol === "^KS11" ? "KOSPI" : "KOSDAQ") :
+        "https://finance.yahoo.com/quote/" + encodeURIComponent(asset.symbol) + "/history/";
       source.target = "_blank";
       source.rel = "noopener noreferrer";
       const provenance = document.createElement("small");
@@ -203,6 +207,7 @@
         addLine(quoteDetails, "갱신 시도 " + collectedAt.format(new Date(asset.quoteUpdate.attemptedAt)) + " KST");
       }
       if (stats) addLine(quoteDetails, "이력 시작 " + stats.first);
+      if (Object.keys(supplemental).length) addLine(quoteDetails, "이력 출처 · Yahoo Finance, 누락일 네이버 금융 보완");
 
       const match = stats?.comparison;
       position.textContent = match ? match.date + " · " + price(match.price) : "비교 이력 부족";

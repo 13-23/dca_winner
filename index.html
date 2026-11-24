@@ -555,7 +555,7 @@
 </div>
 
 <script src="valuation.js?v=source-audit"></script>
-<script src="price-summary.js?v=source-audit"></script>
+<script src="price-summary.js?v=confirmed-data"></script>
 <script src="portfolio.js?v=cool-review"></script>
 <script src="strategy-ui.js?v=cool-review"></script>
 <script src="index-valuation.js?v=source-audit" defer></script>
@@ -621,8 +621,10 @@ const cache = new Map();
 async function loadChart(sym) {
   if (cache.has(sym)) return cache.get(sym);
   const j = await API.getChart(sym);
-  j.data = j.data.map(([t, c, a]) => ({ t, c, a: a ?? c }));
-  cache.set(sym, j); return j;
+  const data = PriceSummary.confirmedRows(j).map(({row:[t,c,a]}) => ({t,c,a:a ?? c}));
+  if (!data.length) throw Error("확정 종가 또는 환율 자료가 없습니다.");
+  const chart = {...j,data};
+  cache.set(sym, chart); return chart;
 }
 
 /* ---------- 날짜 ---------- */
@@ -655,7 +657,7 @@ function syncForm(modeChanged) {
   if (foreign) {
     $("fxsrc").options[0].textContent = `날짜별 실제 환율 (${cur}/KRW)`;
     if ($("fxsrc").value === "auto") {
-      $("fxhint").textContent = st.fx ? `환율 데이터 ${st.fx.data[0].t}부터. 그 이전 회차는 첫 환율을 씁니다.` : (st.fxErr ? "환율을 불러오지 못해 고정 환율을 써야 합니다: " + st.fxErr : "환율 불러오는 중…");
+      $("fxhint").textContent = st.fx ? `환율 데이터 ${st.fx.data[0].t}부터. 자동 환율 계산은 이 날짜 이후부터 시작합니다.` : (st.fxErr ? "환율을 불러오지 못해 고정 환율을 써야 합니다: " + st.fxErr : "환율 불러오는 중…");
       $("fxhint").className = st.fxErr ? "hint warn" : "hint";
     } else {
       $("fxhint").textContent = st.fxErr ? "날짜별 환율을 불러오지 못해 고정 환율로 계산합니다. 입력된 환율을 확인해 주세요. (" + st.fxErr + ")" : "모든 회차에 같은 환율을 씁니다.";
@@ -765,7 +767,7 @@ function pickCustom(sym, name) {
 function fxAt(series, t) {
   const i = lowerBound(series, t);
   if (i < series.length && series[i].t === t) return series[i].c;
-  return i > 0 ? series[i - 1].c : series[0].c;
+  return i > 0 ? series[i - 1].c : null;
 }
 function schedule(days, startT, endT, frequency = st.freq) {
   const idx = [];
@@ -806,6 +808,10 @@ function simulate() {
   const notes = [];
   if (startT < days[0].t) { notes.push(`데이터가 ${days[0].t}부터 있어 그날부터 계산했습니다.`); startT = days[0].t; }
   if (endT > days[days.length - 1].t) endT = days[days.length - 1].t;
+  if (useAuto && st.fx && startT < st.fx.data[0].t) {
+    startT = st.fx.data[0].t;
+    notes.push(`자동 환율 이력이 시작되는 ${startT}부터 계산했습니다.`);
+  }
   if (endT < startT) return { error: "종료일이 시작일보다 빠릅니다." };
   const buyIdx = schedule(days, startT, endT);
   if (!buyIdx.length) return { error: "이 기간에는 매수일이 없습니다. 기간이나 주기를 바꿔 보세요." };
@@ -956,7 +962,7 @@ function run() {
     $("restag").hidden = true; $("resnote").textContent = ""; $("txbody").innerHTML = ""; $("txcount").textContent = ""; $("more").hidden = true; drawChart(); return;
   }
   const cur = r.a.currency;
-  $("restag").hidden = false; $("restag").textContent = `${r.lastT} 일별 시세 기준`;
+  $("restag").hidden = false; $("restag").textContent = `${r.lastT} 확정 종가 기준`;
   const plA = r.valueA - r.costA, rtA = r.costA ? plA / r.costA : 0;
   const plK = r.valueK - r.costK, rtK = r.costK ? plK / r.costK : 0;
   let h = "";
@@ -1400,8 +1406,9 @@ function indicators(bars) {
 }
 
 function prepare(j) {
-  const days = j.data.map(r => ({ t: r[0], c: r[1], o: r[3] ?? r[1], h: r[4] ?? r[1], l: r[5] ?? r[1], v: r[6] ?? 0 }));
+  const days = PriceSummary.confirmedRows(j).map(({row:r}) => ({ t: r[0], c: r[1], o: r[3] ?? r[1], h: r[4] ?? r[1], l: r[5] ?? r[1], v: r[6] ?? 0 }));
   const N = days.length;
+  if (!N) throw Error("확정 종가 자료가 없습니다.");
   const B = { D: days.map((d, i) => ({ ...d, first: i, last: i })), W: [], M: [] };
   const idx = { D: Int32Array.from({ length: N }, (_, i) => i), W: new Int32Array(N), M: new Int32Array(N) };
   const weekKey = t => { const d = parseISO(t); d.setUTCDate(d.getUTCDate() - (d.getUTCDay() + 6) % 7); return iso(d); };
@@ -1419,7 +1426,7 @@ function prepare(j) {
   // tf 주기 n 이평선의 "i번째 거래일 종가 기준" 값: 직전 n-1개 완성봉 종가 + 그날 종가
   const maAt = (tf, n, i) => { const bi = idx[tf][i]; if (bi < n - 1) return null; return (P[tf][bi] - P[tf][bi - n + 1] + days[i].c) / n; };
   const indicatorsByTf = Object.fromEntries(Object.entries(B).map(([tf, bars]) => [tf, indicators(bars)]));
-  return { ...j, days, confirmedCloses: PriceSummary.confirmedRows(j).map(({date,price}) => [date,price]), B, idx, maAt, indicatorsByTf, hasVol: days.some(d => d.v > 0) };
+  return { ...j, days, confirmedCloses: days.map(({t,c}) => [t,c]), B, idx, maAt, indicatorsByTf, hasVol: days.some(d => d.v > 0) };
 }
 async function loadSym(sym) {
   st.sym = sym; const my = ++st.req; st.valuation = null;
@@ -1862,7 +1869,7 @@ let startTab = "dca"; try { startTab = localStorage.getItem(LS_TAB) || "dca"; } 
 showTab(tabs.includes(startTab) ? startTab : "dca");
 })();
 </script>
-<script src="portfolio-ui.js?v=overview"></script>
+<script src="portfolio-ui.js?v=confirmed-data"></script>
 <script src="drawdown-ui.js?v=market-context" defer></script>
 <script src="market-context.js" defer></script>
 </body>

@@ -30,7 +30,10 @@ function renderRows(){
 }
 function conditions(){ $('pf-week-field').hidden=$('pf-frequency').value!=='week';$('pf-month-field').hidden=$('pf-frequency').value!=='month'; }
 function changed(){conditions();total();save();result=null;StrategyUI.update($('pf-strategy'),null);$('pf-results').hidden=true;$('pf-status').className='hint';$('pf-status').textContent='입력 변경 · 계산 대기 중…';request++;clearTimeout(timer);if(active)timer=setTimeout(calculate,250);}
-async function load(symbol){if(cache.has(symbol))return cache.get(symbol);const j=await API.getChart(symbol);cache.set(symbol,j);return j;}
+async function load(symbol){if(cache.has(symbol))return cache.get(symbol);const raw=await API.getChart(symbol);
+ const data=PriceSummary.confirmedRows(raw).map(({row})=>row);
+ if(!data.length)throw Error(symbol+' 확정 종가 또는 환율 자료가 없습니다.');
+ const chart={...raw,data};cache.set(symbol,chart);return chart;}
 async function calculate(){
  const mine=++request;clearTimeout(timer);save();StrategyUI.update($('pf-strategy'),null);$('pf-results').hidden=true;$('pf-status').className='hint';$('pf-status').textContent='시세와 환율을 불러오는 중…';result=null;
  try{
