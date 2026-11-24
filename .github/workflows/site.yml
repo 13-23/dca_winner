@@ -40,11 +40,13 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_*.py'
           node --test tests/*.test.cjs
+          node --check ai-cycle.js
+          python -m py_compile update_ai_cycle.py
       - name: 공개 파일 묶기
         id: package
         run: |
           mkdir _site
-          cp index.html styles.css market.js position.js portfolio.js portfolio-ui.js price-summary.js strategy-ui.js valuation.js index-valuation.js POSITION_V2_METHOD.md POSITION_V2_RESULTS.md drawdown-ui.js market-context.js DRAWDOWN_METHOD.md _site/
+          cp ai-cycle.js index.html styles.css market.js position.js portfolio.js portfolio-ui.js price-summary.js strategy-ui.js valuation.js index-valuation.js POSITION_V2_METHOD.md POSITION_V2_RESULTS.md drawdown-ui.js market-context.js DRAWDOWN_METHOD.md _site/
           cp -r data _site/
           revision=$(git rev-parse HEAD)
           printf '{"revision":"%s"}\n' "$revision" > _site/release.json

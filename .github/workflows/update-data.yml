@@ -60,6 +60,9 @@ jobs:
       - name: 주요 6개 지수 하락·회복 통계 갱신
         run: python drawdown_analysis.py
 
+      - name: AI 사이클 공개 지표 갱신
+        run: python update_ai_cycle.py
+
       - name: 바뀐 시세 저장
         run: |
           git config user.name "github-actions[bot]"
