@@ -128,7 +128,8 @@ function compareMonthly(options) {
   return {
     start:immediate.start,end:immediate.end,contributions:immediate.contributions,
     invested:immediate.series.at(-1).invested,
-    immediate:describe(immediate),reserve:describe(reserve)
+    immediate:describe(immediate),reserve:describe(reserve),
+    ...(options.includeSeries ? {series:{immediate:immediate.series,reserve:reserve.series}} : {})
   };
 }
 const api={simulate,compare,compareMonthly,metrics,xirr};if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.PortfolioEngine=api;

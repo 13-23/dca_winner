@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>적립식 평단 계산기</title>
 <script>try { const t = localStorage.getItem("theme-v1"); if (t === "dark" || t === "auto" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="styles.css?v=scan">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
+<link rel="stylesheet" href="styles.css?v=cool-review">
 </head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -35,8 +33,7 @@
   <div id="tab-dca" role="tabpanel" aria-labelledby="tab-btn-dca" class="tabpanel">
   <div class="page-heading">
   <header>
-    <h1>적립식 평단 계산기</h1>
-    <p>그날부터 꾸준히 샀다면 지금 평단과 평가금액은 얼마일까. 종목과 주기, 금액을 고르면 야후 파이낸스 일별 종가로 회차별 계산을 합니다.</p>
+    <h1>적립식 투자 분석</h1>
   </header>
 
   <div class="seg" role="group" aria-label="계산 방식" id="dca-kind">
@@ -85,6 +82,12 @@
           </div>
           <p class="hint" data-strategy-status role="status"></p>
           <dl class="comparison-strip" data-strategy-differences aria-label="현금 보유 전략의 차이" hidden></dl>
+          <figure class="strategy-trend" data-strategy-trend hidden>
+            <figcaption>평가금액 추이 <small>원화 · 남은 현금 포함</small></figcaption>
+            <div class="strategy-legend"><span>즉시 적립</span><span>현금 보유 후 추가 매수</span></div>
+            <div class="strategy-plot" data-strategy-plot></div>
+            <div class="strategy-axis" data-strategy-axis aria-hidden="true"></div>
+          </figure>
           <div class="tablewrap" tabindex="0" role="region" aria-label="월 적립 전략 비교 결과" hidden>
             <table><thead><tr><th scope="col">지표</th><th scope="col">즉시 적립</th><th scope="col">현금 보유 후 추가 매수</th></tr></thead><tbody>
               <tr><th scope="row">최종 자산</th><td></td><td></td></tr>
@@ -192,6 +195,7 @@
             <section><h3>하락 위험</h3><div data-overview-risk></div><a class="results-link" href="#single-results">적립식 결과</a></section>
           </div>
         </div>
+        <div class="overview-actions"><button type="button" class="btn overview-cta" id="open-single-strategy" aria-controls="single-strategy">월 적립 전략 비교</button></div>
         <details><summary>비교·집계 기준</summary><p class="hint">현지 통화(지수는 포인트)로 공급처의 종가 열을 비교합니다. 최신 종가에서 30일 이상 지난 관측 중 ±1% 이내의 가장 최근 날짜를 표시합니다. 없다면 가격 차이가 가장 작은 날짜를 표시합니다. 이평선 이격은 종가 ÷ 이동평균 − 1입니다. 200일선은 최근 200개 일봉, 60주선은 이전 59개 주의 마지막 종가와 이번 주 최신 종가를 사용합니다. 배수는 출처의 이익·장부가치를 고정해 종가로 환산합니다. 낙폭은 최근 365일 중 확보된 종가의 고점 대비 하락과 그 구간의 최대 낙폭이며, 미래 손실을 예측하지 않습니다.</p><p class="hint">수집 시각이 한국 17:00 KST, 미국 22:00 UTC를 지난 일봉을 사용합니다. 가상자산과 그 외 시장은 일봉 표시일 다음 UTC 자정 이후 수집한 봉을 사용합니다.</p></details>
       </section>
     </div>
@@ -265,6 +269,12 @@
         </div>
         <p class="hint" data-strategy-status role="status"></p>
         <dl class="comparison-strip" data-strategy-differences aria-label="현금 보유 전략의 차이" hidden></dl>
+        <figure class="strategy-trend" data-strategy-trend hidden>
+          <figcaption>평가금액 추이 <small>원화 · 남은 현금 포함</small></figcaption>
+          <div class="strategy-legend"><span>즉시 적립</span><span>현금 보유 후 추가 매수</span></div>
+          <div class="strategy-plot" data-strategy-plot></div>
+          <div class="strategy-axis" data-strategy-axis aria-hidden="true"></div>
+        </figure>
         <div class="tablewrap" tabindex="0" role="region" aria-label="월 적립 전략 비교 결과" hidden>
           <table><thead><tr><th scope="col">지표</th><th scope="col">즉시 적립</th><th scope="col">현금 보유 후 추가 매수</th></tr></thead><tbody>
             <tr><th scope="row">최종 자산</th><td></td><td></td></tr>
@@ -521,9 +531,9 @@
 </div>
 
 <script src="valuation.js"></script>
-<script src="price-summary.js?v=scan"></script>
-<script src="portfolio.js?v=monthly-strategy"></script>
-<script src="strategy-ui.js?v=scan"></script>
+<script src="price-summary.js?v=cool-review"></script>
+<script src="portfolio.js?v=cool-review"></script>
+<script src="strategy-ui.js?v=cool-review"></script>
 <script src="index-valuation.js?v=overview" defer></script>
 <script src="market.js" defer></script>
 <script src="position.js?v=20261109-markets" defer></script>
@@ -631,6 +641,14 @@ function syncForm(modeChanged) {
   if (a) { const f = a.data[0].t, l = a.data[a.data.length - 1].t; $("start").min = f; $("start").max = l; $("end").min = f; $("end").max = l; }
 }
 
+$("open-single-strategy").addEventListener("click", () => {
+  const panel = $("single-strategy");
+  panel.open = true;
+  const heading = panel.querySelector("summary");
+  heading.focus({preventScroll:true});
+  panel.scrollIntoView({block:"start"});
+});
+
 /* ---------- 종목 불러오기 ---------- */
 async function selectSymbol(sym, label) {
   sym = sym.trim().toUpperCase(); if (!sym) return;
@@ -640,6 +658,7 @@ async function selectSymbol(sym, label) {
   $("crypto-source-note").hidden = !/^(BTC|ETH)-KRW$/.test(sym);
   st.strategyAsset = null;
   StrategyUI.update($("single-strategy"), null);
+  $("assetinfo").classList.add("loading-status");
   $("assetinfo").innerHTML = `<b></b><small>시세 불러오는 중…</small>`; $("assetinfo").querySelector("b").textContent = label || sym;
   $("single-results").classList.add("loading");
   try {
@@ -647,7 +666,7 @@ async function selectSymbol(sym, label) {
     if (my !== st.req) return;
     st.asset = st.strategyAsset = a; st.fx = null; st.fxErr = null;
     PriceSummary.render($("single-price-summary"), [{...a, label}]);
-    const info = $("assetinfo"); info.innerHTML = "<b></b><small></small><small></small>";
+    const info = $("assetinfo"); info.classList.remove("loading-status"); info.innerHTML = "<b></b><small></small><small></small>";
     info.children[0].textContent = (label && label !== sym ? label + " · " : "") + (a.name || sym);
     info.children[1].textContent = `${sym} · ${a.currency}`;
     info.children[2].textContent = sym.startsWith("^") ? "지수는 직접 살 수 없어 지수 값을 1주 가격으로 보고 계산합니다." : (a.exchange || "");

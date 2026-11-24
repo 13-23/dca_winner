@@ -158,6 +158,7 @@
 
     const rows = assets.map(asset => {
       const stats = summarize(asset);
+      if (!body) panel.querySelector("h2").textContent = asset.label || asset.name || asset.symbol;
       let quote, position, valuation, risk;
       if (body) {
         const row = body.insertRow();
@@ -270,8 +271,11 @@
         if (body) addLine(valuation, "PBR " + multiple(pbr));
         else {
           const headline = document.createElement("strong");
-          headline.textContent = "PER " + multiple(per) + " · PBR " + multiple(pbr);
+          const concise = new Intl.NumberFormat("ko-KR", {maximumFractionDigits: 2});
+          const show = value => value == null ? "—" : concise.format(value) + "배";
+          headline.textContent = "PER " + show(per);
           valuation.replaceChildren(headline);
+          addLine(valuation, "PBR " + show(pbr));
         }
         addLine(valuation, snapshot.asOf + " · " + (snapshot.source || "출처 미기재"));
         addLine(valuation, "과거 배수 비교 자료 없음");
