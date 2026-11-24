@@ -227,11 +227,52 @@ def growth_gaps(revenue, balances, source, url):
     return result
 
 
+BIGTECH = (320193, 789019, 1652044, 1018724, 1326801)
+CFO = ("NetCashProvidedByUsedInOperatingActivities",)
+CAPEX = ("PaymentsToAcquirePropertyPlantAndEquipment",)
+CASH = ("CashAndCashEquivalentsAtCarryingValue",)
+DEBT_CURRENT = ("LongTermDebtCurrent", "LongTermDebtAndCapitalLeaseObligationsCurrent")
+DEBT_LONG = ("LongTermDebtNoncurrent", "LongTermDebtAndCapitalLeaseObligationsNoncurrent")
+
+
+def annual_series(company, tags):
+    out = {}
+    for tag in tags:
+        for row in company.get(tag, {}).get("units", {}).get("USD", []):
+            if row.get("form") not in ("10-K", "10-K/A") or not row.get("start"):
+                continue
+            end = dt.date.fromisoformat(row["end"])
+            if not 350 <= (end - dt.date.fromisoformat(row["start"])).days <= 380:
+                continue
+            if end not in out or row["filed"] > out[end]["filed"]:
+                out[end] = row
+    return {day: row["val"] for day, row in out.items()}
+
+
+def bigtech_fcf():
+    # Sum each company's latest two completed fiscal years, not quarterly guidance.
+    current = previous = 0
+    periods = []
+    for cik in BIGTECH:
+        company = facts(cik)
+        cfo, capex = annual_series(company, CFO), annual_series(company, CAPEX)
+        latest, prior = sorted(set(cfo) & set(capex))[-2:][::-1]
+        if not 350 <= (latest - prior).days <= 380:
+            raise ValueError("Nonconsecutive fiscal years")
+        current += cfo[latest] - capex[latest]
+        previous += cfo[prior] - capex[prior]
+        periods.append(latest)
+    return {"fcf": {"current": current / 1e9, "previous": previous / 1e9,
+                    "date": min(periods).isoformat(),
+                    "source": "SEC 10-K · AAPL/MSFT/GOOGL/AMZN/META · 최근 2개 회계연도 FCF 합계 · 가장 오래된 결산일 기준",
+                    "url": "https://www.sec.gov/edgar/search/"}}
+
+
 def update(path=pathlib.Path("data/ai-cycle.json")):
     path.parent.mkdir(exist_ok=True)
     old = json.loads(path.read_text()) if path.exists() else {}
     status = {}
-    for keys, collect_source in [(("yield",), collect), (tuple(BALANCES), nv)]:
+    for keys, collect_source in [(("yield",), collect), (tuple(BALANCES), nv), (("fcf",), bigtech_fcf)]:
         try:
             for key, item in collect_source().items():
                 if key in old and item["date"] < old[key]["date"]:
