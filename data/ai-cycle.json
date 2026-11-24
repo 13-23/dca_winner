@@ -10,20 +10,20 @@
     "current": -2.4251808313421552,
     "previous": 5.183477553242666,
     "date": "2026-10-25",
-    "source": "SEC NVIDIA · 전년 동기 대비 · 직전 분기 2026-07-26 비교",
-    "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27pr.htm"
+    "source": "NVIDIA 공식 실적 발표 · 전년 동기 대비 · 직전 분기 2026-07-26 비교",
+    "url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027"
   },
   "receivables": {
     "current": 39.465468240627864,
     "previous": 20.91453545458659,
     "date": "2026-10-25",
-    "source": "SEC NVIDIA · 전년 동기 대비 · 직전 분기 2026-07-26 비교",
-    "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27pr.htm"
+    "source": "NVIDIA 공식 실적 발표 · 전년 동기 대비 · 직전 분기 2026-07-26 비교",
+    "url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027"
   },
   "_status": {
     "yield": "ok",
-    "inventory": "retained",
-    "receivables": "retained"
+    "inventory": "ok",
+    "receivables": "ok"
   },
-  "_attempted": "2026-11-24T11:46:46.859371+00:00"
+  "_attempted": "2026-11-24T11:49:02.653704+00:00"
 }

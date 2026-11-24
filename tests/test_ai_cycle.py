@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from update_ai_cycle import earnings_values, update, yield_pair
+from update_ai_cycle import earnings_values, nv, update, yield_pair
 
 
 class AiCycleTests(unittest.TestCase):
@@ -34,6 +34,20 @@ class AiCycleTests(unittest.TestCase):
         row = yield_pair(observations, "Treasury", "https://home.treasury.gov/")["yield"]
         self.assertEqual(row["previous"], 5.12)
         self.assertIn("2026-11-13", row["source"])
+
+    def test_sec_failure_uses_official_earnings_filings(self):
+        dates = [dt.date.fromisoformat(value) for value in
+                 ("2025-07-27", "2025-10-26", "2026-07-26", "2026-10-25")]
+        revenue = dict(zip(dates, (100, 200, 120, 220)))
+        balance = dict(zip(dates, (10, 20, 15, 22)))
+        with patch("update_ai_cycle.sec_quarters", side_effect=OSError("403")), \
+             patch("update_ai_cycle.newsroom_quarters",
+                   return_value=(revenue, {"inventory": balance}, "NVIDIA", "https://nvidianews.nvidia.com/")):
+            row = nv()["inventory"]
+        self.assertEqual(row["date"], "2026-10-25")
+        self.assertAlmostEqual(row["current"], 0)
+        self.assertAlmostEqual(row["previous"], 30)
+        self.assertTrue(row["source"].startswith("NVIDIA"))
 
     def test_failed_collection_keeps_previous_data(self):
         point = {"current": 4.92, "previous": 5.12, "date": "2026-11-23"}

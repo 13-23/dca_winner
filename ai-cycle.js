@@ -32,7 +32,7 @@ function render(){let warnings=0,valid=0;for(const r of rows){const age=(Date.no
 const autoStatus=automatic._status?.[r.id];
 const label=r.manual?"직접 입력":autoStatus==="retained"?"자동 · 이전 값 유지":autoStatus==="ok"?"자동":autoStatus==="unavailable"?"자동 수집 실패":"";
 const url=automatic[r.id]?.url;
-r.link.hidden=r.manual||typeof url!=="string"||!/^https:\/\/(?:www\.sec\.gov|data\.sec\.gov|home\.treasury\.gov|fred\.stlouisfed\.org)\//.test(url);
+r.link.hidden=r.manual||typeof url!=="string"||!/^https:\/\/(?:www\.sec\.gov|data\.sec\.gov|home\.treasury\.gov|fred\.stlouisfed\.org|nvidianews\.nvidia\.com)\//.test(url);
 if(!r.link.hidden)r.link.href=url;
 const setStatus=message=>{r.status.textContent=[label,message].filter(Boolean).join(" · ")};
 if(!Number.isFinite(a)||!Number.isFinite(b)||!r.source.value.trim()||!Number.isFinite(age)||age< -1||age>r.days){setStatus("자료 부족 / 오래됨");continue}

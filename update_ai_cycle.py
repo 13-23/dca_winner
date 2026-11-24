@@ -8,11 +8,13 @@ import pathlib
 import re
 import urllib.request
 import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
 from html.parser import HTMLParser
 
 FRED = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10"
 TREASURY = "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value_month="
 SEC = "https://data.sec.gov"
+NEWSROOM = "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-"
 EDGAR = "https://www.sec.gov/Archives/edgar/data/1045810/"
 UA = "DCA Winner financial research https://github.com/13-23/dca_winner"
 REVENUE = ("RevenueFromContractWithCustomerExcludingAssessedTax", "SalesRevenueNet", "Revenues")
@@ -114,7 +116,7 @@ def earnings_values(html):
     match = re.search(r"(?:quarter|year) ended\s+([A-Z][a-z]+\s+\d{1,2},\s+\d{4})",
                       " ".join(" ".join(release.text).split()), re.I)
     if not match:
-        raise ValueError("Missing financial period in SEC release")
+        raise ValueError("Missing financial period in earnings release")
     period = dt.datetime.strptime(match[1], "%B %d, %Y").date()
     values = {}
     aliases = {"revenue":"revenue", "inventories":"inventory", "accounts receivable, net":"receivables"}
@@ -130,7 +132,7 @@ def earnings_values(html):
         if metric not in values and numeric:
             values[metric] = numeric[0] * 1_000_000
     if values.keys() != set(aliases.values()):
-        raise ValueError("Missing financial values in SEC release")
+        raise ValueError("Missing financial values in earnings release")
     return period, values
 
 
@@ -155,7 +157,7 @@ def supplemental_quarter(last_period):
     return None
 
 
-def nv():
+def sec_quarters():
     company = facts(1045810)
     revenue = series(company, REVENUE, True)
     balances = {key: series(company, tags) for key, tags in BALANCES.items()}
@@ -169,7 +171,46 @@ def nv():
             for key in balances:
                 balances[key][period] = values[key]
     except Exception as error:
-        print("SEC 8-K supplemental release:", error)
+        raise RuntimeError("SEC 8-K supplemental release unavailable") from error
+    return revenue, balances, "SEC NVIDIA", url
+
+
+def newsroom_release(candidate):
+    year, index = divmod(candidate, 4)
+    suffix = ("fourth-quarter-and-fiscal", "first-quarter-fiscal",
+              "second-quarter-fiscal", "third-quarter-fiscal")[index]
+    url = f"{NEWSROOM}{suffix}-{year + bool(index)}"
+    try:
+        day, values = earnings_values(get(url).decode("utf-8"))
+        expected = dt.date(year, 1 + 3 * index, 25)
+        if abs((day - expected).days) <= 15:
+            return day, values, url
+    except (OSError, ValueError):
+        return None
+    return None
+
+
+def newsroom_quarters():
+    today = dt.datetime.now(dt.timezone.utc).date()
+    quarter = today.year * 4 + (today.month - 1) // 3
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        releases = list(filter(None, pool.map(newsroom_release, range(quarter, quarter - 7, -1))))
+    if not releases:
+        raise ValueError("No comparable NVIDIA Newsroom releases")
+    revenue = {day: values["revenue"] for day, values, _ in releases}
+    balances = {key: {day: values[key] for day, values, _ in releases} for key in BALANCES}
+    return revenue, balances, "NVIDIA 공식 실적 발표", max(releases, key=lambda row: row[0])[2]
+
+
+def nv():
+    try:
+        return growth_gaps(*sec_quarters())
+    except Exception as error:
+        print("SEC NVIDIA:", error)
+    return growth_gaps(*newsroom_quarters())
+
+
+def growth_gaps(revenue, balances, source, url):
     result = {}
     for key, balance in balances.items():
         dates = sorted(set(balance) & set(revenue))
@@ -182,7 +223,7 @@ def nv():
         if not 75 <= (latest - previous).days <= 110:
             raise ValueError("Latest two comparable quarters are not consecutive")
         result[key] = {"current":gaps[latest], "previous":gaps[previous], "date":latest.isoformat(),
-                       "source":f"SEC NVIDIA · 전년 동기 대비 · 직전 분기 {previous.isoformat()} 비교", "url":url}
+                       "source":f"{source} · 전년 동기 대비 · 직전 분기 {previous.isoformat()} 비교", "url":url}
     return result
 
 
