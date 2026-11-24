@@ -19,3 +19,26 @@ test('band multiples are positive finite numbers with an explicit five-line limi
  assert.deepEqual(multiples('25, 15, 20, 15'),[15,20,25]);
  for(const text of ['', '0,1', '-1', 'NaN', 'Infinity', '1,', '1,2,3,4,5,6'])assert.throws(()=>multiples(text));
 });
+
+test('price scenarios require a matching confirmed close and never backfill before availability',()=>{
+ const {assess}=require('../valuation.js');
+ const base={asOf:'2026-11-19',referencePrice:100,per:20};
+ const days=[['2026-11-19',100],['2026-11-20',105],['2026-11-23',110]];
+ assert.deepEqual(assess(base,days),{reason:null,from:'2026-11-23'});
+ assert.deepEqual(assess({...base,availableOn:'2026-11-20'},days),{reason:null,from:'2026-11-20'});
+ assert.equal(assess({...base,availableOn:'2026-11-24'},days).reason,'future');
+ assert.equal(assess({...base,referencePrice:101},days).reason,'mismatch');
+ assert.equal(assess({...base,asOf:'2026-11-21'},days).reason,'no-anchor');
+ assert.equal(assess({...base,referencePrice:null},days).reason,'quote-only');
+ assert.equal(assess({...base,status:'stale'},days).reason,'stale');
+ assert.equal(assess(base,days,true).from,'2026-11-19');
+});
+
+test('published forward and trailing conventions never substitute for each other',()=>{
+ const {publishedSnapshot}=require('../valuation.js');
+ const refs=require('../data/valuation-references.json');
+ assert.equal(publishedSnapshot(refs, {}, '^GSPC').per,22.9);
+ assert.equal(publishedSnapshot(refs, {}, '^GSPC','forward').per,17.1);
+ assert.equal(publishedSnapshot(refs, {per:10}, '^NDX','forward'),null);
+ assert.equal(publishedSnapshot(refs, {status:'unavailable'}, '^NDX'),null);
+});

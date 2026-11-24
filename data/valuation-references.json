@@ -2,8 +2,8 @@
   "trailing": {
     "^KS11": {
       "referencePrice": 6838.04,
-      "per": 11.40,
-      "pbr": 1.70,
+      "per": 11.4,
+      "pbr": 1.7,
       "asOf": "2026-09-30",
       "source": "한국거래소 · 국가통계포털",
       "basis": "2026년 9월 공표 배수와 월말 종가",
@@ -23,29 +23,51 @@
         "PER": "https://kosis.kr/statHtml/statHtml.do?orgId=343&tblId=DT_343_2010_S0073",
         "PBR": "https://kosis.kr/statHtml/statHtml.do?orgId=343&tblId=DT_343_2010_S0074"
       }
+    },
+    "^GSPC": {
+      "referencePrice": null,
+      "per": 22.9,
+      "pbr": null,
+      "asOf": "2026-11-20",
+      "dateBasis": "보고서 발행일",
+      "source": "FactSet",
+      "basis": "최근 12개월 실적 기준",
+      "perAverages": {
+        "5": 24.4,
+        "10": 23.7
+      },
+      "sourceUrls": {
+        "FactSet Earnings Insight": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_112026.pdf"
+      }
     }
   },
   "forward": {
     "^KS11": {
-      "referencePrice": 5730.74,
+      "referencePrice": null,
       "per": 4.14,
       "pbr": 1.09,
-      "asOf": "2026-10-30",
+      "asOf": "2026-11-02",
       "source": "미래에셋증권 리서치 · FnGuide",
-      "basis": "12개월 선행 추정 · 11월 2일자 보고 수치를 10월 30일 종가로 환산",
+      "basis": "12개월 선행 이익·장부가 추정",
       "sourceUrls": {
         "선행 PER·PBR": "https://t.me/eqmirae/3274"
-      }
+      },
+      "dateBasis": "보고서 발행일"
     },
     "^GSPC": {
-      "referencePrice": 7720.39,
-      "per": 18.7,
+      "referencePrice": null,
+      "per": 17.1,
       "pbr": null,
-      "asOf": "2026-10-29",
+      "asOf": "2026-11-20",
+      "dateBasis": "보고서 발행일",
       "source": "FactSet",
-      "basis": "12개월 선행 이익 · 2026-10-30 보고서",
+      "basis": "향후 12개월 예상 이익 기준",
+      "perAverages": {
+        "5": 19.8,
+        "10": 19.1
+      },
       "sourceUrls": {
-        "선행 PER": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_103026.pdf#page=16"
+        "FactSet Earnings Insight": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_112026.pdf"
       }
     }
   }

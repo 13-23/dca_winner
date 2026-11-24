@@ -91,26 +91,6 @@
   const number = new Intl.NumberFormat("ko-KR", {maximumFractionDigits: 4});
   const percent = new Intl.NumberFormat("ko-KR", {style: "percent", maximumFractionDigits: 2, signDisplay: "exceptZero"});
   const collectedAt = new Intl.DateTimeFormat("ko-KR", {dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Seoul"});
-  let valuationRequest;
-
-  function read(path) {
-    return fetch(path, {cache: "no-cache", signal: AbortSignal.timeout(10000)}).then(response => {
-      if (!response.ok) throw Error("자료 조회 실패");
-      return response.json();
-    });
-  }
-
-  function loadValuations() {
-    if (!valuationRequest) {
-      valuationRequest = Promise.allSettled([read("data/valuation-references.json"), read("data/valuations.json")])
-        .then(([references, automatic]) => {
-          if (references.status === "rejected" || automatic.status === "rejected") valuationRequest = null;
-          return {references: references.value?.trailing, automatic: automatic.value?.items};
-        });
-    }
-    return valuationRequest;
-  }
-
   function addLine(cell, value) {
     const line = document.createElement("small");
     line.textContent = value;
@@ -257,28 +237,26 @@
     });
     panel.hidden = false;
 
-    if (rows.some(row => row.stats)) loadValuations().then(({references, automatic}) => {
+    if (rows.some(row => row.stats)) ValuationModel.loadArchive().then(({references, automatic}) => {
       for (const {asset, stats, valuation} of rows) {
         if (!stats) continue;
-        const candidates = [references?.[asset.symbol], automatic?.find(item => item.symbol === asset.symbol)];
-        const snapshot = candidates.find(item => item?.asOf && item.asOf <= stats.current.date &&
-          item.status !== "unavailable" && ValuationModel.positive(item.referencePrice) &&
-          (ValuationModel.positive(item.per) || ValuationModel.positive(item.pbr)));
-        const {per, pbr} = ValuationModel.evaluate(snapshot, stats.current.price);
-        const multiple = value => value == null ? "자료 없음" : number.format(value) + "배";
-        valuation.textContent = snapshot ? "PER " + multiple(per) : "제공 배수 없음";
+        const snapshot = ValuationModel.publishedSnapshot(references, automatic?.find(item => item.symbol === asset.symbol), asset.symbol);
+        const {per, pbr} = snapshot || {};
+        const multiple = value => !ValuationModel.positive(value) ? "자료 없음" : number.format(value) + "배";
+        valuation.textContent = snapshot ? "출처 PER " + multiple(per) : "제공 배수 없음";
         if (!snapshot) continue;
         if (body) addLine(valuation, "PBR " + multiple(pbr));
         else {
           const headline = document.createElement("strong");
           const concise = new Intl.NumberFormat("ko-KR", {maximumFractionDigits: 2});
-          const show = value => value == null ? "—" : concise.format(value) + "배";
-          headline.textContent = "PER " + show(per);
+          const show = value => !ValuationModel.positive(value) ? "—" : concise.format(value) + "배";
+          headline.textContent = "출처 PER " + show(per);
           valuation.replaceChildren(headline);
           addLine(valuation, "PBR " + show(pbr));
         }
-        addLine(valuation, snapshot.asOf + " · " + (snapshot.source || "출처 미기재"));
-        addLine(valuation, "과거 배수 비교 자료 없음");
+        addLine(valuation, snapshot.asOf + (snapshot.dateBasis ? " " + snapshot.dateBasis : "") + " · " + (snapshot.source || "출처 미기재"));
+        addLine(valuation, snapshot.perAverages ? "같은 출처 PER 5년 " + number.format(snapshot.perAverages[5]) +
+          "배 · 10년 " + number.format(snapshot.perAverages[10]) + "배" : "과거 배수 비교 자료 없음");
         if (snapshot.estimated || snapshot.status === "stale") {
           addLine(valuation, [snapshot.estimated && "출처 추정치", snapshot.status === "stale" && "이전 자료"].filter(Boolean).join(" · "));
         }

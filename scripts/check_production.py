@@ -31,6 +31,8 @@ def check():
         raise ValueError('Published monthly strategy comparison is missing')
     if 'market-context-card' not in page or b'additionalDecline' not in get(SITE + 'market-context.js?v=' + revision):
         raise ValueError('Published market context is missing')
+    if 'EPS·BPS 충격 시' not in page or b'function assess(' not in get(SITE + 'valuation.js?v=' + revision):
+        raise ValueError('Published valuation source guards or sensitivity table is missing')
     index = json.loads(get(SITE + 'data/index.json?v=' + revision))
     kst = timezone(timedelta(hours=9))
     updated = datetime.strptime(index['updated'], '%Y-%m-%d %H:%M KST').replace(tzinfo=kst)
