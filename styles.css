@@ -446,3 +446,13 @@ tbody tr:hover { background: var(--accent-soft); }
 .price-drawdown { margin-top: .4rem; white-space: normal; }
 .strategy-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .6rem; }
 .strategy-panel th, .strategy-panel td { text-align: left; white-space: normal; }
+
+.overview-quote { margin: 0; padding: .8rem 1rem; background: var(--accent-soft); border-radius: 8px; font-weight: 700; }
+.overview-quote small { font-weight: 400; }
+.overview-areas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin-top: .75rem; }
+.overview-areas section { border: 1px solid var(--line); border-radius: 8px; padding: .85rem; overflow-wrap: anywhere; }
+.overview-areas h3 { margin: 0 0 .5rem; color: var(--muted); font-size: .86rem; }
+.overview-areas .results-link { display: inline-block; margin-top: .5rem; }
+@media (max-width: 600px) {
+  .overview-areas { grid-template-columns: 1fr; }
+}

@@ -11,7 +11,9 @@ const fields=['start','end','frequency','monthday','weekday','amount'];
 for(let i=1;i<=31;i++){$('pf-monthday').add(new Option(i===31?'말일':i+'일',i));}
 if(saved){if(Array.isArray(saved.entries)&&saved.entries.length&&saved.entries.length<=10)entries=saved.entries.map(e=>({symbol:String(e.symbol),weight:Number(e.weight),label:String(e.label||e.symbol)}));for(const f of fields)if(saved[f]!=null)$('pf-'+f).value=saved[f];$('pf-fractional').checked=saved.fractional!==false;$('pf-adjusted').checked=!!saved.adjusted;}
 function save(){try{const v={entries,active,fractional:$('pf-fractional').checked,adjusted:$('pf-adjusted').checked};for(const f of fields)v[f]=$('pf-'+f).value;localStorage.setItem(storeKey,JSON.stringify(v));}catch(e){}}
-function total(){const sum=entries.reduce((s,e)=>s+(Number.isFinite(e.weight)?e.weight:0),0);$('pf-total').textContent='합계 '+num.format(sum)+'%';$('pf-total').className=Math.abs(sum-100)>1e-6?'hint warn':'hint';$('pf-add').disabled=entries.length>=10;}
+function total(){
+ $('pf-crypto-source-note').hidden=!entries.some(entry=>/^(BTC|ETH)-KRW$/.test(entry.symbol));
+ const sum=entries.reduce((s,e)=>s+(Number.isFinite(e.weight)?e.weight:0),0);$('pf-total').textContent='합계 '+num.format(sum)+'%';$('pf-total').className=Math.abs(sum-100)>1e-6?'hint warn':'hint';$('pf-add').disabled=entries.length>=10;}
 function renderRows(){
  const box=$('pf-assets');box.replaceChildren();
  entries.forEach((entry,i)=>{

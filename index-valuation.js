@@ -198,6 +198,12 @@
   });
   for (const field of ["range", "per-on", "pbr-on", "per-levels", "pbr-levels"]) $(field).addEventListener("input", render);
   new ResizeObserver(() => { if (loaded && !tab.hidden) render(); }).observe($("chart"));
-  window.addEventListener("indexvaluationopen", () => { if (!loaded) load(); });
+  window.addEventListener("indexvaluationopen", event => {
+    const index = $("index");
+    if (event.detail && index.value !== event.detail) {
+      index.value = event.detail;
+      load();
+    } else if (!loaded) load();
+  });
   if (!tab.hidden) load();
 })();

@@ -58,8 +58,33 @@
     };
   }
 
+  function comparisonAge(current, match) {
+    const end = new Date(current.time), start = new Date(match.time);
+    const monthEnd = new Date(Date.UTC(end.getUTCFullYear(), end.getUTCMonth() + 1, 0)).getUTCDate();
+    const months = (end.getUTCFullYear() - start.getUTCFullYear()) * 12 + end.getUTCMonth() -
+      start.getUTCMonth() - Number(end.getUTCDate() < Math.min(start.getUTCDate(), monthEnd));
+    if (months < 1) return (current.time - match.time) / day + "일 전";
+    return "약 " + [Math.floor(months / 12) || null, months % 12 || null]
+      .map((value, index) => value ? value + (index ? "개월" : "년") : "")
+      .filter(Boolean).join(" ") + " 전";
+  }
+
+  function quoteStatus(asset) {
+    const update = asset.quoteUpdate;
+    if (!update) return asset.source ? "검색 시세 수집" : "저장 시세 · 최근 갱신 결과 미기록";
+    const captured = Date.parse(asset.fetchedAt), attempted = Date.parse(update.attemptedAt);
+    if (update.status === "retained" && Number.isFinite(attempted) && !(captured > attempted)) {
+      return "갱신 실패 · 이전 시세 유지";
+    }
+    if (asset.fetchedAt && asset.fetchedAt === update.fetchedAt) {
+      if (update.status === "unchanged") return "수집 성공 · 확정 종가 날짜 유지";
+      if (update.status === "collected") return "수집 성공";
+    }
+    return "저장 시세 · 파일의 개별 갱신 결과 미기록";
+  }
+
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = {summarize};
+    module.exports = {summarize, comparisonAge, quoteStatus};
     return;
   }
 
@@ -110,48 +135,79 @@
     return button;
   }
 
+  function analysisButton(tab, symbol, label) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn price-drawdown";
+    button.textContent = label;
+    button.addEventListener("click", () => window.dispatchEvent(new CustomEvent("pricesummaryopen", {detail: {tab, symbol}})));
+    return button;
+  }
+
   function render(panel, assets, {portfolio = false, mdd = null} = {}) {
     panel.hidden = true;
     const body = panel.querySelector("tbody");
-    body.replaceChildren();
+    body?.replaceChildren();
     if (!assets.length) return;
 
-    panel.querySelector("[data-price-context]").textContent = portfolio
-      ? "구성 종목별 최신 종가이며 적립 계산 종료일과 다를 수 있습니다. 계산 기간의 혼합 MDD(입금 효과 제외) " + (mdd == null ? "자료 없음" : percent.format(mdd)) + "."
-      : "적립 조건과 별도로 사용할 수 있는 최신 일봉 종가를 표시합니다.";
+    if (portfolio) {
+      panel.querySelector("[data-price-context]").textContent =
+        "구성 종목별 최신 종가이며 적립 계산 종료일과 다를 수 있습니다. 계산 기간의 혼합 MDD(입금 효과 제외) " +
+        (mdd == null ? "자료 없음" : percent.format(mdd)) + ".";
+    }
 
     const rows = assets.map(asset => {
       const stats = summarize(asset);
-      const row = body.insertRow();
-      const title = document.createElement("th");
-      title.scope = "row";
-      title.textContent = asset.label || asset.symbol;
-      if (asset.label && asset.label !== asset.symbol) addLine(title, asset.symbol);
-      row.append(title);
-      const quote = row.insertCell(), position = row.insertCell(), valuation = row.insertCell(), risk = row.insertCell();
+      let quote, position, valuation, risk;
+      if (body) {
+        const row = body.insertRow();
+        const title = document.createElement("th");
+        title.scope = "row";
+        title.textContent = asset.label || asset.symbol;
+        if (asset.label && asset.label !== asset.symbol) addLine(title, asset.symbol);
+        row.append(title);
+        [quote, position, valuation, risk] = Array.from({length: 4}, () => row.insertCell());
+      } else {
+        [quote, position, valuation, risk] = ["quote", "position", "valuation", "risk"]
+          .map(key => panel.querySelector("[data-overview-" + key + "]"));
+        const ma = panel.querySelector("[data-overview-ma]"), value = panel.querySelector("[data-overview-value-link]");
+        ma.replaceChildren();
+        value.replaceChildren();
+        if (Object.hasOwn(drawdownMarkets, asset.symbol)) {
+          ma.append(analysisButton("ma", asset.symbol, "이평선 차트"));
+          value.append(analysisButton("value", asset.symbol, "지수 PER·PBR 상세"));
+        }
+      }
       const unit = asset.symbol.startsWith("^") ? "pt" : asset.currency || "통화 미기재";
       const price = value => number.format(value) + " " + unit;
       quote.textContent = stats ? price(stats.current.price) : "확정 종가 자료 없음";
-      if (stats) addLine(quote, stats.current.date + " · " + (crypto(asset) ? "UTC 일봉" : "현지 거래일"));
+      if (stats) addLine(quote, stats.current.date + " · " + (crypto(asset) ? "UTC 일봉 종가" : "현지 일봉 종가") + " · " + (asset.currency || "통화 미기재"));
       const source = document.createElement("a");
       source.textContent = "Yahoo Finance";
       source.href = "https://finance.yahoo.com/quote/" + encodeURIComponent(asset.symbol) + "/history/";
       source.target = "_blank";
       source.rel = "noopener noreferrer";
       const provenance = document.createElement("small");
-      provenance.append(source, asset.source ? " · 검색 시세" : " · 저장 시세");
+      const status = quoteStatus(asset);
+      provenance.append(source, " · " + status);
       quote.append(provenance);
       if (Number.isFinite(Date.parse(asset.fetchedAt))) addLine(quote, "수집 " + collectedAt.format(new Date(asset.fetchedAt)) + " KST");
+
+      if (asset.quoteUpdate?.status === "retained" && status.startsWith("갱신 실패") &&
+          Number.isFinite(Date.parse(asset.quoteUpdate.attemptedAt))) {
+        addLine(quote, "갱신 시도 " + collectedAt.format(new Date(asset.quoteUpdate.attemptedAt)) + " KST");
+      }
+      if (stats) addLine(quote, "이력 시작 " + stats.first);
 
       const match = stats?.comparison;
       position.textContent = match ? match.date + " · " + price(match.price) : "비교 이력 부족";
       if (match) addLine(position, (stats.withinBand ? "±1% 내 최근" : "±1% 밖 최인접") + " · 현재 대비 " + percent.format(match.gap));
-      if (stats) addLine(position, "시세 이력 " + stats.first + "부터");
+      if (match) addLine(position, comparisonAge(stats.current, match) + (stats.withinBand ? " 가격대" : " 비교 종가"));
       const gapLabel = value => value == null ? "이력 부족" : percent.format(value);
       addLine(position, "200일선 " + gapLabel(stats?.dailyGap));
       addLine(position, "60주선 " + gapLabel(stats?.weeklyGap));
       valuation.textContent = stats ? "배수 자료 확인 중…" : "자료 없음";
-      risk.textContent = stats?.peakGap != null ? "고점 대비 " + percent.format(stats.peakGap) : "낙폭 이력 부족";
+      risk.textContent = stats?.peakGap != null ? "최근 1년 고점 대비 " + percent.format(stats.peakGap) : "낙폭 이력 부족";
       if (stats?.maxDrawdown != null) {
         addLine(risk, "최대 낙폭 " + percent.format(stats.maxDrawdown));
         addLine(risk, stats.riskStart + " ~ " + stats.current.date);
@@ -174,6 +230,7 @@
         if (!snapshot) continue;
         addLine(valuation, "PBR " + multiple(pbr));
         addLine(valuation, snapshot.asOf + " · " + (snapshot.source || "출처 미기재"));
+        addLine(valuation, "과거 배수 비교 자료 없음");
         if (snapshot.estimated || snapshot.status === "stale") {
           addLine(valuation, [snapshot.estimated && "출처 추정치", snapshot.status === "stale" && "이전 자료"].filter(Boolean).join(" · "));
         }

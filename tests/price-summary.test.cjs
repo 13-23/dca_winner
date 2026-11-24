@@ -61,3 +61,22 @@ test('200-day and 60-week gaps use current confirmed close and the previous 59 w
   assert.equal(short.dailyGap, null);
   assert.equal(short.weeklyGap, null);
 });
+
+test('comparison age uses complete calendar months including month-end dates', () => {
+  const {comparisonAge} = require('../price-summary.js');
+  const date = value => ({time: Date.parse(value)});
+  assert.equal(comparisonAge(date('2026-11-20'), date('2024-08-20')), '약 2년 3개월 전');
+  assert.equal(comparisonAge(date('2026-06-30'), date('2026-05-31')), '약 1개월 전');
+  assert.equal(comparisonAge(date('2026-08-30'), date('2026-07-31')), '30일 전');
+});
+
+test('status differentiates successful no-new-close, retained data and a newer source file', () => {
+  const {quoteStatus} = require('../price-summary.js');
+  const fetchedAt = '2026-11-24T08:00:00Z', attemptedAt = '2026-11-24T08:01:00Z';
+  assert.match(quoteStatus({fetchedAt, quoteUpdate:{status:'unchanged', fetchedAt, attemptedAt}}), /확정 종가 날짜 유지/);
+  const quoteUpdate = {status:'retained', fetchedAt, attemptedAt};
+  assert.match(quoteStatus({fetchedAt, quoteUpdate}), /갱신 실패/);
+  assert.match(quoteStatus({fetchedAt:'2026-11-24T09:00:00Z', quoteUpdate}), /미기록/);
+  assert.match(quoteStatus({fetchedAt}), /미기록/);
+  assert.match(quoteStatus({fetchedAt, source:'Yahoo Finance'}), /검색 시세/);
+});

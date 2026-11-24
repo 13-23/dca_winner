@@ -150,6 +150,56 @@ def mock(symbol):
     return {"symbol": symbol, "name": "MOCK " + symbol, "currency": cur, "exchange": "MOCK", "data": data}
 
 
+def confirmed_date(asset):
+    stamp = asset.get("fetchedAt")
+    if not stamp:
+        return None
+    captured = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    symbol, exchange = asset["symbol"], asset.get("exchange", "")
+    if exchange.upper() in {"CCC", "CMC"} or symbol in {"BTC-KRW", "BTC-USD", "ETH-KRW", "ETH-USD"}:
+        hours = 24
+    elif symbol.endswith((".KS", ".KQ")) or symbol in {"^KS11", "^KQ11"}:
+        hours = 8
+    else:
+        hours = 22 if asset["currency"] == "USD" else 24
+    cutoff = captured.astimezone(timezone.utc) - timedelta(hours=hours)
+    return next((row[0] for row in reversed(asset["data"]) if row[0] <= cutoff.date().isoformat()), None)
+
+
+def collect_item(ticker, previous, hidden=False):
+    symbol = ticker["symbol"]
+    path = os.path.join(DATA, file_name(symbol))
+    temporary = path + ".tmp"
+    previous_close = previous.get("quoteUpdate", {}).get("closeDate") if previous else None
+    try:
+        asset = fetch(symbol)
+        close = confirmed_date(asset)
+        item = {"symbol": symbol, "name": asset["name"], "currency": asset["currency"],
+                "first": asset["data"][0][0], "last": asset["data"][-1][0]}
+        update = {"status": "unchanged" if close and close == previous_close else "collected",
+                  "closeDate": close, "fetchedAt": asset.get("fetchedAt")}
+        with open(temporary, "w", encoding="utf-8") as f:
+            json.dump(asset, f, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+        os.replace(temporary, path)
+    except Exception as error:
+        print("  FAIL %-12s %s" % (symbol, error))
+        if not previous or not os.path.isfile(path):
+            return None
+        item = dict(previous)
+        update = {**previous.get("quoteUpdate", {}), "status": "retained"}
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+    item["label"] = ticker.get("label") or item["name"]
+    item["group"] = ticker.get("group") or "기타"
+    item["quoteUpdate"] = {**update, "attemptedAt": datetime.now(timezone.utc).isoformat()}
+    if ticker.get("aliases"):
+        item["aliases"] = ticker["aliases"]
+    if hidden:
+        item["hidden"] = True
+    return item
+
+
 def main():
     with open(os.path.join(ROOT, "tickers.json"), encoding="utf-8") as f:
         tickers = json.load(f)
@@ -164,26 +214,14 @@ def main():
 
     def run(t, hidden=False):
         sym = t["symbol"]
-        try:
-            out = fetch(sym)
-            with open(os.path.join(DATA, file_name(sym)), "w", encoding="utf-8") as f:
-                json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
-            item = {"symbol": sym, "label": t.get("label") or out["name"], "name": out["name"],
-                    "group": t.get("group") or "기타", "currency": out["currency"],
-                    "first": out["data"][0][0], "last": out["data"][-1][0]}
-            ok.append(sym)
-            print("  ok   %-12s %s ~ %s (%d일)" % (sym, item["first"], item["last"], len(out["data"])))
-        except Exception as e:
+        item = collect_item(t, old.get(sym), hidden)
+        if not item or item["quoteUpdate"]["status"] == "retained":
             failed.append(sym)
-            print("  FAIL %-12s %s" % (sym, e))
-            if sym not in old or not os.path.exists(os.path.join(DATA, file_name(sym))):
-                return None
-            item = dict(old[sym])  # 예전 파일 유지
-            item.update({"label": t.get("label") or item.get("label"), "group": t.get("group") or item.get("group")})
-        if t.get("aliases"):
-            item["aliases"] = t["aliases"]
-        if hidden:
-            item["hidden"] = True
+        else:
+            ok.append(sym)
+            print("  ok   %-12s %s ~ %s" % (sym, item["first"], item["last"]))
+        if not item:
+            return None
         items.append(item)
         if not MOCK:
             time.sleep(1)
@@ -205,8 +243,10 @@ def main():
     from update_valuations import update as update_valuations
     update_valuations(DATA, yahoo, mock=MOCK)
     print("완료: 성공 %d, 실패 %d%s" % (len(ok), len(failed), (" (" + ", ".join(failed) + ")") if failed else ""))
-    if failed and len(failed) >= len(tickers):
-        sys.exit(1)  # 전부 실패하면 Actions에 오류로 표시
+    if tickers and not any(item for item in items if not item.get("hidden")):
+        sys.exit(1)
+    if failed:
+        print("::warning::시세 수집 실패 %d건. 저장 자료가 있으면 유지하고 종목별 상태를 기록했습니다." % len(failed))
 
 
 if __name__ == "__main__":
