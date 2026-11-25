@@ -229,7 +229,7 @@ def growth_gaps(revenue, balances, source, url):
 
 BIGTECH = (320193, 789019, 1652044, 1018724, 1326801)
 CFO = ("NetCashProvidedByUsedInOperatingActivities",)
-CAPEX = ("PaymentsToAcquirePropertyPlantAndEquipment",)
+CAPEX = ("PaymentsToAcquirePropertyPlantAndEquipment", "PaymentsToAcquireProductiveAssets")
 CASH = ("CashAndCashEquivalentsAtCarryingValue",)
 DEBT_CURRENT = ("LongTermDebtCurrent", "LongTermDebtAndCapitalLeaseObligationsCurrent")
 DEBT_LONG = ("LongTermDebtNoncurrent", "LongTermDebtAndCapitalLeaseObligationsNoncurrent")
@@ -253,15 +253,24 @@ def bigtech_fcf():
     # Sum each company's latest two completed fiscal years, not quarterly guidance.
     current = previous = 0
     periods = []
+    errors = []
     for cik in BIGTECH:
-        company = facts(cik)
-        cfo, capex = annual_series(company, CFO), annual_series(company, CAPEX)
-        latest, prior = sorted(set(cfo) & set(capex))[-2:][::-1]
-        if not 350 <= (latest - prior).days <= 380:
-            raise ValueError("Nonconsecutive fiscal years")
-        current += cfo[latest] - capex[latest]
-        previous += cfo[prior] - capex[prior]
-        periods.append(latest)
+        try:
+            company = facts(cik)
+            cfo, capex = annual_series(company, CFO), annual_series(company, CAPEX)
+            common = sorted(set(cfo) & set(capex))
+            if len(common) < 2:
+                raise ValueError(f"Insufficient annual periods: CFO={len(cfo)}, CAPEX={len(capex)}, common={len(common)}")
+            latest, prior = common[-2:][::-1]
+            if not 350 <= (latest - prior).days <= 380:
+                raise ValueError("Nonconsecutive fiscal years")
+            current += cfo[latest] - capex[latest]
+            previous += cfo[prior] - capex[prior]
+            periods.append(latest)
+        except Exception as error:
+            errors.append(f"CIK {cik}: {type(error).__name__}: {error}")
+    if errors:
+        raise ValueError("; ".join(errors))
     return {"fcf": {"current": current / 1e9, "previous": previous / 1e9,
                     "date": min(periods).isoformat(),
                     "source": "SEC 10-K · AAPL/MSFT/GOOGL/AMZN/META · 최근 2개 회계연도 FCF 합계 · 가장 오래된 결산일 기준",
@@ -272,6 +281,7 @@ def update(path=pathlib.Path("data/ai-cycle.json")):
     path.parent.mkdir(exist_ok=True)
     old = json.loads(path.read_text()) if path.exists() else {}
     status = {}
+    errors = {}
     for keys, collect_source in [(("yield",), collect), (tuple(BALANCES), nv), (("fcf",), bigtech_fcf)]:
         try:
             for key, item in collect_source().items():
@@ -283,8 +293,9 @@ def update(path=pathlib.Path("data/ai-cycle.json")):
         except Exception as error:
             for key in keys:
                 status[key] = "retained" if key in old else "unavailable"
+                errors[key] = f"{type(error).__name__}: {error}"
             print(keys, error)
-    old.update(_status=status, _attempted=dt.datetime.now(dt.timezone.utc).isoformat())
+    old.update(_status=status, _errors=errors, _attempted=dt.datetime.now(dt.timezone.utc).isoformat())
     temporary = path.with_suffix(".tmp")
     temporary.write_text(json.dumps(old, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     temporary.replace(path)
