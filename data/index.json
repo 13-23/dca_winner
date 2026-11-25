@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-25 13:52 KST",
+ "updated": "2026-11-26 03:38 KST",
  "items": [
   {
    "symbol": "^KS11",
@@ -10,10 +10,10 @@
    "label": "코스피",
    "group": "지수",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:51:49.038648+00:00",
-    "attemptedAt": "2026-11-25T04:51:50.195456+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-25",
+    "fetchedAt": "2026-11-25T18:37:44.556819+00:00",
+    "attemptedAt": "2026-11-25T18:37:45.315997+00:00"
    }
   },
   {
@@ -25,10 +25,10 @@
    "label": "코스닥",
    "group": "지수",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:51:51.406107+00:00",
-    "attemptedAt": "2026-11-25T04:51:52.191028+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-25",
+    "fetchedAt": "2026-11-25T18:37:46.507737+00:00",
+    "attemptedAt": "2026-11-25T18:37:47.082367+00:00"
    }
   },
   {
@@ -36,14 +36,14 @@
    "name": "NASDAQ Composite",
    "currency": "USD",
    "first": "1971-02-05",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "나스닥 종합",
    "group": "지수",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:51:53.488426+00:00",
-    "attemptedAt": "2026-11-25T04:51:53.567998+00:00"
+    "fetchedAt": "2026-11-25T18:37:48.405146+00:00",
+    "attemptedAt": "2026-11-25T18:37:48.484317+00:00"
    }
   },
   {
@@ -51,14 +51,14 @@
    "name": "NASDAQ-100",
    "currency": "USD",
    "first": "1985-10-01",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "나스닥 100",
    "group": "지수",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:51:54.808156+00:00",
-    "attemptedAt": "2026-11-25T04:51:54.868113+00:00"
+    "fetchedAt": "2026-11-25T18:37:49.754271+00:00",
+    "attemptedAt": "2026-11-25T18:37:49.814257+00:00"
    }
   },
   {
@@ -66,14 +66,14 @@
    "name": "Dow Jones Industrial Average",
    "currency": "USD",
    "first": "1992-01-02",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "다우존스",
    "group": "지수",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:51:56.116415+00:00",
-    "attemptedAt": "2026-11-25T04:51:56.169437+00:00"
+    "fetchedAt": "2026-11-25T18:37:51.052363+00:00",
+    "attemptedAt": "2026-11-25T18:37:51.105422+00:00"
    }
   },
   {
@@ -81,14 +81,14 @@
    "name": "S&P 500",
    "currency": "USD",
    "first": "1970-01-02",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "S&P 500",
    "group": "지수",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:51:57.478015+00:00",
-    "attemptedAt": "2026-11-25T04:51:57.559015+00:00"
+    "fetchedAt": "2026-11-25T18:37:52.419901+00:00",
+    "attemptedAt": "2026-11-25T18:37:52.499972+00:00"
    }
   },
   {
@@ -100,10 +100,10 @@
    "label": "KODEX 200",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:51:58.740967+00:00",
-    "attemptedAt": "2026-11-25T04:51:58.763032+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-25",
+    "fetchedAt": "2026-11-25T18:37:53.658878+00:00",
+    "attemptedAt": "2026-11-25T18:37:53.680735+00:00"
    }
   },
   {
@@ -115,10 +115,10 @@
    "label": "KODEX 레버리지",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:51:59.897436+00:00",
-    "attemptedAt": "2026-11-25T04:51:59.917249+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-25",
+    "fetchedAt": "2026-11-25T18:37:54.837780+00:00",
+    "attemptedAt": "2026-11-25T18:37:54.857241+00:00"
    }
   },
   {
@@ -130,10 +130,10 @@
    "label": "KODEX 코스닥150레버리지",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:01.051818+00:00",
-    "attemptedAt": "2026-11-25T04:52:01.064619+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-25",
+    "fetchedAt": "2026-11-25T18:37:55.998660+00:00",
+    "attemptedAt": "2026-11-25T18:37:56.011198+00:00"
    }
   },
   {
@@ -145,10 +145,10 @@
    "label": "KODEX 코스닥150",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:02.229083+00:00",
-    "attemptedAt": "2026-11-25T04:52:02.243009+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-25",
+    "fetchedAt": "2026-11-25T18:37:57.174798+00:00",
+    "attemptedAt": "2026-11-25T18:37:57.188554+00:00"
    }
   },
   {
@@ -160,10 +160,10 @@
    "label": "TIGER 미국나스닥100",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:03.434564+00:00",
-    "attemptedAt": "2026-11-25T04:52:03.455031+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-25",
+    "fetchedAt": "2026-11-25T18:37:58.339057+00:00",
+    "attemptedAt": "2026-11-25T18:37:58.359233+00:00"
    }
   },
   {
@@ -175,10 +175,10 @@
    "label": "TIGER 미국S&P500",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:04.559126+00:00",
-    "attemptedAt": "2026-11-25T04:52:04.567574+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-25",
+    "fetchedAt": "2026-11-25T18:37:59.484302+00:00",
+    "attemptedAt": "2026-11-25T18:37:59.492199+00:00"
    }
   },
   {
@@ -186,14 +186,14 @@
    "name": "Invesco QQQ Trust",
    "currency": "USD",
    "first": "1999-03-10",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "QQQ (나스닥100)",
    "group": "미국 ETF",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:05.801676+00:00",
-    "attemptedAt": "2026-11-25T04:52:05.841103+00:00"
+    "fetchedAt": "2026-11-25T18:38:00.729135+00:00",
+    "attemptedAt": "2026-11-25T18:38:00.767890+00:00"
    }
   },
   {
@@ -201,14 +201,14 @@
    "name": "ProShares Ultra QQQ",
    "currency": "USD",
    "first": "2006-06-21",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "QLD (나스닥100 2배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:07.064389+00:00",
-    "attemptedAt": "2026-11-25T04:52:07.093107+00:00"
+    "fetchedAt": "2026-11-25T18:38:01.990215+00:00",
+    "attemptedAt": "2026-11-25T18:38:02.018775+00:00"
    }
   },
   {
@@ -216,14 +216,14 @@
    "name": "ProShares UltraPro QQQ",
    "currency": "USD",
    "first": "2010-02-11",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "TQQQ (나스닥100 3배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:08.257595+00:00",
-    "attemptedAt": "2026-11-25T04:52:08.281406+00:00"
+    "fetchedAt": "2026-11-25T18:38:03.247182+00:00",
+    "attemptedAt": "2026-11-25T18:38:03.270922+00:00"
    }
   },
   {
@@ -231,14 +231,14 @@
    "name": "ProShares Ultra S&P500",
    "currency": "USD",
    "first": "2006-06-21",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "SSO (S&P500 2배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:09.486983+00:00",
-    "attemptedAt": "2026-11-25T04:52:09.517015+00:00"
+    "fetchedAt": "2026-11-25T18:38:04.543332+00:00",
+    "attemptedAt": "2026-11-25T18:38:04.572398+00:00"
    }
   },
   {
@@ -246,14 +246,14 @@
    "name": "ProShares UltraPro S&P500",
    "currency": "USD",
    "first": "2009-06-25",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "UPRO (S&P500 3배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:10.713801+00:00",
-    "attemptedAt": "2026-11-25T04:52:10.739155+00:00"
+    "fetchedAt": "2026-11-25T18:38:05.769232+00:00",
+    "attemptedAt": "2026-11-25T18:38:05.794370+00:00"
    }
   },
   {
@@ -261,14 +261,14 @@
    "name": "ProShares Ultra Semiconductors",
    "currency": "USD",
    "first": "2007-02-01",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "USD (반도체 2배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:11.923727+00:00",
-    "attemptedAt": "2026-11-25T04:52:11.951950+00:00"
+    "fetchedAt": "2026-11-25T18:38:07.014916+00:00",
+    "attemptedAt": "2026-11-25T18:38:07.042859+00:00"
    }
   },
   {
@@ -276,14 +276,14 @@
    "name": "Direxion Daily Semiconductor Bull 3X Shares",
    "currency": "USD",
    "first": "2010-03-11",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "SOXL (반도체 3배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:13.135904+00:00",
-    "attemptedAt": "2026-11-25T04:52:13.159974+00:00"
+    "fetchedAt": "2026-11-25T18:38:08.295313+00:00",
+    "attemptedAt": "2026-11-25T18:38:08.318797+00:00"
    }
   },
   {
@@ -291,14 +291,14 @@
    "name": "Direxion Daily Technology Bull 3X Shares",
    "currency": "USD",
    "first": "2008-12-30",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "TECL (기술주 3배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:14.331568+00:00",
-    "attemptedAt": "2026-11-25T04:52:14.357266+00:00"
+    "fetchedAt": "2026-11-25T18:38:09.538531+00:00",
+    "attemptedAt": "2026-11-25T18:38:09.563624+00:00"
    }
   },
   {
@@ -306,14 +306,14 @@
    "name": "MicroSectors FANG+ 3X Leveraged",
    "currency": "USD",
    "first": "2025-02-20",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "FNGU (FANG+ 3배 ETN)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:15.420712+00:00",
-    "attemptedAt": "2026-11-25T04:52:15.423490+00:00"
+    "fetchedAt": "2026-11-25T18:38:10.630915+00:00",
+    "attemptedAt": "2026-11-25T18:38:10.633782+00:00"
    }
   },
   {
@@ -321,14 +321,14 @@
    "name": "State Street SPDR S&P 500 ETF Trust",
    "currency": "USD",
    "first": "1993-01-29",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "SPY (S&P500)",
    "group": "미국 ETF",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:16.694159+00:00",
-    "attemptedAt": "2026-11-25T04:52:16.742402+00:00"
+    "fetchedAt": "2026-11-25T18:38:11.897669+00:00",
+    "attemptedAt": "2026-11-25T18:38:11.945416+00:00"
    }
   },
   {
@@ -336,14 +336,14 @@
    "name": "Vanguard S&P 500 ETF",
    "currency": "USD",
    "first": "2010-09-09",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "VOO (S&P500)",
    "group": "미국 ETF",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:17.916356+00:00",
-    "attemptedAt": "2026-11-25T04:52:17.939611+00:00"
+    "fetchedAt": "2026-11-25T18:38:13.133215+00:00",
+    "attemptedAt": "2026-11-25T18:38:13.156332+00:00"
    }
   },
   {
@@ -351,14 +351,14 @@
    "name": "State Street SPDR Dow Jones Industrial Average ETF Trust",
    "currency": "USD",
    "first": "1998-01-20",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "DIA (다우30)",
    "group": "미국 ETF",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:19.204496+00:00",
-    "attemptedAt": "2026-11-25T04:52:19.245682+00:00"
+    "fetchedAt": "2026-11-25T18:38:14.432783+00:00",
+    "attemptedAt": "2026-11-25T18:38:14.473710+00:00"
    }
   },
   {
@@ -366,14 +366,14 @@
    "name": "Schwab U.S. Dividend Equity ETF",
    "currency": "USD",
    "first": "2011-10-20",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "SCHD (배당)",
    "group": "미국 ETF",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:20.413559+00:00",
-    "attemptedAt": "2026-11-25T04:52:20.435998+00:00"
+    "fetchedAt": "2026-11-25T18:38:15.654488+00:00",
+    "attemptedAt": "2026-11-25T18:38:15.676886+00:00"
    }
   },
   {
@@ -381,14 +381,14 @@
    "name": "Samsung Electronics Co., Ltd.",
    "currency": "KRW",
    "first": "2000-01-04",
-   "last": "2026-11-25",
+   "last": "2026-11-24",
    "label": "삼성전자",
    "group": "개별 종목",
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:21.638385+00:00",
-    "attemptedAt": "2026-11-25T04:52:21.672281+00:00"
+    "fetchedAt": "2026-11-25T18:38:16.895323+00:00",
+    "attemptedAt": "2026-11-25T18:38:16.929052+00:00"
    }
   },
   {
@@ -396,14 +396,14 @@
    "name": "SK hynix Inc.",
    "currency": "KRW",
    "first": "2000-01-04",
-   "last": "2026-11-25",
+   "last": "2026-11-24",
    "label": "SK하이닉스",
    "group": "개별 종목",
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:22.909027+00:00",
-    "attemptedAt": "2026-11-25T04:52:22.942127+00:00"
+    "fetchedAt": "2026-11-25T18:38:18.133702+00:00",
+    "attemptedAt": "2026-11-25T18:38:18.167435+00:00"
    }
   },
   {
@@ -411,14 +411,14 @@
    "name": "Apple Inc.",
    "currency": "USD",
    "first": "1980-12-12",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "애플",
    "group": "개별 종목",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:24.300378+00:00",
-    "attemptedAt": "2026-11-25T04:52:24.366350+00:00"
+    "fetchedAt": "2026-11-25T18:38:19.498990+00:00",
+    "attemptedAt": "2026-11-25T18:38:19.563723+00:00"
    }
   },
   {
@@ -426,14 +426,14 @@
    "name": "Microsoft Corporation",
    "currency": "USD",
    "first": "1986-03-13",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "마이크로소프트",
    "group": "개별 종목",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:25.659517+00:00",
-    "attemptedAt": "2026-11-25T04:52:25.716822+00:00"
+    "fetchedAt": "2026-11-25T18:38:20.876925+00:00",
+    "attemptedAt": "2026-11-25T18:38:20.933848+00:00"
    }
   },
   {
@@ -441,14 +441,14 @@
    "name": "NVIDIA Corporation",
    "currency": "USD",
    "first": "1999-01-22",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "엔비디아",
    "group": "개별 종목",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:26.991381+00:00",
-    "attemptedAt": "2026-11-25T04:52:27.032362+00:00"
+    "fetchedAt": "2026-11-25T18:38:22.167152+00:00",
+    "attemptedAt": "2026-11-25T18:38:22.206640+00:00"
    }
   },
   {
@@ -456,14 +456,14 @@
    "name": "Tesla, Inc.",
    "currency": "USD",
    "first": "2010-06-29",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "테슬라",
    "group": "개별 종목",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:28.188899+00:00",
-    "attemptedAt": "2026-11-25T04:52:28.213176+00:00"
+    "fetchedAt": "2026-11-25T18:38:23.369100+00:00",
+    "attemptedAt": "2026-11-25T18:38:23.392555+00:00"
    }
   },
   {
@@ -471,14 +471,14 @@
    "name": "Direxion Daily South Korea Bull 3X Shares",
    "currency": "USD",
    "first": "2013-04-10",
-   "last": "2026-11-24",
+   "last": "2026-11-25",
    "label": "KORU (한국 3배)",
    "group": "미국 레버리지 ETF·ETN",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:29.371272+00:00",
-    "attemptedAt": "2026-11-25T04:52:29.390622+00:00"
+    "fetchedAt": "2026-11-25T18:38:24.539330+00:00",
+    "attemptedAt": "2026-11-25T18:38:24.558760+00:00"
    },
    "aliases": [
     "한국",
@@ -491,14 +491,14 @@
    "name": "Kakao Corp.",
    "currency": "KRW",
    "first": "2000-02-11",
-   "last": "2026-11-25",
+   "last": "2026-11-24",
    "label": "카카오",
    "group": "개별 종목",
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:30.581434+00:00",
-    "attemptedAt": "2026-11-25T04:52:30.617221+00:00"
+    "fetchedAt": "2026-11-25T18:38:25.804406+00:00",
+    "attemptedAt": "2026-11-25T18:38:25.838492+00:00"
    },
    "aliases": [
     "Kakao"
@@ -509,14 +509,14 @@
    "name": "NAVER Corporation",
    "currency": "KRW",
    "first": "2002-10-29",
-   "last": "2026-11-25",
+   "last": "2026-11-24",
    "label": "네이버",
    "group": "개별 종목",
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:31.941933+00:00",
-    "attemptedAt": "2026-11-25T04:52:31.975424+00:00"
+    "fetchedAt": "2026-11-25T18:38:27.053301+00:00",
+    "attemptedAt": "2026-11-25T18:38:27.086530+00:00"
    },
    "aliases": [
     "NAVER"
@@ -527,14 +527,14 @@
    "name": "LG H&H Co., Ltd.",
    "currency": "KRW",
    "first": "2001-04-25",
-   "last": "2026-11-25",
+   "last": "2026-11-24",
    "label": "LG생활건강",
    "group": "개별 종목",
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:33.198313+00:00",
-    "attemptedAt": "2026-11-25T04:52:33.231039+00:00"
+    "fetchedAt": "2026-11-25T18:38:28.326304+00:00",
+    "attemptedAt": "2026-11-25T18:38:28.358295+00:00"
    },
    "aliases": [
     "엘지생활건강",
@@ -547,14 +547,14 @@
    "name": "Bitcoin KRW",
    "currency": "KRW",
    "first": "2014-09-17",
-   "last": "2026-11-23",
+   "last": "2026-11-24",
    "label": "비트코인(원화)",
    "group": "가상자산",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-23",
-    "fetchedAt": "2026-11-25T04:52:34.389807+00:00",
-    "attemptedAt": "2026-11-25T04:52:34.414726+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-24",
+    "fetchedAt": "2026-11-25T18:38:29.527943+00:00",
+    "attemptedAt": "2026-11-25T18:38:29.551921+00:00"
    },
    "aliases": [
     "BTC",
@@ -568,14 +568,14 @@
    "name": "Bitcoin USD",
    "currency": "USD",
    "first": "2014-09-17",
-   "last": "2026-11-23",
+   "last": "2026-11-24",
    "label": "비트코인(달러)",
    "group": "가상자산",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-23",
-    "fetchedAt": "2026-11-25T04:52:35.568311+00:00",
-    "attemptedAt": "2026-11-25T04:52:35.596037+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-24",
+    "fetchedAt": "2026-11-25T18:38:30.703066+00:00",
+    "attemptedAt": "2026-11-25T18:38:30.730240+00:00"
    },
    "aliases": [
     "BTC",
@@ -589,14 +589,14 @@
    "name": "Ethereum KRW",
    "currency": "KRW",
    "first": "2017-11-11",
-   "last": "2026-11-23",
+   "last": "2026-11-24",
    "label": "이더리움(원화)",
    "group": "가상자산",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-23",
-    "fetchedAt": "2026-11-25T04:52:36.757728+00:00",
-    "attemptedAt": "2026-11-25T04:52:36.778381+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-24",
+    "fetchedAt": "2026-11-25T18:38:31.866556+00:00",
+    "attemptedAt": "2026-11-25T18:38:31.886464+00:00"
    },
    "aliases": [
     "ETH",
@@ -610,14 +610,14 @@
    "name": "Ethereum USD",
    "currency": "USD",
    "first": "2017-11-09",
-   "last": "2026-11-23",
+   "last": "2026-11-24",
    "label": "이더리움(달러)",
    "group": "가상자산",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-23",
-    "fetchedAt": "2026-11-25T04:52:37.895768+00:00",
-    "attemptedAt": "2026-11-25T04:52:37.915188+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-24",
+    "fetchedAt": "2026-11-25T18:38:33.036660+00:00",
+    "attemptedAt": "2026-11-25T18:38:33.056412+00:00"
    },
    "aliases": [
     "ETH",
@@ -635,10 +635,10 @@
    "label": "USD/KRW 환율",
    "group": "환율",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-24",
-    "fetchedAt": "2026-11-25T04:52:39.112081+00:00",
-    "attemptedAt": "2026-11-25T04:52:39.145981+00:00"
+    "fetchedAt": "2026-11-25T18:38:34.248901+00:00",
+    "attemptedAt": "2026-11-25T18:38:34.282285+00:00"
    },
    "hidden": true
   }
