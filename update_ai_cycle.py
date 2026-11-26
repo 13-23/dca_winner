@@ -277,12 +277,44 @@ def bigtech_fcf():
                     "url": "https://www.sec.gov/edgar/search/"}}
 
 
+
+def bigtech_debt():
+    # Comparable annual snapshots; explicitly exclude lease liabilities and
+    # commercial paper where not included in the long-term debt tags.
+    current = previous = 0
+    periods, errors = [], []
+    for cik in BIGTECH:
+        try:
+            company = facts(cik)
+            cash = series(company, CASH)
+            short = series(company, ("LongTermDebtCurrent",))
+            long = series(company, ("LongTermDebtNoncurrent",))
+            annual = annual_series(company, CFO)
+            common = sorted(set(cash) & set(short) & set(long) & set(annual))
+            if len(common) < 2:
+                raise ValueError("Missing comparable annual debt or cash facts")
+            latest, prior = common[-2:][::-1]
+            if not 350 <= (latest - prior).days <= 380:
+                raise ValueError("Nonconsecutive fiscal years")
+            current += short[latest] + long[latest] - cash[latest]
+            previous += short[prior] + long[prior] - cash[prior]
+            periods.append(latest)
+        except Exception as error:
+            errors.append(f"CIK {cik}: {type(error).__name__}: {error}")
+    if errors:
+        raise ValueError("; ".join(errors))
+    return {"debt": {"current": current / 1e9, "previous": previous / 1e9,
+                     "date": min(periods).isoformat(),
+                     "source": "SEC 10-K · 5개사 장기차입금(유동+비유동)−현금성자산 · 별도 단기차입금 제외 · 최근 2개 회계연도",
+                     "url": "https://www.sec.gov/edgar/search/"}}
+
+
 def update(path=pathlib.Path("data/ai-cycle.json")):
     path.parent.mkdir(exist_ok=True)
     old = json.loads(path.read_text()) if path.exists() else {}
     status = {}
     errors = {}
-    for keys, collect_source in [(("yield",), collect), (tuple(BALANCES), nv), (("fcf",), bigtech_fcf)]:
+    for keys, collect_source in [(("yield",), collect), (tuple(BALANCES), nv), (("fcf",), bigtech_fcf), (("debt",), bigtech_debt)]:
         try:
             for key, item in collect_source().items():
                 if key in old and item["date"] < old[key]["date"]:
