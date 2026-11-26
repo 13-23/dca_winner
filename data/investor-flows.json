@@ -1,0 +1,15 @@
+{
+  "status": "pending",
+  "metric": "net_buy_amount",
+  "period": "daily",
+  "currency": "KRW",
+  "source": "자료 제공처 연동 대기",
+  "asOf": null,
+  "updatedAt": null,
+  "rankings": {
+    "foreign": [],
+    "institution": [],
+    "individual": []
+  },
+  "note": "매수대금 - 매도대금 기준. 제공처 연결 후 기준일과 수집 시각을 기록합니다."
+}

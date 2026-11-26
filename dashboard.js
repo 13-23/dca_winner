@@ -75,6 +75,24 @@
     });
     container.innerHTML=rows.map(row=>row.missing?`<div class="theme-row"><span><strong>${escape(row.name)}</strong><small>구성 종목 ${row.missing}개 자료 누락 · 평균 계산 보류</small></span><b>—</b></div>`:`<div class="theme-row"><span><strong>${escape(row.name)}</strong><small>${escape(row.members.join(" · "))} · ${row.day} · 동일가중</small></span><b class="${row.change>0?"positive":row.change<0?"negative":""}">${row.change>0?"+":""}${nf.format(row.change)}%</b></div>`).join("");
   }
+  function renderInvestorRankings(snapshot) {
+    const groups=[{key:"foreign",label:"외국인"},{key:"institution",label:"기관"},{key:"individual",label:"개인"}];
+    const meta=$("#investor-ranking-meta"),container=$("#investor-ranking-lists");
+    const source=snapshot?.source||"자료 제공처 연동 대기";
+    const asOf=snapshot?.asOf||"기준일 미확정";
+    meta.textContent=`${asOf} · ${source}`;
+    container.innerHTML=groups.map(group=>{
+      const entries=snapshot?.rankings?.[group.key];
+      const populated=Array.isArray(entries)&&entries.length>0;
+      const rows=populated?[...entries].sort((a,b)=>(Number(b.netBuyAmount)||0)-(Number(a.netBuyAmount)||0)).slice(0,10).map((item,index)=>{
+        const amount=Number(item.netBuyAmount);
+        const ticker=item.symbol?` · ${escape(item.symbol)}`:"";
+        return `<li><span class="investor-stock"><b>${String(item.rank||index+1).padStart(2,"0")}</b><strong>${escape(item.name||item.symbol||"종목")}</strong><small>${ticker}</small></span><span class="investor-amount ${amount>0?"positive":amount<0?"negative":""}">${Number.isFinite(amount)?(amount>0?"+":"")+won.format(amount)+"원":"—"}</span></li>`;
+      }).join(""):"<li class=\"investor-empty\">자료 제공처 연결 후 표시합니다.<br>현재는 확인되지 않은 종목·금액을 표시하지 않습니다.</li>";
+      const groupDate=populated?(entries[0]?.asOf||asOf):asOf;
+      return `<section class="investor-ranking-card" aria-label="${group.label} 순매수 상위 10종목"><header><h3>${group.label}</h3><small>${escape(groupDate)} · KRW</small></header><ol>${rows}</ol></section>`;
+    }).join("");
+  }
   function statusFor(item, marketItems=[]) {
     if(item.status==="unavailable")return "자료 없음";
     if(item.status==="stale"||item.status==="retained")return "이전 수집값 · 확인 필요";
@@ -144,7 +162,9 @@
       try{market=await fetch("data/market.json",{cache:"no-cache"}).then(response=>response.ok?response.json():null)}catch(_){}
       try{ai=await fetch("data/ai-cycle.json",{cache:"no-cache"}).then(response=>response.ok?response.json():null)}catch(_){}
       try{derivatives=await fetch("data/derivatives.json",{cache:"no-cache"}).then(response=>response.ok?response.json():null)}catch(_){}
+      let investorFlows=null;try{investorFlows=await fetch("data/investor-flows.json",{cache:"no-cache"}).then(response=>response.ok?response.json():null)}catch(_){}
       renderMacro(market,ai,derivatives);
+      renderInvestorRankings(investorFlows);
       status.textContent=`전체 수집 ${index.updated} · KST`;
       const summary=document.getElementById("dashboard-data-summary");
       if(summary)summary.innerHTML=`<strong>가격 자료 상태</strong><span class="data-state ok">수집 성공 ${stateCounts.updated}</span><span class="data-state neutral">새 종가 없음 ${stateCounts.unchanged}</span><span class="data-state warn">기준일 확인 ${stateCounts.attention}</span><small>종목별 기준일·수집 시각은 각 행의 상세 요약에서 확인</small>`;

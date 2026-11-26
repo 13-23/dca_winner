@@ -6,7 +6,7 @@
 <title>적립식 평단 계산기</title>
 <script>try { const t = localStorage.getItem("theme-v1"); if (t === "dark" || t === "auto" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
-<link rel="stylesheet" href="styles.css?v=market-valuation-v1">
+<link rel="stylesheet" href="styles.css?v=investor-ranking-v1">
 </head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -40,6 +40,7 @@
     <div class="dashboard-bottom"><section class="dashboard-theme"><div class="statement-head"><h2>국내 테마</h2><span class="hint">구성 종목 종가 · 동일가중</span></div><div id="dashboard-kr-themes" class="theme-list"></div></section>
     <section class="dashboard-theme"><div class="statement-head"><h2>미국 테마</h2><span class="hint">구성 종목 종가 · 동일가중</span></div><div id="dashboard-us-themes" class="theme-list"></div></section>
     <section class="dashboard-theme"><div class="statement-head"><h2>금리·변동성·선물·옵션</h2><span class="hint">주간 포지션 · 일별 옵션</span></div><div id="dashboard-macro" class="macro-list"></div></section></div>
+    <section class="dashboard-investors" aria-labelledby="investor-ranking-title"><div class="statement-head"><div><h2 id="investor-ranking-title">국내 투자자별 순매수 상위</h2><p class="hint">순매수대금 기준 · 국내 주식시장</p></div><span id="investor-ranking-meta" class="hint">자료 연동 대기</span></div><div id="investor-ranking-lists" class="investor-ranking-grid" aria-live="polite"></div><details class="investor-ranking-method"><summary>집계 기준과 자료 출처</summary><p class="hint">순매수대금은 매수대금에서 매도대금을 뺀 값입니다. 투자자별 동일 거래일의 확정 자료를 기준으로 정렬하며, 외국인·기관·개인 각각 상위 10개 종목을 표시합니다. 데이터 제공처와 기준일을 함께 공개합니다. 현재 자료 연동 전이며 숫자나 종목을 임의로 채우지 않습니다.</p></details></section>
     <p id="dashboard-note" class="hint">시장은 서로 다른 시간에 마감합니다. 각 값의 기준일과 통화를 함께 확인하세요. 지수 포인트와 ETF 가격은 서로 다른 값입니다.</p>
   </div>
   <div id="tab-dca" role="tabpanel" aria-labelledby="tab-btn-dca" class="tabpanel" hidden>
@@ -1826,6 +1827,6 @@ showTab(tabs.includes(startTab) ? startTab : "dashboard");
 <script src="drawdown-ui.js?v=period-summary" defer></script>
 <script src="market-context.js" defer></script>
 <script src="ai-cycle.js?v=3" defer></script>
-<script src="dashboard.js?v=6" defer></script>
+<script src="dashboard.js?v=7" defer></script>
 </body>
 </html>
