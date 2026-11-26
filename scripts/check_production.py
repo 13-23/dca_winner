@@ -31,13 +31,13 @@ def check():
         raise ValueError('Published monthly strategy comparison is missing')
     if 'market-context-card' not in page or b'additionalDecline' not in get(SITE + 'market-context.js?v=' + revision):
         raise ValueError('Published market context is missing')
-    if not all(marker in page for marker in ('tab-dashboard', 'dashboard-markets', 'dashboard-kr-themes', 'dashboard-us-themes', 'dashboard-macro', 'dashboard-data-summary', 'dashboard-reading', 'dashboard-open-value', '국내 테마', '미국 테마')):
+    if not all(marker in page for marker in ('tab-dashboard', 'dashboard-markets', 'dashboard-kr-themes', 'dashboard-us-themes', 'dashboard-macro', 'dashboard-data-summary', 'dashboard-reading', 'dashboard-open-value', 'market-valuation-summary', '저평가', '고평가', '국내 테마', '미국 테마')):
         raise ValueError('Published market dashboard or thematic sections are missing')
     if 'tab-btn-tv' in page or 'tab-tv' in page or b'tv-symbol' in get(SITE + 'dashboard.js?v=' + revision):
         raise ValueError('TradingView chart tab is still published')
     if not all(marker in page for marker in ('pf-preset-save', 'pf-preset-load', 'pf-preset-export', '총 납입액')) or b'dca-condition-presets-v1' not in get(SITE + 'portfolio-ui.js?v=named-presets'):
         raise ValueError('Named, reproducible portfolio conditions are missing')
-    if b'dashboard-columns' not in get(SITE + 'styles.css?v=' + revision) or b'function renderGroup' not in get(SITE + 'dashboard.js?v=' + revision):
+    if b'dashboard-columns' not in get(SITE + 'styles.css?v=' + revision) or not all(marker in get(SITE + 'dashboard.js?v=' + revision) for marker in (b'function renderGroup', b'function renderValuationSummary')):
         raise ValueError('Published dashboard assets are missing')
     if 'EPS·BPS 충격 시' not in page or b'function assess(' not in get(SITE + 'valuation.js?v=' + revision):
         raise ValueError('Published valuation source guards or sensitivity table is missing')

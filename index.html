@@ -6,7 +6,7 @@
 <title>적립식 평단 계산기</title>
 <script>try { const t = localStorage.getItem("theme-v1"); if (t === "dark" || t === "auto" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
-<link rel="stylesheet" href="styles.css?v=consulting-upgrade-1">
+<link rel="stylesheet" href="styles.css?v=market-valuation-v1">
 </head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -35,6 +35,7 @@
     <header class="dashboard-head"><div><p class="eyebrow">DCA WINNER · MARKET SNAPSHOT</p><h1>시장 대시보드</h1><p class="hint">실시간 호가가 아닌 정기 수집 종가와 공개 시장 지표를 보여줍니다.</p></div><p id="dashboard-updated" class="snapshot-stamp" role="status" aria-live="polite">데이터를 불러오는 중…</p></header>
     <section class="dashboard-reading" aria-labelledby="dashboard-reading-title"><div><h2 id="dashboard-reading-title">시장을 세 관점으로 확인</h2><p class="hint">가격 위치·기업가치·투자 전략은 서로 다른 정보입니다. 하나의 매수 점수로 합산하지 않습니다.</p></div><button type="button" class="btn" id="dashboard-open-drawdown">가격 위치 · 하락 이력</button><button type="button" class="btn" id="dashboard-open-value">지수 PER · PBR</button><button type="button" class="btn" id="dashboard-open-dca">적립 전략 · 위험</button></section>
     <div id="dashboard-data-summary" class="dashboard-data-summary" aria-live="polite"><strong>가격 자료 상태</strong><small>종목별 기준일과 수집 상태를 불러오는 중…</small></div>
+    <section class="market-valuation-summary" aria-labelledby="market-valuation-title"><div class="statement-head"><h2 id="market-valuation-title">시장 밸류에이션 구간</h2><span class="hint">상대 PER 참고 · 저평가 / 적정 / 고평가</span></div><div class="valuation-market-grid" id="market-valuation-cards"><p class="hint">시장 배수와 비교 기준을 불러오는 중…</p></div><details class="valuation-method"><summary>분류 기준과 한계</summary><div id="market-valuation-method"><p class="hint">미국은 S&amp;P 500 TTM PER을 출처가 제공한 10년 평균과 비교합니다. 10년 평균보다 10% 이상 낮으면 저평가 구간, ±10% 안이면 적정 구간, 10% 이상 높으면 고평가 구간으로 표시합니다. 이 경계는 화면 해석을 위한 규칙이며 내재가치나 매매 신호가 아닙니다.</p><p class="hint">한국 지수는 비교 가능한 같은 출처의 장기 PER 평균이 없고, 코스피 PBR 기준은 재검증 중입니다. 따라서 현재 배수만으로 저·적정·고를 판정하지 않고 보류합니다. PER·PBR은 수익성, 업종 구성, 추정치와 기준일에 따라 달라집니다.</p></div></details></section>
     <div id="dashboard-markets" class="dashboard-columns" aria-live="polite"></div>
     <div class="dashboard-bottom"><section class="dashboard-theme"><div class="statement-head"><h2>국내 테마</h2><span class="hint">구성 종목 종가 · 동일가중</span></div><div id="dashboard-kr-themes" class="theme-list"></div></section>
     <section class="dashboard-theme"><div class="statement-head"><h2>미국 테마</h2><span class="hint">구성 종목 종가 · 동일가중</span></div><div id="dashboard-us-themes" class="theme-list"></div></section>
@@ -1825,6 +1826,6 @@ showTab(tabs.includes(startTab) ? startTab : "dashboard");
 <script src="drawdown-ui.js?v=period-summary" defer></script>
 <script src="market-context.js" defer></script>
 <script src="ai-cycle.js?v=3" defer></script>
-<script src="dashboard.js?v=5" defer></script>
+<script src="dashboard.js?v=6" defer></script>
 </body>
 </html>

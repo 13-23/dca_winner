@@ -118,10 +118,27 @@ th:first-child, td:first-child { text-align: left; }
 .dashboard-reading > div { flex:1 1 100%; }
 .dashboard-reading h2 { margin:0; font-size:15px; }
 .dashboard-reading p { margin:4px 0 2px; }
+.market-valuation-summary { margin:0 0 14px; padding:15px; border:1px solid var(--line); border-radius:10px; background:var(--sheet); }
+.market-valuation-summary > .statement-head { margin-bottom:10px; }
+.market-valuation-summary h2 { margin:0; font-size:15px; }
+.market-valuation-summary .statement-head .hint { font-size:10px; }
+.valuation-market-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.valuation-market-card { min-width:0; padding:13px; border:1px solid var(--line); border-radius:9px; }
+.valuation-market-card header { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.valuation-market-card h3 { margin:0; font-size:14px; }
+.valuation-verdict { font-size:12px; font-weight:700; }
+.valuation-verdict.low { color:var(--support); }.valuation-verdict.fair { color:var(--accent); }.valuation-verdict.high { color:var(--resist); }.valuation-verdict.pending { color:var(--muted); }
+.valuation-chips { display:flex; gap:5px; margin:9px 0; }
+.valuation-chip { padding:3px 8px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:10px; }
+.valuation-chip.active { color:var(--ink); border-color:var(--accent); background:var(--accent-soft); font-weight:700; }
+.valuation-market-card .hint { margin:5px 0 0; font-size:11px; }
+.valuation-method { margin-top:10px; }
+.valuation-method summary { color:var(--muted); font-size:11px; cursor:pointer; }
+.valuation-method .hint { margin:7px 0; font-size:11px; }
 .data-state { font-size:10px; font-weight:600; }
-.data-state.ok { color:var(--up); }
+.data-state.ok { color:var(--support); }
 .data-state.neutral { color:var(--muted); }
-.data-state.warn { color:var(--down); }
+.data-state.warn { color:var(--resist); }
 .condition-presets { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:8px; margin:14px 0; padding:14px; border:1px solid var(--line); border-radius:10px; }
 .condition-presets .row { grid-column:1/-1; align-items:end; }
 .condition-presets .row .field { flex:1; }
@@ -157,6 +174,7 @@ th:first-child, td:first-child { text-align: left; }
 @media(max-width:900px){.dashboard-columns,.dashboard-bottom{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-market:last-child,.dashboard-theme:last-child{grid-column:1/-1}}
 @media(max-width:620px){.dashboard-head{align-items:flex-start;flex-direction:column;gap:12px}.snapshot-stamp{white-space:normal}.dashboard-columns,.dashboard-bottom{grid-template-columns:minmax(0,1fr);gap:10px}.dashboard-market:last-child,.dashboard-theme:last-child{grid-column:auto}.dashboard-market{padding:15px}.dashboard-theme{padding:14px}}
 @media(max-width:620px){.condition-presets{grid-template-columns:1fr}.condition-presets .row{display:grid;grid-template-columns:1fr 1fr}.condition-presets .row .field{grid-column:1/-1}}
+@media(max-width:620px){.valuation-market-grid{grid-template-columns:1fr}.market-valuation-summary{padding:12px}}
 
 /* ---------- 이평선 탭 ---------- */
 .ma-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }

@@ -108,6 +108,20 @@
     const options=optionItems.map(item=>`<div class="macro-row"><span><strong>${escape(labels[item.id]||item.label)} · 옵션</strong><small>${escape(item.asOf||"기준일 없음")} · ${escape(item.source||"출처")} · ${escape(statusFor(item))}</small></span><b>${Number.isFinite(item.value)?nf.format(item.value)+(item.unit?" "+escape(item.unit):""):"—"}</b></div>`).join("");
     $("#dashboard-macro").innerHTML=listed+`<h3 class="macro-subhead">선물 포지션·미결제약정 · CFTC</h3>${futures||'<p class="hint">선물 포지션 자료를 불러오지 못했습니다.</p>'}<h3 class="macro-subhead">옵션 심리 · Cboe</h3>${options||'<p class="hint">옵션 자료를 불러오지 못했습니다.</p>'}<p class="hint derivatives-guide">VIX 구간은 참고용 설명 기준입니다. CFTC 포지션은 매주 화요일 기준 주간 자료입니다. 옵션 포함 OI는 옵션을 선물 등가로 환산한 값이며 실제 옵션 계약 수와 다릅니다. OI 증감만으로 방향을 판단할 수 없습니다. 풋/콜은 Cboe 전체 상품 당일 거래량 비율이며 매수·매도 방향을 뜻하지 않습니다. <a href="https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm" target="_blank" rel="noopener noreferrer">CFTC 원자료</a> · <a href="https://www.cboe.com/markets/us/options/market-statistics/daily" target="_blank" rel="noopener noreferrer">Cboe 옵션 원자료</a></p>`;
   }
+  function renderValuationSummary(indexItems, assets, references) {
+    const korea=[];
+    for(const [symbol,label] of [["^KS11","코스피"],["^KQ11","코스닥"]]){
+      const ref=references?.trailing?.[symbol],metadata=indexItems.find(item=>item.symbol===symbol),rows=assets[symbol]?.data||[],last=rows.find(row=>row[0]===metadata?.quoteUpdate?.closeDate);
+      const per=ref&&Number.isFinite(ref.referencePrice)&&Number.isFinite(ref.per)&&last?ref.per*last[1]/ref.referencePrice:null;
+      const sourceUrl=ref?.sourceUrls?.PER;
+      korea.push(`<span>${escape(label)} PER ${Number.isFinite(per)?nf.format(per)+"배":"자료 없음"} · ${escape(ref?.asOf||"기준일 없음")} 기준 EPS 고정 환산${sourceUrl?` · <a href="${escape(sourceUrl)}" target="_blank" rel="noopener noreferrer">원자료</a>`:""}</span>`);
+    }
+    const us=references?.trailing?.["^GSPC"],avg=us?.perAverages?.[10],asOf=us?.asOf,age=asOf?(Date.now()-Date.parse(asOf+"T00:00:00Z"))/86400000:Infinity;
+    let state="평가 보류",category="pending",detail="동일 기준 장기 평균 자료가 없어 분류하지 않습니다.",ratio=null;
+    if(Number.isFinite(us?.per)&&Number.isFinite(avg)){ratio=us.per/avg;detail=`S&P 500 TTM PER ${nf.format(us.per)}배 · 5년 평균 ${nf.format(us.perAverages?.[5])}배 · 10년 평균 ${nf.format(avg)}배 · 10년 평균 대비 ${(ratio-1)>0?"+":""}${nf.format((ratio-1)*100)}% · ${asOf} · ${us.source||"출처"}`;if(age<=30){state=ratio<.9?"저평가 구간":ratio>1.1?"고평가 구간":"적정 구간";category=ratio<.9?"low":ratio>1.1?"high":"fair";}else detail+=" · 기준 자료 30일 초과, 분류 보류";}
+    const chips=(active)=>[["low","저평가"],["fair","적정"],["high","고평가"]].map(([key,title])=>`<span class="valuation-chip ${key===active?"active":""}">${title}</span>`).join("");
+    $("#market-valuation-cards").innerHTML=`<article class="valuation-market-card"><header><h3>한국시장</h3><span class="valuation-verdict pending">분류 보류</span></header><div class="valuation-chips">${chips("")}</div><div class="hint valuation-market-detail">${korea.join("<br>")}</div><p class="hint">한국거래소·국가통계포털 공개 기준</p></article><article class="valuation-market-card"><header><h3>미국시장</h3><span class="valuation-verdict ${category}">${state}</span></header><div class="valuation-chips">${chips(category)}</div><p class="hint">${escape(detail)}</p>${us?.sourceUrls?.["FactSet Earnings Insight"]?`<p class="hint"><a href="${escape(us.sourceUrls["FactSet Earnings Insight"])}" target="_blank" rel="noopener noreferrer">FactSet 원자료</a></p>`:""}</article>`;
+  }
   async function load() {
     const status=$("#dashboard-updated");
     status.textContent="자료를 불러오는 중…";
@@ -121,6 +135,8 @@
         try {return [item.symbol,await fetch("data/"+item.symbol.replace(/[^A-Za-z0-9.\\-]/g,"_")+".json",{cache:"no-cache"}).then(response=>{if(!response.ok)throw Error();return response.json()})];}
         catch(_){return [item.symbol,null];}
       })));
+      let valuationReferences=null;try{valuationReferences=await fetch("data/valuation-references.json",{cache:"no-cache"}).then(response=>response.ok?response.json():null)}catch(_){}
+      renderValuationSummary(index.items,assets,valuationReferences);
       $("#dashboard-markets").replaceChildren(...groups.map((group,position)=>renderGroup(group,position,index.items,assets)));
       renderThemes($("#dashboard-kr-themes"),themes.korea,index.items,assets);
       renderThemes($("#dashboard-us-themes"),themes.us,index.items,assets);
