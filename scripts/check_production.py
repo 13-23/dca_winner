@@ -31,8 +31,8 @@ def check():
         raise ValueError('Published monthly strategy comparison is missing')
     if 'market-context-card' not in page or b'additionalDecline' not in get(SITE + 'market-context.js?v=' + revision):
         raise ValueError('Published market context is missing')
-    if not all(marker in page for marker in ('tab-dashboard', 'dashboard-markets', 'dashboard-kr-themes', 'dashboard-us-themes', 'dashboard-macro')):
-        raise ValueError('Published market dashboard is missing')
+    if not all(marker in page for marker in ('tab-dashboard', 'dashboard-markets', 'dashboard-kr-themes', 'dashboard-us-themes', 'dashboard-macro', '국내 테마', '미국 테마')):
+        raise ValueError('Published market dashboard or thematic sections are missing')
     if b'dashboard-columns' not in get(SITE + 'styles.css?v=' + revision) or b'function renderGroup' not in get(SITE + 'dashboard.js?v=' + revision):
         raise ValueError('Published dashboard assets are missing')
     if 'EPS·BPS 충격 시' not in page or b'function assess(' not in get(SITE + 'valuation.js?v=' + revision):
@@ -42,6 +42,14 @@ def check():
     updated = datetime.strptime(index['updated'], '%Y-%m-%d %H:%M KST').replace(tzinfo=kst)
     if datetime.now(kst) - updated > timedelta(days=7) or not index['items']:
         raise ValueError('Default price list is empty or stale')
+    derivatives = json.loads(get(SITE + 'data/derivatives.json?v=' + revision))
+    derivatives_by_id = {item.get('id'): item for item in derivatives.get('items', [])}
+    if not {'sp500', 'nasdaq100'} <= derivatives_by_id.keys():
+        raise ValueError('CFTC index-futures positioning is missing')
+    for market in ('sp500', 'nasdaq100'):
+        item = derivatives_by_id[market]
+        if not item.get('futuresOnly', {}).get('openInterest') or not item.get('combined', {}).get('openInterest'):
+            raise ValueError('CFTC futures/options open interest is missing: ' + market)
     study = json.loads(get(SITE + 'data/position-v2.json?v=' + revision))
     if study.get('version') != 'research-v2' or not all(m.get('latest') for m in study['markets'].values()):
         raise ValueError('Market position study is unavailable')

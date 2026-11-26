@@ -47,6 +47,9 @@ jobs:
       - name: 시장 보조지표 받기
         run: python update_market.py
 
+      - name: 미국 지수 선물 포지션·미결제약정 갱신
+        run: python update_derivatives.py
+
       - name: 시장 위치 연구용 이력 받기
         run: python update_position_inputs.py
 

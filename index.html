@@ -6,7 +6,7 @@
 <title>적립식 평단 계산기</title>
 <script>try { const t = localStorage.getItem("theme-v1"); if (t === "dark" || t === "auto" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
-<link rel="stylesheet" href="styles.css?v=dashboard-4h">
+<link rel="stylesheet" href="styles.css?v=dashboard-derivatives">
 </head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -35,9 +35,9 @@
   <div id="tab-dashboard" role="tabpanel" aria-labelledby="tab-btn-dashboard" class="tabpanel dashboard-panel">
     <header class="dashboard-head"><div><p class="eyebrow">DCA WINNER · MARKET SNAPSHOT</p><h1>시장 대시보드</h1><p class="hint">실시간 호가가 아닌 정기 수집 종가와 공개 시장 지표를 보여줍니다.</p></div><p id="dashboard-updated" class="snapshot-stamp" role="status" aria-live="polite">데이터를 불러오는 중…</p></header>
     <div id="dashboard-markets" class="dashboard-columns" aria-live="polite"></div>
-    <div class="dashboard-bottom"><section class="dashboard-theme"><div class="statement-head"><h2>국내 전일 강세 지수</h2><span class="hint">ETF 종가 변화 · 테마 분류 아님</span></div><div id="dashboard-kr-themes" class="theme-list"></div></section>
-    <section class="dashboard-theme"><div class="statement-head"><h2>미국 전일 시장 흐름</h2><span class="hint">대표 지수 ETF 종가 변화</span></div><div id="dashboard-us-themes" class="theme-list"></div></section>
-    <section class="dashboard-theme"><div class="statement-head"><h2>금리·변동성·심리</h2><span class="hint">지표별 기준일</span></div><div id="dashboard-macro" class="macro-list"></div></section></div>
+    <div class="dashboard-bottom"><section class="dashboard-theme"><div class="statement-head"><h2>국내 테마</h2><span class="hint">구성 종목 종가 · 동일가중</span></div><div id="dashboard-kr-themes" class="theme-list"></div></section>
+    <section class="dashboard-theme"><div class="statement-head"><h2>미국 테마</h2><span class="hint">구성 종목 종가 · 동일가중</span></div><div id="dashboard-us-themes" class="theme-list"></div></section>
+    <section class="dashboard-theme"><div class="statement-head"><h2>금리·변동성·선물·옵션</h2><span class="hint">주간 포지션 · 일별 옵션</span></div><div id="dashboard-macro" class="macro-list"></div></section></div>
     <p id="dashboard-note" class="hint">시장은 서로 다른 시간에 마감합니다. 각 값의 기준일과 통화를 함께 확인하세요. 지수 포인트와 ETF 가격은 서로 다른 값입니다.</p>
   </div>
   <div id="tab-dca" role="tabpanel" aria-labelledby="tab-btn-dca" class="tabpanel" hidden>
@@ -1887,6 +1887,6 @@ showTab(tabs.includes(startTab) ? startTab : "dashboard");
 <script src="drawdown-ui.js?v=market-context" defer></script>
 <script src="market-context.js" defer></script>
 <script src="ai-cycle.js?v=3" defer></script>
-<script src="dashboard.js?v=2" defer></script>
+<script src="dashboard.js?v=3" defer></script>
 </body>
 </html>

@@ -155,6 +155,31 @@
     "group": "개별 종목"
   },
   {
+    "symbol": "AMD",
+    "label": "AMD",
+    "group": "개별 종목"
+  },
+  {
+    "symbol": "AVGO",
+    "label": "브로드컴",
+    "group": "개별 종목"
+  },
+  {
+    "symbol": "GOOGL",
+    "label": "알파벳 A",
+    "group": "개별 종목"
+  },
+  {
+    "symbol": "AMZN",
+    "label": "아마존",
+    "group": "개별 종목"
+  },
+  {
+    "symbol": "META",
+    "label": "메타 플랫폼스",
+    "group": "개별 종목"
+  },
+  {
     "symbol": "KORU",
     "label": "KORU (한국 3배)",
     "group": "미국 레버리지 ETF·ETN",

@@ -134,6 +134,10 @@ th:first-child, td:first-child { text-align: left; }
 .theme-list,.macro-list { display: grid; }
 .theme-row,.macro-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 0; border-top: 1px solid var(--line); }
 .macro-row > b { font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.macro-subhead { margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12px; }
+.macro-row.futures-row { align-items: flex-start; }
+.macro-row.futures-row > span { flex: 1; }
+.derivatives-guide { margin-top: 8px; line-height: 1.6; }
 .dashboard-panel > #dashboard-note { line-height: 1.5; }
 @media(max-width:900px){.dashboard-columns,.dashboard-bottom{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-market:last-child,.dashboard-theme:last-child{grid-column:1/-1}}
 @media(max-width:620px){.dashboard-head{align-items:flex-start;flex-direction:column;gap:12px}.snapshot-stamp{white-space:normal}.dashboard-columns,.dashboard-bottom{grid-template-columns:minmax(0,1fr);gap:10px}.dashboard-market:last-child,.dashboard-theme:last-child{grid-column:auto}.dashboard-market{padding:15px}.dashboard-theme{padding:14px}}

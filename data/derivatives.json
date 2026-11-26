@@ -1,0 +1,87 @@
+{
+  "updated": "2026-11-26T04:16:00.491302+00:00",
+  "source": "CFTC Traders in Financial Futures · futures only",
+  "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm",
+  "items": [
+    {
+      "id": "sp500",
+      "status": "available",
+      "futuresOnly": {
+        "id": "sp500",
+        "label": "S&P 500 E-mini 선물",
+        "reportType": "CFTC Leveraged Funds · 선물 전용",
+        "asOf": "2026-11-17",
+        "previousAsOf": "2026-11-10",
+        "openInterest": 2096958,
+        "openInterestChange": 79271,
+        "leveragedFundsLong": 197833,
+        "leveragedFundsShort": 432811,
+        "net": -234978,
+        "netPercentOpenInterest": -11.205660771460373,
+        "netChange": 68082,
+        "status": "순매도 우위",
+        "source": "CFTC Traders in Financial Futures · futures only",
+        "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"
+      },
+      "fetchedAt": "2026-11-26T04:16:00.491302+00:00",
+      "combined": {
+        "id": "sp500",
+        "label": "S&P 500 E-mini 선물",
+        "reportType": "CFTC Leveraged Funds · 선물·옵션 합산",
+        "asOf": "2026-11-17",
+        "previousAsOf": "2026-11-10",
+        "openInterest": 3244953,
+        "openInterestChange": 222360,
+        "leveragedFundsLong": 209747,
+        "leveragedFundsShort": 429893,
+        "net": -220146,
+        "netPercentOpenInterest": -6.784258508520771,
+        "netChange": 64403,
+        "status": "순매도 우위",
+        "source": "CFTC Traders in Financial Futures · futures-and-options combined",
+        "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"
+      },
+      "combinedStatus": "retained"
+    },
+    {
+      "id": "nasdaq100",
+      "status": "available",
+      "futuresOnly": {
+        "id": "nasdaq100",
+        "label": "나스닥100 선물",
+        "reportType": "CFTC Leveraged Funds · 선물 전용",
+        "asOf": "2026-11-17",
+        "previousAsOf": "2026-11-10",
+        "openInterest": 314318,
+        "openInterestChange": 8218,
+        "leveragedFundsLong": 51004,
+        "leveragedFundsShort": 63472,
+        "net": -12468,
+        "netPercentOpenInterest": -3.966683422521141,
+        "netChange": -25357,
+        "status": "순매도 우위",
+        "source": "CFTC Traders in Financial Futures · futures only",
+        "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"
+      },
+      "fetchedAt": "2026-11-26T04:16:00.491302+00:00",
+      "combined": {
+        "id": "nasdaq100",
+        "label": "나스닥100 선물",
+        "reportType": "CFTC Leveraged Funds · 선물·옵션 합산",
+        "asOf": "2026-11-17",
+        "previousAsOf": "2026-11-10",
+        "openInterest": 372727,
+        "openInterestChange": 16581,
+        "leveragedFundsLong": 51699,
+        "leveragedFundsShort": 64310,
+        "net": -12611,
+        "netPercentOpenInterest": -3.3834415000791465,
+        "netChange": -25324,
+        "status": "순매도 우위",
+        "source": "CFTC Traders in Financial Futures · futures-and-options combined",
+        "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"
+      },
+      "combinedStatus": "retained"
+    }
+  ]
+}
