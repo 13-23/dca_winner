@@ -6,14 +6,15 @@
 <title>적립식 평단 계산기</title>
 <script>try { const t = localStorage.getItem("theme-v1"); if (t === "dark" || t === "auto" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
-<link rel="stylesheet" href="styles.css?v=market-context">
+<link rel="stylesheet" href="styles.css?v=dashboard-4h">
 </head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 이동</a>
 <div class="wrap">
   <div class="topbar">
-  <div class="brand" translate="no"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><path d="M8 22v-5m8 5V12m8 10V7M8 12l8-5" stroke="var(--on-accent)" stroke-width="2.5" stroke-linecap="round"/></svg>DCA Winner</div>
+  <a class="brand" href="#dashboard" data-home aria-label="DCA Winner 대시보드"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="9" fill="currentColor"/><path d="M8 22v-5m8 5V12m8 10V7M8 12l8-5" stroke="var(--on-accent)" stroke-width="2.5" stroke-linecap="round"/></svg>DCA Winner</a>
   <nav class="tabs" role="tablist" aria-label="도구">
+    <button type="button" role="tab" id="tab-btn-dashboard" aria-controls="tab-dashboard" aria-selected="true">대시보드</button>
     <button type="button" role="tab" id="tab-btn-dca" aria-controls="tab-dca" aria-selected="true">적립식 평단 계산기</button>
     <button type="button" role="tab" id="tab-btn-ma" aria-controls="tab-ma" aria-selected="false">이평선 지지·저항</button>
     <button type="button" role="tab" id="tab-btn-value" aria-controls="tab-value" aria-selected="false" tabindex="-1">지수 PER·PBR</button>
@@ -31,7 +32,15 @@
   <p class="hint" id="data-updated" hidden></p>
 
   <main id="main-content" tabindex="-1">
-  <div id="tab-dca" role="tabpanel" aria-labelledby="tab-btn-dca" class="tabpanel">
+  <div id="tab-dashboard" role="tabpanel" aria-labelledby="tab-btn-dashboard" class="tabpanel dashboard-panel">
+    <header class="dashboard-head"><div><p class="eyebrow">DCA WINNER · MARKET SNAPSHOT</p><h1>시장 대시보드</h1><p class="hint">실시간 호가가 아닌 정기 수집 종가와 공개 시장 지표를 보여줍니다.</p></div><p id="dashboard-updated" class="snapshot-stamp" role="status" aria-live="polite">데이터를 불러오는 중…</p></header>
+    <div id="dashboard-markets" class="dashboard-columns" aria-live="polite"></div>
+    <div class="dashboard-bottom"><section class="dashboard-theme"><div class="statement-head"><h2>국내 전일 강세 지수</h2><span class="hint">ETF 종가 변화 · 테마 분류 아님</span></div><div id="dashboard-kr-themes" class="theme-list"></div></section>
+    <section class="dashboard-theme"><div class="statement-head"><h2>미국 전일 시장 흐름</h2><span class="hint">대표 지수 ETF 종가 변화</span></div><div id="dashboard-us-themes" class="theme-list"></div></section>
+    <section class="dashboard-theme"><div class="statement-head"><h2>금리·변동성·심리</h2><span class="hint">지표별 기준일</span></div><div id="dashboard-macro" class="macro-list"></div></section></div>
+    <p id="dashboard-note" class="hint">시장은 서로 다른 시간에 마감합니다. 각 값의 기준일과 통화를 함께 확인하세요. 지수 포인트와 ETF 가격은 서로 다른 값입니다.</p>
+  </div>
+  <div id="tab-dca" role="tabpanel" aria-labelledby="tab-btn-dca" class="tabpanel" hidden>
   <div class="page-heading">
   <header>
     <h1>적립식 투자 분석</h1>
@@ -1219,7 +1228,7 @@ try {
 function save() { try { localStorage.setItem(LS, JSON.stringify({ sym: st.sym, tf: st.tf, range: st.range, on: [...st.on], sort: st.sort, log: st.log, dim: st.dim, bb: st.bb, rsi: st.rsi, perBands: st.perBands, pbrBands: st.pbrBands, perLevels: st.perLevels, pbrLevels: st.pbrLevels })); } catch (e) {} }
 
 /* ---------- 탭 ---------- */
-const tabs = ["dca", "ma", "value", "tv", "drawdown", "ai"];
+const tabs = ["dashboard", "dca", "ma", "value", "tv", "drawdown", "ai"];
 let tradingViewKey = "";
 function showTradingView() {
   if ($("tab-tv").hidden) return;
@@ -1279,6 +1288,9 @@ function showTab(which, symbol) {
   if (which === "drawdown") window.dispatchEvent(new Event("drawdownopen"));
 }
 for (const tab of tabs) $("tab-btn-" + tab).addEventListener("click", () => showTab(tab));
+document.querySelector("[data-home]").addEventListener("click", event => { event.preventDefault(); showTab("dashboard"); });
+document.getElementById("tab-btn-dashboard").addEventListener("click", () => window.dispatchEvent(new Event("dashboardopen")));
+window.addEventListener("dashboardopen", () => window.dispatchEvent(new Event("dashboardrefresh")));
 window.addEventListener("pricesummaryopen", e => {
   const {tab, symbol} = e.detail;
   showTab(tab, symbol);
@@ -1867,13 +1879,14 @@ window.addEventListener("themechange", () => draw());
 
 /* ---------- 시작 ---------- */
 renderChips();
-let startTab = "dca"; try { startTab = localStorage.getItem(LS_TAB) || "dca"; } catch (e) {}
-showTab(tabs.includes(startTab) ? startTab : "dca");
+let startTab = "dashboard"; try { startTab = localStorage.getItem(LS_TAB) || "dashboard"; } catch (e) {}
+showTab(tabs.includes(startTab) ? startTab : "dashboard");
 })();
 </script>
 <script src="portfolio-ui.js?v=confirmed-data"></script>
 <script src="drawdown-ui.js?v=market-context" defer></script>
 <script src="market-context.js" defer></script>
 <script src="ai-cycle.js?v=3" defer></script>
+<script src="dashboard.js?v=2" defer></script>
 </body>
 </html>

@@ -31,6 +31,10 @@ def check():
         raise ValueError('Published monthly strategy comparison is missing')
     if 'market-context-card' not in page or b'additionalDecline' not in get(SITE + 'market-context.js?v=' + revision):
         raise ValueError('Published market context is missing')
+    if not all(marker in page for marker in ('tab-dashboard', 'dashboard-markets', 'dashboard-kr-themes', 'dashboard-us-themes', 'dashboard-macro')):
+        raise ValueError('Published market dashboard is missing')
+    if b'dashboard-columns' not in get(SITE + 'styles.css?v=' + revision) or b'function renderGroup' not in get(SITE + 'dashboard.js?v=' + revision):
+        raise ValueError('Published dashboard assets are missing')
     if 'EPS·BPS 충격 시' not in page or b'function assess(' not in get(SITE + 'valuation.js?v=' + revision):
         raise ValueError('Published valuation source guards or sensitivity table is missing')
     index = json.loads(get(SITE + 'data/index.json?v=' + revision))
@@ -69,7 +73,7 @@ def check():
         raise ValueError('PSQ price history is unavailable')
     if date.today() - date.fromisoformat(chart['data'][-1][0]) > timedelta(days=7):
         raise ValueError('PSQ price history is stale')
-    print('Public release, six drawdown markets, four crypto histories, and external PSQ search/history verified')
+    print('Public release, market dashboard, six drawdown markets, four crypto histories, and external PSQ search/history verified')
 
 
 if __name__ == '__main__':
