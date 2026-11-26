@@ -73,7 +73,7 @@
     });
     container.innerHTML=rows.map(row=>row.missing?`<div class="theme-row"><span><strong>${escape(row.name)}</strong><small>구성 종목 ${row.missing}개 자료 누락 · 평균 계산 보류</small></span><b>—</b></div>`:`<div class="theme-row"><span><strong>${escape(row.name)}</strong><small>${escape(row.members.join(" · "))} · ${row.day} · 동일가중</small></span><b class="${row.change>0?"positive":row.change<0?"negative":""}">${row.change>0?"+":""}${nf.format(row.change)}%</b></div>`).join("");
   }
-  function statusFor(item, marketItems) {
+  function statusFor(item, marketItems=[]) {
     if(item.status==="unavailable")return "자료 없음";
     if(item.status==="stale"||item.status==="retained")return "이전 수집값 · 확인 필요";
     if(item.id==="vix")return item.value<15?"내재변동성 낮은 구간":item.value<20?"보통 변동성 구간":item.value<30?"변동성 상승 구간":"높은 변동성 구간";
@@ -94,12 +94,13 @@
     const listed=data.map(item=>`<div class="macro-row"><span><strong>${escape(labels[item.id]||item.label)}</strong><small>${escape(item.asOf||"기준일 없음")} · ${escape(item.source||"출처")} · ${escape(statusFor(item,snapshot?.items||[]))}</small></span><b>${Number.isFinite(item.value)?nf.format(item.value)+(item.unit?" "+escape(item.unit):""):"—"}</b></div>`).join("");
     const futures=(derivatives?.items||[]).map(item=>{
       const future=item.futuresOnly||{}, combined=item.combined||{};
-      const oiChange=future.openInterestChange, netChange=future.netChange;
+      const oiChange=future.openInterestChange, netChange=future.netChange, combinedOiChange=combined.openInterestChange;
       const oiStatus=!Number.isFinite(oiChange)?"미결제약정 변화 자료 없음":oiChange>0?"미결제약정 증가 · 계약 수 확대":oiChange<0?"미결제약정 감소 · 계약 수 축소":"미결제약정 보합";
+      const combinedOiSummary=!Number.isFinite(combinedOiChange)?"주간 변화 없음":`주간 ${combinedOiChange>0?"+":""}${nf.format(combinedOiChange)}계약`;
       const netStatus=item.status==="retained"?"마지막 수집값 · 새 보고서 대기":item.status==="stale"?"보고서 기준일 오래됨":item.status==="unavailable"?"자료 수집 불가":item.status;
       const changeText=Number.isFinite(netChange)?`순포지션 ${netChange>0?"+":""}${nf.format(netChange)}계약 주간 변화`:"";
       const combinedStatus=item.combinedStatus==="available"?"옵션 포함 환산 OI":item.combinedStatus==="stale"?"옵션 포함 OI 갱신 지연":item.combinedStatus==="retained"?"옵션 포함 OI 이전 보고서 유지":"옵션 포함 OI 자료 없음";
-      return `<div class="macro-row futures-row"><span><strong>${escape(future.label||item.label)} · 미결제약정</strong><small>${escape(future.asOf||"기준일 없음")} 화요일 기준 · ${escape(netStatus)}</small><small>선물 전용 OI ${Number.isFinite(future.openInterest)?nf.format(future.openInterest)+"계약":"—"} (${escape(oiStatus)}) · 옵션 포함 OI ${Number.isFinite(combined.openInterest)?nf.format(combined.openInterest)+"계약":"—"}</small><small>레버리지 펀드 ${escape(future.status||"포지션 자료 없음")} · 순포지션 ${Number.isFinite(future.net)?nf.format(future.net)+"계약":"—"} (${Number.isFinite(future.netPercentOpenInterest)?nf.format(future.netPercentOpenInterest)+"% of OI":"—"}) · ${changeText}</small><small>${escape(combinedStatus)} · 옵션은 선물 환산값</small></span></div>`;
+      return `<div class="macro-row futures-row"><span><strong>${escape(future.label||item.label)} · 미결제약정</strong><small>${escape(future.asOf||"기준일 없음")} 화요일 기준 · ${escape(netStatus)}</small><small>선물 전용 OI ${Number.isFinite(future.openInterest)?nf.format(future.openInterest)+"계약":"—"} (${escape(oiStatus)}) · 선물·옵션 합산 등가 OI ${Number.isFinite(combined.openInterest)?nf.format(combined.openInterest)+"계약":"—"} (${escape(combinedOiSummary)})</small><small>레버리지 펀드 ${escape(future.status||"포지션 자료 없음")} · 순포지션 ${Number.isFinite(future.net)?nf.format(future.net)+"계약":"—"} (${Number.isFinite(future.netPercentOpenInterest)?nf.format(future.netPercentOpenInterest)+"% of OI":"—"}) · ${changeText}</small><small>${escape(combinedStatus)} · 옵션은 선물 환산값</small></span></div>`;
     }).join("");
     const optionItems=(snapshot?.items||[]).filter(item=>["put_call","vix9d","vvix"].includes(item.id));
     const options=optionItems.map(item=>`<div class="macro-row"><span><strong>${escape(labels[item.id]||item.label)} · 옵션</strong><small>${escape(item.asOf||"기준일 없음")} · ${escape(item.source||"출처")} · ${escape(statusFor(item))}</small></span><b>${Number.isFinite(item.value)?nf.format(item.value)+(item.unit?" "+escape(item.unit):""):"—"}</b></div>`).join("");
