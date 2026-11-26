@@ -18,7 +18,6 @@
     <button type="button" role="tab" id="tab-btn-dca" aria-controls="tab-dca" aria-selected="true">적립식 평단 계산기</button>
     <button type="button" role="tab" id="tab-btn-ma" aria-controls="tab-ma" aria-selected="false">이평선 지지·저항</button>
     <button type="button" role="tab" id="tab-btn-value" aria-controls="tab-value" aria-selected="false" tabindex="-1">지수 PER·PBR</button>
-    <button type="button" role="tab" id="tab-btn-tv" aria-controls="tab-tv" aria-selected="false" tabindex="-1">TradingView 차트</button>
     <button type="button" role="tab" id="tab-btn-drawdown" aria-controls="tab-drawdown" aria-selected="false" tabindex="-1">하락·회복 분석</button>
     <button type="button" role="tab" id="tab-btn-ai" aria-controls="tab-ai" aria-selected="false" tabindex="-1">AI 사이클 모니터</button>
   </nav>
@@ -511,29 +510,6 @@
         <div class="tablewrap"><table><thead><tr><th scope="col">입력 배수</th><th scope="col">환산 지수값</th><th scope="col">최신 종가 대비</th><th scope="col">EPS·BPS 충격 시</th></tr></thead><tbody id="iv-bands"></tbody></table></div>
       </section>
     </div>
-  </div>
-  <div id="tab-tv" role="tabpanel" aria-labelledby="tab-btn-tv" class="tabpanel" hidden>
-    <header class="tool-intro">
-      <h1>TradingView 차트</h1>
-      <p>TradingView의 시세로 주요 지수 차트를 대조할 수 있습니다.</p>
-    </header>
-    <section class="panel tv-panel" aria-label="TradingView 지수 차트">
-      <div class="field">
-        <label for="tv-symbol">비교할 지수</label>
-        <select id="tv-symbol">
-          <option value="KRX:KOSPI">코스피</option>
-          <option value="KRX:KOSDAQ">코스닥</option>
-          <option value="NASDAQ:IXIC">나스닥 종합</option>
-          <option value="NASDAQ:NDX">나스닥 100</option>
-          <option value="SP:SPX">S&amp;P 500</option>
-          <option value="DJ:DJI">다우존스</option>
-        </select>
-      </div>
-      <p class="hint">거래소에 따라 시세가 지연되거나 일부 지수 표시가 제한될 수 있습니다. 차트 도구에서 직접 선을 그릴 수 있습니다.</p>
-      <div id="tv-chart"></div>
-      <p id="tv-status" class="hint" role="status" hidden></p>
-      <p class="hint"><a id="tv-open" href="https://kr.tradingview.com/symbols/KRX-KOSPI/" target="_blank" rel="noopener">TradingView에서 열기</a></p>
-    </section>
   </div>
   <div id="tab-drawdown" role="tabpanel" aria-labelledby="tab-btn-drawdown" class="tabpanel" hidden>
     <header class="tool-intro"><h1>하락·회복 분석</h1><p>한국·미국 주요 6개 지수가 과거에 얼마나 자주, 깊게, 오래 하락했는지 확인합니다. 많이 하락한 가격과 펀더멘털 저평가는 서로 다릅니다.</p></header>
@@ -1228,51 +1204,7 @@ try {
 function save() { try { localStorage.setItem(LS, JSON.stringify({ sym: st.sym, tf: st.tf, range: st.range, on: [...st.on], sort: st.sort, log: st.log, dim: st.dim, bb: st.bb, rsi: st.rsi, perBands: st.perBands, pbrBands: st.pbrBands, perLevels: st.perLevels, pbrLevels: st.pbrLevels })); } catch (e) {} }
 
 /* ---------- 탭 ---------- */
-const tabs = ["dashboard", "dca", "ma", "value", "tv", "drawdown", "ai"];
-let tradingViewKey = "";
-function showTradingView() {
-  if ($("tab-tv").hidden) return;
-  const symbol = $("tv-symbol").value;
-  const theme = document.documentElement.dataset.theme;
-  const dark = theme === "dark" || (theme === "auto" && matchMedia("(prefers-color-scheme: dark)").matches);
-  const key = symbol + ":" + dark;
-  if (tradingViewKey === key) return;
-  tradingViewKey = key;
-
-  const link = $("tv-open");
-  link.href = "https://kr.tradingview.com/symbols/" + symbol.replace(":", "-") + "/";
-  $("tv-status").hidden = true;
-  const container = document.createElement("div");
-  container.className = "tradingview-widget-container";
-  const chart = document.createElement("div");
-  chart.className = "tradingview-widget-container__widget";
-  const credit = document.createElement("div");
-  credit.className = "tradingview-widget-copyright";
-  const creditLink = document.createElement("a");
-  creditLink.href = link.href;
-  creditLink.target = "_blank";
-  creditLink.rel = "noopener nofollow";
-  creditLink.textContent = "TradingView 차트";
-  credit.append(creditLink, " by TradingView");
-  const script = document.createElement("script");
-  script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-  script.async = true;
-  script.textContent = JSON.stringify({
-    symbol, autosize: true, interval: "D", timezone: "Asia/Seoul", locale: "kr",
-    style: "1", theme: dark ? "dark" : "light", hide_side_toolbar: false,
-    allow_symbol_change: false, withdateranges: true, support_host: "https://www.tradingview.com"
-  });
-  script.addEventListener("error", () => {
-    if (!container.isConnected) return;
-    tradingViewKey = "";
-    $("tv-status").textContent = "위젯을 불러오지 못했습니다. 아래 링크로 원본 차트를 열 수 있습니다.";
-    $("tv-status").hidden = false;
-  });
-  $("tv-chart").replaceChildren(container);
-  container.append(chart, credit, script);
-}
-$("tv-symbol").addEventListener("change", showTradingView);
-window.addEventListener("themechange", showTradingView);
+const tabs = ["dashboard", "dca", "ma", "value", "drawdown", "ai"];
 function showTab(which, symbol) {
   for (const t of tabs) {
     $("tab-btn-" + t).setAttribute("aria-selected", t === which ? "true" : "false");
@@ -1284,7 +1216,6 @@ function showTab(which, symbol) {
     st.loaded = true; loadSym(symbol || st.sym);
   } else if (which === "ma") requestAnimationFrame(draw);
   if (which === "value") window.dispatchEvent(new CustomEvent("indexvaluationopen", {detail: symbol}));
-  if (which === "tv") showTradingView();
   if (which === "drawdown") window.dispatchEvent(new Event("drawdownopen"));
 }
 for (const tab of tabs) $("tab-btn-" + tab).addEventListener("click", () => showTab(tab));
@@ -1887,6 +1818,6 @@ showTab(tabs.includes(startTab) ? startTab : "dashboard");
 <script src="drawdown-ui.js?v=market-context" defer></script>
 <script src="market-context.js" defer></script>
 <script src="ai-cycle.js?v=3" defer></script>
-<script src="dashboard.js?v=3" defer></script>
+<script src="dashboard.js?v=4" defer></script>
 </body>
 </html>

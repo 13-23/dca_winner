@@ -33,6 +33,8 @@ def check():
         raise ValueError('Published market context is missing')
     if not all(marker in page for marker in ('tab-dashboard', 'dashboard-markets', 'dashboard-kr-themes', 'dashboard-us-themes', 'dashboard-macro', '국내 테마', '미국 테마')):
         raise ValueError('Published market dashboard or thematic sections are missing')
+    if 'tab-btn-tv' in page or 'tab-tv' in page or b'tv-symbol' in get(SITE + 'dashboard.js?v=' + revision):
+        raise ValueError('TradingView chart tab is still published')
     if b'dashboard-columns' not in get(SITE + 'styles.css?v=' + revision) or b'function renderGroup' not in get(SITE + 'dashboard.js?v=' + revision):
         raise ValueError('Published dashboard assets are missing')
     if 'EPS·BPS 충격 시' not in page or b'function assess(' not in get(SITE + 'valuation.js?v=' + revision):

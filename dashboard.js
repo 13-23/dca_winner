@@ -23,7 +23,6 @@
     ]
   };
   const labels = {fear_greed:"공포·탐욕",vix:"VIX",vix9d:"VIX9D",vvix:"VVIX",put_call:"풋/콜 비율"};
-  const tvSymbols={"^KS11":"KRX:KOSPI","^KQ11":"KRX:KOSDAQ","^IXIC":"NASDAQ:IXIC","^NDX":"NASDAQ:NDX","^DJI":"DJ:DJI","^GSPC":"SP:SPX"};
   const currency = {KRW:"₩",USD:"$",JPY:"¥",EUR:"€"};
   function priceRow(item, asset, metadata, alias) {
     const rows = asset?.data;
@@ -37,7 +36,7 @@
     const formatted=symbol.startsWith("^") ? nf.format(current[1])+" pt" : unit+(metadata.currency==="KRW"?won:nf).format(current[1]);
     const age=(Date.now()-Date.parse(current[0]+"T00:00:00Z"))/86400000;
     const status=metadata.quoteUpdate.status==="retained"?"이전 수집값":age>5?"기준일 확인":"종가 확정";
-    const tab=symbol.startsWith("^")?"tv":"dca";
+    const tab=symbol.startsWith("^")?"drawdown":"dca";
     const denomination=symbol.startsWith("^")?"지수 포인트":metadata.currency;
     return `<a class="snapshot-row" href="#${tab}" data-open-market="${escape(symbol)}" aria-label="${escape(alias||metadata.label)} 상세 보기"><div><strong>${escape(alias||metadata.label)}</strong><small>${escape(current[0])} · ${escape(denomination)} · ${status}</small></div><div class="snapshot-value"><b>${escape(formatted)}</b><small class="${change>0?"positive":change<0?"negative":""}">${change>0?"+":""}${nf.format(change)}%</small></div></a>`;
   }
@@ -129,7 +128,7 @@
       $("#dashboard-note").textContent="테마 변동은 표시 구성 종목의 같은 거래일 종가 수익률을 동일가중 평균한 참고값이며 배당을 반영하지 않습니다. 시장별 기준일과 전체 수집 시각은 다를 수 있습니다.";
       document.querySelectorAll("[data-open-market]").forEach(link=>link.addEventListener("click",event=>{
         event.preventDefault(); const symbol=link.dataset.openMarket;
-        if(symbol.startsWith("^")){document.querySelector('#tv-symbol').value=tvSymbols[symbol];document.querySelector('#tv-symbol').dispatchEvent(new Event("change"));document.getElementById("tab-btn-tv").click();}
+        if(symbol.startsWith("^")){document.getElementById("dd-market").value=symbol;document.getElementById("tab-btn-drawdown").click();document.getElementById("dd-market").dispatchEvent(new Event("change"));}
         else{document.getElementById("tab-btn-dca").click();document.querySelector('#preset').value=symbol;document.querySelector('#preset').dispatchEvent(new Event("change"));}
       }));
     } catch(_) {status.textContent="가격 데이터를 불러오지 못했습니다.";$("#dashboard-markets").innerHTML='<p class="hint">시세 목록을 읽을 수 없습니다. 잠시 후 다시 확인해 주세요.</p>';}
