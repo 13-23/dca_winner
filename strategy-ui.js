@@ -83,6 +83,7 @@
       const {immediate, reserve} = result;
       const cells = [
         [won(immediate.value), won(reserve.value)],
+        [won(result.invested), won(result.invested)],
         [percent.format(immediate.mdd), percent.format(reserve.mdd)],
         ...["below", "longest"].map(key => [number.format(immediate[key]) + "일", number.format(reserve[key]) + "일"]),
         [won(immediate.cash), won(reserve.cash)],

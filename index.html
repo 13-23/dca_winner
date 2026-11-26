@@ -6,7 +6,7 @@
 <title>적립식 평단 계산기</title>
 <script>try { const t = localStorage.getItem("theme-v1"); if (t === "dark" || t === "auto" || t === "light") document.documentElement.dataset.theme = t; } catch (e) {}</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.css">
-<link rel="stylesheet" href="styles.css?v=dashboard-derivatives">
+<link rel="stylesheet" href="styles.css?v=consulting-upgrade-1">
 </head>
 <body>
 <a class="skip-link" href="#main-content">본문으로 이동</a>
@@ -33,6 +33,8 @@
   <main id="main-content" tabindex="-1">
   <div id="tab-dashboard" role="tabpanel" aria-labelledby="tab-btn-dashboard" class="tabpanel dashboard-panel">
     <header class="dashboard-head"><div><p class="eyebrow">DCA WINNER · MARKET SNAPSHOT</p><h1>시장 대시보드</h1><p class="hint">실시간 호가가 아닌 정기 수집 종가와 공개 시장 지표를 보여줍니다.</p></div><p id="dashboard-updated" class="snapshot-stamp" role="status" aria-live="polite">데이터를 불러오는 중…</p></header>
+    <section class="dashboard-reading" aria-labelledby="dashboard-reading-title"><div><h2 id="dashboard-reading-title">시장을 세 관점으로 확인</h2><p class="hint">가격 위치·기업가치·투자 전략은 서로 다른 정보입니다. 하나의 매수 점수로 합산하지 않습니다.</p></div><button type="button" class="btn" id="dashboard-open-drawdown">가격 위치 · 하락 이력</button><button type="button" class="btn" id="dashboard-open-value">지수 PER · PBR</button><button type="button" class="btn" id="dashboard-open-dca">적립 전략 · 위험</button></section>
+    <div id="dashboard-data-summary" class="dashboard-data-summary" aria-live="polite"><strong>가격 자료 상태</strong><small>종목별 기준일과 수집 상태를 불러오는 중…</small></div>
     <div id="dashboard-markets" class="dashboard-columns" aria-live="polite"></div>
     <div class="dashboard-bottom"><section class="dashboard-theme"><div class="statement-head"><h2>국내 테마</h2><span class="hint">구성 종목 종가 · 동일가중</span></div><div id="dashboard-kr-themes" class="theme-list"></div></section>
     <section class="dashboard-theme"><div class="statement-head"><h2>미국 테마</h2><span class="hint">구성 종목 종가 · 동일가중</span></div><div id="dashboard-us-themes" class="theme-list"></div></section>
@@ -77,6 +79,7 @@
           <label class="check"><input type="checkbox" id="pf-fractional" checked><span>소수점 수량 허용</span></label>
           <label class="check"><input type="checkbox" id="pf-adjusted"><span>배당 재투자 가정 (수정주가)</span></label>
           <p class="hint">해외 종목은 매수일·평가일의 실제 환율로 원화 환산합니다. 각 시장의 휴장일에는 배정금을 원화로 보관하고 다음 거래일에 매수합니다. 정수 수량 매수의 잔액도 원화로 이월합니다.</p>
+          <section class="condition-presets" aria-label="포트폴리오 조건 저장"><div class="field"><label for="pf-preset-name">조건 이름</label><input id="pf-preset-name" maxlength="40" placeholder="예: 미국지수 월 적립"></div><button type="button" class="btn" id="pf-preset-save">현재 조건 저장</button><div class="row"><label class="field" for="pf-preset-list">저장한 조건</label><select id="pf-preset-list"><option value="">조건 선택</option></select><button type="button" class="btn" id="pf-preset-load">불러오기</button><button type="button" class="btn" id="pf-preset-delete">삭제</button><button type="button" class="btn" id="pf-preset-export">JSON 내보내기</button></div><p class="hint" id="pf-preset-status" role="status" aria-live="polite">조건은 이 브라우저에 저장됩니다. 내보내기 파일에는 계산 버전과 시세 목록 기준일을 기록합니다.</p></section>
           <button type="button" class="btn" id="pf-calculate">계산 / 시세 다시 불러오기</button>
           <p id="pf-status" class="hint" role="status" aria-live="polite"></p>
         </section>
@@ -100,6 +103,7 @@
           <div class="tablewrap" tabindex="0" role="region" aria-label="월 적립 전략 비교 결과" hidden>
             <table><thead><tr><th scope="col">지표</th><th scope="col">즉시 적립</th><th scope="col">현금 보유 후 추가 매수</th></tr></thead><tbody>
               <tr><th scope="row">최종 자산</th><td></td><td></td></tr>
+              <tr><th scope="row">총 납입액</th><td></td><td></td></tr>
               <tr><th scope="row">최대 낙폭</th><td></td><td></td></tr>
               <tr><th scope="row">원금 미달 누적 기간</th><td></td><td></td></tr>
               <tr><th scope="row">원금 미달 최장 연속 기간</th><td></td><td></td></tr>
@@ -1219,6 +1223,9 @@ function showTab(which, symbol) {
   if (which === "drawdown") window.dispatchEvent(new Event("drawdownopen"));
 }
 for (const tab of tabs) $("tab-btn-" + tab).addEventListener("click", () => showTab(tab));
+$("dashboard-open-drawdown").addEventListener("click", () => showTab("drawdown"));
+$("dashboard-open-value").addEventListener("click", () => showTab("value"));
+$("dashboard-open-dca").addEventListener("click", () => showTab("dca"));
 document.querySelector("[data-home]").addEventListener("click", event => { event.preventDefault(); showTab("dashboard"); });
 document.getElementById("tab-btn-dashboard").addEventListener("click", () => window.dispatchEvent(new Event("dashboardopen")));
 window.addEventListener("dashboardopen", () => window.dispatchEvent(new Event("dashboardrefresh")));
@@ -1814,10 +1821,10 @@ let startTab = "dashboard"; try { startTab = localStorage.getItem(LS_TAB) || "da
 showTab(tabs.includes(startTab) ? startTab : "dashboard");
 })();
 </script>
-<script src="portfolio-ui.js?v=confirmed-data"></script>
-<script src="drawdown-ui.js?v=market-context" defer></script>
+<script src="portfolio-ui.js?v=named-presets"></script>
+<script src="drawdown-ui.js?v=period-summary" defer></script>
 <script src="market-context.js" defer></script>
 <script src="ai-cycle.js?v=3" defer></script>
-<script src="dashboard.js?v=4" defer></script>
+<script src="dashboard.js?v=5" defer></script>
 </body>
 </html>

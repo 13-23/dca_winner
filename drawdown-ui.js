@@ -45,7 +45,7 @@ function render(){
   peak=Math.max(peak,close);
   mdd=Math.min(mdd,close/peak-1);
  }
- $('dd-period-mdd').textContent='선택 기간 최대 낙폭 '+pct(mdd)+' · 기간 안에서 기록한 고점부터 계산';
+ $('dd-period-mdd').textContent='통계 기간 '+view.start+' ~ '+view.end+' · '+view.sessions.toLocaleString()+'거래일 · 선택 기간 최대 낙폭 '+pct(mdd)+' · 기간 안에서 기록한 고점부터 계산';
  const cards=[['현재 고점 대비 낙폭 · 전체 이력 기준',pct(c.drawdown),'고점일 '+c.peakDate],['고점 미회복 연속 기간',days(c.underwaterDays),'종가가 고점 아래였던 관측 일수'],['200일선 대비 거리',pct(c.gap200),'선 회복은 고점 회복과 다릅니다'],['60주선 대비 거리',pct(c.gap60w),'현재 주는 해당일 종가까지 반영'],['현재 낙폭 이하였던 과거 비중',view.ranks.drawdown.percentile==null?'—':nf.format(view.ranks.drawdown.percentile)+'%',view.ranks.drawdown.n.toLocaleString()+'개 과거 거래일 · 현재일 제외'],['최근 21일 실현변동성',rate(c.volatility21),'일별 수익률 표준편차 · 연율화']];
  $('dd-current').innerHTML=cards.map(([label,value,sub])=>'<div class="kpi"><span class="lbl">'+esc(label)+'</span><span class="val">'+esc(value)+'</span><span class="sub">'+esc(sub)+'</span></div>').join('');
  const age=(Date.now()-Date.parse(data.asOf+'T22:00:00Z'))/86400000;

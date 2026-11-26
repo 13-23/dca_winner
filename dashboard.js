@@ -35,10 +35,13 @@
     const unit=currency[metadata.currency] || "";
     const formatted=symbol.startsWith("^") ? nf.format(current[1])+" pt" : unit+(metadata.currency==="KRW"?won:nf).format(current[1]);
     const age=(Date.now()-Date.parse(current[0]+"T00:00:00Z"))/86400000;
-    const status=metadata.quoteUpdate.status==="retained"?"이전 수집값":age>5?"기준일 확인":"종가 확정";
+    const updateStatus=metadata.quoteUpdate.status;
+    const stale=age>5;
+    const status=updateStatus==="retained"?"갱신 실패 · 이전 값 유지":updateStatus==="unavailable"?"수집 불가":updateStatus==="stale"?"갱신 상태 확인":stale?"기준일 확인":updateStatus==="unchanged"?"수집 성공 · 새 종가 없음":updateStatus==="collected"?"수집 성공":"개별 상태 미기록";
+    const statusClass=["retained","unavailable","stale"].includes(updateStatus)||stale?"warn":updateStatus==="unchanged"?"neutral":"ok";
     const tab=symbol.startsWith("^")?"drawdown":"dca";
     const denomination=symbol.startsWith("^")?"지수 포인트":metadata.currency;
-    return `<a class="snapshot-row" href="#${tab}" data-open-market="${escape(symbol)}" aria-label="${escape(alias||metadata.label)} 상세 보기"><div><strong>${escape(alias||metadata.label)}</strong><small>${escape(current[0])} · ${escape(denomination)} · ${status}</small></div><div class="snapshot-value"><b>${escape(formatted)}</b><small class="${change>0?"positive":change<0?"negative":""}">${change>0?"+":""}${nf.format(change)}%</small></div></a>`;
+    return `<a class="snapshot-row" href="#${tab}" data-open-market="${escape(symbol)}" aria-label="${escape(alias||metadata.label)} 상세 보기"><div><strong>${escape(alias||metadata.label)}</strong><small>${escape(current[0])} · ${escape(denomination)} · <span class="data-state ${statusClass}">${status}</span></small></div><div class="snapshot-value"><b>${escape(formatted)}</b><small class="${change>0?"positive":change<0?"negative":""}">${change>0?"+":""}${nf.format(change)}%</small></div></a>`;
   }
   function symbolName(item){return typeof item==="string"?item:item?.label||item?.symbol||"시장 지표";}
   function renderGroup(group, index, indexItems, assets) {
@@ -112,6 +115,8 @@
       const index=await fetch("data/index.json",{cache:"no-cache"}).then(response=>{if(!response.ok)throw Error();return response.json()});
       const themeSymbols=[...themes.korea,...themes.us].flatMap(theme=>theme.symbols);
       const quoteItems=index.items.filter(item=>groups.some(group=>group.symbols.includes(item.symbol))||themeSymbols.includes(item.symbol));
+      const stateCounts={updated:0,unchanged:0,attention:0};
+      for(const item of quoteItems){const closeDate=item.quoteUpdate?.closeDate,age=(Date.now()-Date.parse((closeDate||"")+"T00:00:00Z"))/86400000;if(!closeDate||["retained","unavailable","stale"].includes(item.quoteUpdate?.status)||age>5)stateCounts.attention++;else if(item.quoteUpdate?.status==="unchanged")stateCounts.unchanged++;else stateCounts.updated++;}
       const assets=Object.fromEntries(await Promise.all(quoteItems.map(async item=>{
         try {return [item.symbol,await fetch("data/"+item.symbol.replace(/[^A-Za-z0-9.\\-]/g,"_")+".json",{cache:"no-cache"}).then(response=>{if(!response.ok)throw Error();return response.json()})];}
         catch(_){return [item.symbol,null];}
@@ -125,6 +130,8 @@
       try{derivatives=await fetch("data/derivatives.json",{cache:"no-cache"}).then(response=>response.ok?response.json():null)}catch(_){}
       renderMacro(market,ai,derivatives);
       status.textContent=`전체 수집 ${index.updated} · KST`;
+      const summary=document.getElementById("dashboard-data-summary");
+      if(summary)summary.innerHTML=`<strong>가격 자료 상태</strong><span class="data-state ok">수집 성공 ${stateCounts.updated}</span><span class="data-state neutral">새 종가 없음 ${stateCounts.unchanged}</span><span class="data-state warn">기준일 확인 ${stateCounts.attention}</span><small>종목별 기준일·수집 시각은 각 행의 상세 요약에서 확인</small>`;
       $("#dashboard-note").textContent="테마 변동은 표시 구성 종목의 같은 거래일 종가 수익률을 동일가중 평균한 참고값이며 배당을 반영하지 않습니다. 시장별 기준일과 전체 수집 시각은 다를 수 있습니다.";
       document.querySelectorAll("[data-open-market]").forEach(link=>link.addEventListener("click",event=>{
         event.preventDefault(); const symbol=link.dataset.openMarket;

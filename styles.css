@@ -111,6 +111,21 @@ th:first-child, td:first-child { text-align: left; }
 .dashboard-head .hint { margin-top: 8px; }
 .eyebrow { margin: 0 0 8px; color: var(--accent); font-size: 11px; letter-spacing: .12em; font-weight: 700; }
 .snapshot-stamp { margin: 0; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); font-size: 12px; white-space: nowrap; }
+.dashboard-data-summary { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:0 0 14px; padding:11px 14px; border:1px solid var(--line); border-radius:10px; background:var(--sheet); font-size:12px; }
+.dashboard-data-summary > strong { margin-right:4px; }
+.dashboard-data-summary > small { flex-basis:100%; color:var(--muted); }
+.dashboard-reading { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:0 0 14px; padding:14px; border:1px solid var(--line); border-radius:10px; background:var(--sheet); }
+.dashboard-reading > div { flex:1 1 100%; }
+.dashboard-reading h2 { margin:0; font-size:15px; }
+.dashboard-reading p { margin:4px 0 2px; }
+.data-state { font-size:10px; font-weight:600; }
+.data-state.ok { color:var(--up); }
+.data-state.neutral { color:var(--muted); }
+.data-state.warn { color:var(--down); }
+.condition-presets { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:8px; margin:14px 0; padding:14px; border:1px solid var(--line); border-radius:10px; }
+.condition-presets .row { grid-column:1/-1; align-items:end; }
+.condition-presets .row .field { flex:1; }
+.condition-presets > .hint { grid-column:1/-1; margin:0; }
 .dashboard-columns { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; align-items: start; }
 .dashboard-market,.dashboard-theme { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--sheet); }
 .dashboard-market > header { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
@@ -141,6 +156,7 @@ th:first-child, td:first-child { text-align: left; }
 .dashboard-panel > #dashboard-note { line-height: 1.5; }
 @media(max-width:900px){.dashboard-columns,.dashboard-bottom{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-market:last-child,.dashboard-theme:last-child{grid-column:1/-1}}
 @media(max-width:620px){.dashboard-head{align-items:flex-start;flex-direction:column;gap:12px}.snapshot-stamp{white-space:normal}.dashboard-columns,.dashboard-bottom{grid-template-columns:minmax(0,1fr);gap:10px}.dashboard-market:last-child,.dashboard-theme:last-child{grid-column:auto}.dashboard-market{padding:15px}.dashboard-theme{padding:14px}}
+@media(max-width:620px){.condition-presets{grid-template-columns:1fr}.condition-presets .row{display:grid;grid-template-columns:1fr 1fr}.condition-presets .row .field{grid-column:1/-1}}
 
 /* ---------- 이평선 탭 ---------- */
 .ma-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 20px; align-items: start; }
