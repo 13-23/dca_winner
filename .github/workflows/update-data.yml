@@ -6,8 +6,7 @@ on:
     paths:
       - tickers.json
   schedule:
-    - cron: "10 8 * * 1-5"    # 평일 17:10 KST — 연구용 한국 종가 확정 기준 이후
-    - cron: "10 22 * * *"     # 매일 07:10 KST — 주말 코인 포함, UTC 확정 일봉 갱신
+    - cron: "10 */4 * * *"    # 4시간 간격 — 수집 완료 시각은 KST로 기록
   workflow_dispatch:           # Actions 탭에서 "Run workflow"로 바로 실행
     inputs:
       market_only:
