@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-27 09:33 KST",
+ "updated": "2026-11-27 22:47 KST",
  "items": [
   {
    "symbol": "^KS11",
@@ -10,10 +10,10 @@
    "label": "코스피",
    "group": "지수",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:32:28.658091+00:00",
-    "attemptedAt": "2026-11-27T00:32:29.813917+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:46:36.216221+00:00",
+    "attemptedAt": "2026-11-27T13:46:37.052294+00:00"
    }
   },
   {
@@ -25,10 +25,10 @@
    "label": "코스닥",
    "group": "지수",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:32:30.963052+00:00",
-    "attemptedAt": "2026-11-27T00:32:31.677354+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:46:38.202771+00:00",
+    "attemptedAt": "2026-11-27T13:46:38.745277+00:00"
    }
   },
   {
@@ -42,8 +42,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:32.914528+00:00",
-    "attemptedAt": "2026-11-27T00:32:33.052114+00:00"
+    "fetchedAt": "2026-11-27T13:46:40.033410+00:00",
+    "attemptedAt": "2026-11-27T13:46:40.147376+00:00"
    }
   },
   {
@@ -57,8 +57,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:34.256483+00:00",
-    "attemptedAt": "2026-11-27T00:32:34.335305+00:00"
+    "fetchedAt": "2026-11-27T13:46:41.383483+00:00",
+    "attemptedAt": "2026-11-27T13:46:41.482536+00:00"
    }
   },
   {
@@ -72,8 +72,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:35.539898+00:00",
-    "attemptedAt": "2026-11-27T00:32:35.618588+00:00"
+    "fetchedAt": "2026-11-27T13:46:42.670036+00:00",
+    "attemptedAt": "2026-11-27T13:46:42.780541+00:00"
    }
   },
   {
@@ -87,8 +87,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:36.867665+00:00",
-    "attemptedAt": "2026-11-27T00:32:36.960159+00:00"
+    "fetchedAt": "2026-11-27T13:46:44.057136+00:00",
+    "attemptedAt": "2026-11-27T13:46:44.173020+00:00"
    }
   },
   {
@@ -100,10 +100,10 @@
    "label": "KODEX 200",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:32:38.116885+00:00",
-    "attemptedAt": "2026-11-27T00:32:38.128895+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:46:45.330827+00:00",
+    "attemptedAt": "2026-11-27T13:46:45.347536+00:00"
    }
   },
   {
@@ -115,10 +115,10 @@
    "label": "KODEX 레버리지",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:32:39.235921+00:00",
-    "attemptedAt": "2026-11-27T00:32:39.246318+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:46:46.472283+00:00",
+    "attemptedAt": "2026-11-27T13:46:46.487397+00:00"
    }
   },
   {
@@ -130,10 +130,10 @@
    "label": "KODEX 코스닥150레버리지",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:32:40.354448+00:00",
-    "attemptedAt": "2026-11-27T00:32:40.361252+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:46:47.578815+00:00",
+    "attemptedAt": "2026-11-27T13:46:47.588432+00:00"
    }
   },
   {
@@ -145,10 +145,10 @@
    "label": "KODEX 코스닥150",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:32:41.478563+00:00",
-    "attemptedAt": "2026-11-27T00:32:41.486101+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:46:48.706369+00:00",
+    "attemptedAt": "2026-11-27T13:46:48.717076+00:00"
    }
   },
   {
@@ -160,10 +160,10 @@
    "label": "TIGER 미국나스닥100",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:32:42.612262+00:00",
-    "attemptedAt": "2026-11-27T00:32:42.623215+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:46:49.856732+00:00",
+    "attemptedAt": "2026-11-27T13:46:49.871960+00:00"
    }
   },
   {
@@ -175,10 +175,10 @@
    "label": "TIGER 미국S&P500",
    "group": "국내 ETF",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:32:43.765462+00:00",
-    "attemptedAt": "2026-11-27T00:32:43.769843+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:46:50.962013+00:00",
+    "attemptedAt": "2026-11-27T13:46:50.968282+00:00"
    }
   },
   {
@@ -192,8 +192,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:44.956824+00:00",
-    "attemptedAt": "2026-11-27T00:32:45.049622+00:00"
+    "fetchedAt": "2026-11-27T13:46:52.168499+00:00",
+    "attemptedAt": "2026-11-27T13:46:52.278152+00:00"
    }
   },
   {
@@ -207,8 +207,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:46.218960+00:00",
-    "attemptedAt": "2026-11-27T00:32:46.333709+00:00"
+    "fetchedAt": "2026-11-27T13:46:53.437197+00:00",
+    "attemptedAt": "2026-11-27T13:46:53.529179+00:00"
    }
   },
   {
@@ -222,8 +222,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:47.495544+00:00",
-    "attemptedAt": "2026-11-27T00:32:47.574297+00:00"
+    "fetchedAt": "2026-11-27T13:46:54.676716+00:00",
+    "attemptedAt": "2026-11-27T13:46:54.755482+00:00"
    }
   },
   {
@@ -237,8 +237,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:48.768108+00:00",
-    "attemptedAt": "2026-11-27T00:32:48.847656+00:00"
+    "fetchedAt": "2026-11-27T13:46:55.916917+00:00",
+    "attemptedAt": "2026-11-27T13:46:56.007497+00:00"
    }
   },
   {
@@ -252,8 +252,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:50.011383+00:00",
-    "attemptedAt": "2026-11-27T00:32:50.105812+00:00"
+    "fetchedAt": "2026-11-27T13:46:57.156998+00:00",
+    "attemptedAt": "2026-11-27T13:46:57.255238+00:00"
    }
   },
   {
@@ -267,8 +267,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:51.288703+00:00",
-    "attemptedAt": "2026-11-27T00:32:51.378406+00:00"
+    "fetchedAt": "2026-11-27T13:46:58.426018+00:00",
+    "attemptedAt": "2026-11-27T13:46:58.515402+00:00"
    }
   },
   {
@@ -282,8 +282,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:52.538106+00:00",
-    "attemptedAt": "2026-11-27T00:32:52.619626+00:00"
+    "fetchedAt": "2026-11-27T13:46:59.656647+00:00",
+    "attemptedAt": "2026-11-27T13:46:59.743060+00:00"
    }
   },
   {
@@ -297,8 +297,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:53.782280+00:00",
-    "attemptedAt": "2026-11-27T00:32:53.854664+00:00"
+    "fetchedAt": "2026-11-27T13:47:00.898687+00:00",
+    "attemptedAt": "2026-11-27T13:47:00.999411+00:00"
    }
   },
   {
@@ -312,8 +312,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:54.912215+00:00",
-    "attemptedAt": "2026-11-27T00:32:54.965629+00:00"
+    "fetchedAt": "2026-11-27T13:47:02.064115+00:00",
+    "attemptedAt": "2026-11-27T13:47:02.113111+00:00"
    }
   },
   {
@@ -327,8 +327,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:56.203512+00:00",
-    "attemptedAt": "2026-11-27T00:32:56.330433+00:00"
+    "fetchedAt": "2026-11-27T13:47:03.338674+00:00",
+    "attemptedAt": "2026-11-27T13:47:03.454380+00:00"
    }
   },
   {
@@ -342,8 +342,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:57.472416+00:00",
-    "attemptedAt": "2026-11-27T00:32:57.574743+00:00"
+    "fetchedAt": "2026-11-27T13:47:04.623198+00:00",
+    "attemptedAt": "2026-11-27T13:47:04.699065+00:00"
    }
   },
   {
@@ -357,8 +357,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:32:58.801504+00:00",
-    "attemptedAt": "2026-11-27T00:32:58.895506+00:00"
+    "fetchedAt": "2026-11-27T13:47:05.942085+00:00",
+    "attemptedAt": "2026-11-27T13:47:06.048333+00:00"
    }
   },
   {
@@ -372,8 +372,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:00.025241+00:00",
-    "attemptedAt": "2026-11-27T00:33:00.155544+00:00"
+    "fetchedAt": "2026-11-27T13:47:07.207449+00:00",
+    "attemptedAt": "2026-11-27T13:47:07.296995+00:00"
    }
   },
   {
@@ -385,10 +385,10 @@
    "label": "삼성전자",
    "group": "개별 종목",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:33:01.348523+00:00",
-    "attemptedAt": "2026-11-27T00:33:01.366769+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:47:08.486398+00:00",
+    "attemptedAt": "2026-11-27T13:47:08.512378+00:00"
    }
   },
   {
@@ -400,10 +400,10 @@
    "label": "SK하이닉스",
    "group": "개별 종목",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:33:02.538971+00:00",
-    "attemptedAt": "2026-11-27T00:33:02.557174+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:47:09.693569+00:00",
+    "attemptedAt": "2026-11-27T13:47:09.719285+00:00"
    }
   },
   {
@@ -417,8 +417,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:03.830543+00:00",
-    "attemptedAt": "2026-11-27T00:33:03.948352+00:00"
+    "fetchedAt": "2026-11-27T13:47:11.010639+00:00",
+    "attemptedAt": "2026-11-27T13:47:11.149050+00:00"
    }
   },
   {
@@ -432,8 +432,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:05.213971+00:00",
-    "attemptedAt": "2026-11-27T00:33:05.315810+00:00"
+    "fetchedAt": "2026-11-27T13:47:12.403545+00:00",
+    "attemptedAt": "2026-11-27T13:47:12.576880+00:00"
    }
   },
   {
@@ -447,8 +447,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:06.514735+00:00",
-    "attemptedAt": "2026-11-27T00:33:06.595732+00:00"
+    "fetchedAt": "2026-11-27T13:47:13.788991+00:00",
+    "attemptedAt": "2026-11-27T13:47:13.950163+00:00"
    }
   },
   {
@@ -462,8 +462,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:07.725675+00:00",
-    "attemptedAt": "2026-11-27T00:33:07.790788+00:00"
+    "fetchedAt": "2026-11-27T13:47:15.103439+00:00",
+    "attemptedAt": "2026-11-27T13:47:15.175003+00:00"
    }
   },
   {
@@ -477,8 +477,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:09.010195+00:00",
-    "attemptedAt": "2026-11-27T00:33:09.097276+00:00"
+    "fetchedAt": "2026-11-27T13:47:16.412035+00:00",
+    "attemptedAt": "2026-11-27T13:47:16.523968+00:00"
    }
   },
   {
@@ -492,8 +492,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:10.268402+00:00",
-    "attemptedAt": "2026-11-27T00:33:10.346889+00:00"
+    "fetchedAt": "2026-11-27T13:47:17.674986+00:00",
+    "attemptedAt": "2026-11-27T13:47:17.757926+00:00"
    }
   },
   {
@@ -507,8 +507,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:11.509963+00:00",
-    "attemptedAt": "2026-11-27T00:33:11.619479+00:00"
+    "fetchedAt": "2026-11-27T13:47:18.913510+00:00",
+    "attemptedAt": "2026-11-27T13:47:18.994611+00:00"
    }
   },
   {
@@ -522,8 +522,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:12.820750+00:00",
-    "attemptedAt": "2026-11-27T00:33:12.903032+00:00"
+    "fetchedAt": "2026-11-27T13:47:20.170790+00:00",
+    "attemptedAt": "2026-11-27T13:47:20.260350+00:00"
    }
   },
   {
@@ -537,8 +537,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:14.039905+00:00",
-    "attemptedAt": "2026-11-27T00:33:14.132219+00:00"
+    "fetchedAt": "2026-11-27T13:47:21.415563+00:00",
+    "attemptedAt": "2026-11-27T13:47:21.485701+00:00"
    }
   },
   {
@@ -552,8 +552,8 @@
    "quoteUpdate": {
     "status": "unchanged",
     "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:15.277447+00:00",
-    "attemptedAt": "2026-11-27T00:33:15.365519+00:00"
+    "fetchedAt": "2026-11-27T13:47:22.612876+00:00",
+    "attemptedAt": "2026-11-27T13:47:22.692629+00:00"
    },
    "aliases": [
     "한국",
@@ -570,10 +570,10 @@
    "label": "카카오",
    "group": "개별 종목",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:33:16.556618+00:00",
-    "attemptedAt": "2026-11-27T00:33:16.574821+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:47:23.857843+00:00",
+    "attemptedAt": "2026-11-27T13:47:23.883705+00:00"
    },
    "aliases": [
     "Kakao"
@@ -588,10 +588,10 @@
    "label": "네이버",
    "group": "개별 종목",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:33:17.743476+00:00",
-    "attemptedAt": "2026-11-27T00:33:17.761244+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:47:25.040119+00:00",
+    "attemptedAt": "2026-11-27T13:47:25.065965+00:00"
    },
    "aliases": [
     "NAVER"
@@ -606,10 +606,10 @@
    "label": "LG생활건강",
    "group": "개별 종목",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:33:18.939291+00:00",
-    "attemptedAt": "2026-11-27T00:33:18.956860+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-27",
+    "fetchedAt": "2026-11-27T13:47:26.232311+00:00",
+    "attemptedAt": "2026-11-27T13:47:26.257664+00:00"
    },
    "aliases": [
     "엘지생활건강",
@@ -622,14 +622,14 @@
    "name": "Bitcoin KRW",
    "currency": "KRW",
    "first": "2014-09-17",
-   "last": "2026-11-25",
+   "last": "2026-11-26",
    "label": "비트코인(원화)",
    "group": "가상자산",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:20.081787+00:00",
-    "attemptedAt": "2026-11-27T00:33:20.094969+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-26",
+    "fetchedAt": "2026-11-27T13:47:27.387032+00:00",
+    "attemptedAt": "2026-11-27T13:47:27.406307+00:00"
    },
    "aliases": [
     "BTC",
@@ -643,14 +643,14 @@
    "name": "Bitcoin USD",
    "currency": "USD",
    "first": "2014-09-17",
-   "last": "2026-11-25",
+   "last": "2026-11-26",
    "label": "비트코인(달러)",
    "group": "가상자산",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:21.212591+00:00",
-    "attemptedAt": "2026-11-27T00:33:21.227194+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-26",
+    "fetchedAt": "2026-11-27T13:47:28.536824+00:00",
+    "attemptedAt": "2026-11-27T13:47:28.557993+00:00"
    },
    "aliases": [
     "BTC",
@@ -664,14 +664,14 @@
    "name": "Ethereum KRW",
    "currency": "KRW",
    "first": "2017-11-11",
-   "last": "2026-11-25",
+   "last": "2026-11-26",
    "label": "이더리움(원화)",
    "group": "가상자산",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:22.346585+00:00",
-    "attemptedAt": "2026-11-27T00:33:22.357260+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-26",
+    "fetchedAt": "2026-11-27T13:47:29.669155+00:00",
+    "attemptedAt": "2026-11-27T13:47:29.685054+00:00"
    },
    "aliases": [
     "ETH",
@@ -685,14 +685,14 @@
    "name": "Ethereum USD",
    "currency": "USD",
    "first": "2017-11-09",
-   "last": "2026-11-25",
+   "last": "2026-11-26",
    "label": "이더리움(달러)",
    "group": "가상자산",
    "quoteUpdate": {
-    "status": "unchanged",
-    "closeDate": "2026-11-25",
-    "fetchedAt": "2026-11-27T00:33:23.511560+00:00",
-    "attemptedAt": "2026-11-27T00:33:23.522273+00:00"
+    "status": "collected",
+    "closeDate": "2026-11-26",
+    "fetchedAt": "2026-11-27T13:47:30.787031+00:00",
+    "attemptedAt": "2026-11-27T13:47:30.802218+00:00"
    },
    "aliases": [
     "ETH",
@@ -710,10 +710,10 @@
    "label": "USD/KRW 환율",
    "group": "환율",
    "quoteUpdate": {
-    "status": "collected",
+    "status": "unchanged",
     "closeDate": "2026-11-26",
-    "fetchedAt": "2026-11-27T00:33:24.704872+00:00",
-    "attemptedAt": "2026-11-27T00:33:24.727315+00:00"
+    "fetchedAt": "2026-11-27T13:47:31.942975+00:00",
+    "attemptedAt": "2026-11-27T13:47:31.968920+00:00"
    },
    "hidden": true
   }

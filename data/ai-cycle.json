@@ -21,13 +21,13 @@
     "url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027"
   },
   "_status": {
-    "yield": "retained",
+    "yield": "ok",
     "inventory": "ok",
     "receivables": "ok",
     "fcf": "unavailable",
     "debt": "unavailable"
   },
-  "_attempted": "2026-11-27T00:34:19.754391+00:00",
+  "_attempted": "2026-11-27T13:48:43.966715+00:00",
   "_errors": {
     "fcf": "ValueError: CIK 320193: HTTPError: HTTP Error 403: Forbidden; CIK 789019: HTTPError: HTTP Error 403: Forbidden; CIK 1652044: HTTPError: HTTP Error 403: Forbidden; CIK 1018724: HTTPError: HTTP Error 403: Forbidden; CIK 1326801: HTTPError: HTTP Error 403: Forbidden",
     "debt": "ValueError: CIK 320193: HTTPError: HTTP Error 403: Forbidden; CIK 789019: HTTPError: HTTP Error 403: Forbidden; CIK 1652044: HTTPError: HTTP Error 403: Forbidden; CIK 1018724: HTTPError: HTTP Error 403: Forbidden; CIK 1326801: HTTPError: HTTP Error 403: Forbidden"
