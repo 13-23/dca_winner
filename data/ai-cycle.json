@@ -27,7 +27,7 @@
     "fcf": "unavailable",
     "debt": "unavailable"
   },
-  "_attempted": "2026-11-28T00:02:27.972221+00:00",
+  "_attempted": "2026-11-28T07:40:38.678410+00:00",
   "_errors": {
     "fcf": "ValueError: CIK 320193: HTTPError: HTTP Error 403: Forbidden; CIK 789019: HTTPError: HTTP Error 403: Forbidden; CIK 1652044: HTTPError: HTTP Error 403: Forbidden; CIK 1018724: HTTPError: HTTP Error 403: Forbidden; CIK 1326801: HTTPError: HTTP Error 403: Forbidden",
     "debt": "ValueError: CIK 320193: HTTPError: HTTP Error 403: Forbidden; CIK 789019: HTTPError: HTTP Error 403: Forbidden; CIK 1652044: HTTPError: HTTP Error 403: Forbidden; CIK 1018724: HTTPError: HTTP Error 403: Forbidden; CIK 1326801: HTTPError: HTTP Error 403: Forbidden"

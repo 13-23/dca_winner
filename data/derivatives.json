@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-28T00:01:32.502137+00:00",
+  "updated": "2026-11-28T07:39:39.814142+00:00",
   "source": "CFTC Traders in Financial Futures · futures only",
   "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm",
   "items": [
@@ -23,7 +23,7 @@
         "source": "CFTC Traders in Financial Futures · futures only",
         "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"
       },
-      "fetchedAt": "2026-11-28T00:01:32.502137+00:00",
+      "fetchedAt": "2026-11-28T07:39:39.814142+00:00",
       "combined": {
         "id": "sp500",
         "label": "S&P 500 E-mini 선물",
@@ -63,7 +63,7 @@
         "source": "CFTC Traders in Financial Futures · futures only",
         "url": "https://www.cftc.gov/MarketReports/CommitmentsofTraders/index.htm"
       },
-      "fetchedAt": "2026-11-28T00:01:32.502137+00:00",
+      "fetchedAt": "2026-11-28T07:39:39.814142+00:00",
       "combined": {
         "id": "nasdaq100",
         "label": "나스닥100 선물",
