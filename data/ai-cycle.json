@@ -1,9 +1,9 @@
 {
   "yield": {
-    "current": 4.85,
-    "previous": 5.07,
-    "date": "2026-11-25",
-    "source": "미 재무부 Daily Treasury Par Yield · 2026-11-18 비교",
+    "current": 4.94,
+    "previous": 4.92,
+    "date": "2026-11-27",
+    "source": "미 재무부 Daily Treasury Par Yield · 2026-11-20 비교",
     "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value_month=202611"
   },
   "inventory": {
@@ -27,7 +27,7 @@
     "fcf": "unavailable",
     "debt": "unavailable"
   },
-  "_attempted": "2026-11-27T13:48:43.966715+00:00",
+  "_attempted": "2026-11-28T00:02:27.972221+00:00",
   "_errors": {
     "fcf": "ValueError: CIK 320193: HTTPError: HTTP Error 403: Forbidden; CIK 789019: HTTPError: HTTP Error 403: Forbidden; CIK 1652044: HTTPError: HTTP Error 403: Forbidden; CIK 1018724: HTTPError: HTTP Error 403: Forbidden; CIK 1326801: HTTPError: HTTP Error 403: Forbidden",
     "debt": "ValueError: CIK 320193: HTTPError: HTTP Error 403: Forbidden; CIK 789019: HTTPError: HTTP Error 403: Forbidden; CIK 1652044: HTTPError: HTTP Error 403: Forbidden; CIK 1018724: HTTPError: HTTP Error 403: Forbidden; CIK 1326801: HTTPError: HTTP Error 403: Forbidden"
